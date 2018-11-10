@@ -46,8 +46,6 @@ public class SC_Tile_Manager : NetworkBehaviour {
         uiManager = SC_UI_Manager.Instance;
         uiManager.TileManager = this;
 
-        uiManager.MenuManager.TileManager = this;
-
         SC_Fight_Manager.Instance.TileManager = this;
 
         FindObjectOfType<SC_Camera>().Setup(xSize, ySize);
@@ -122,7 +120,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     string RandomBorder(string folderPath) {
 
-        return folderPath + "/" + UnityEngine.Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Borders/" + folderPath).Length - 1);
+        return folderPath + "/" + UnityEngine.Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Borders/" + folderPath).Length);
 
     }
 

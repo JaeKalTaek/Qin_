@@ -448,6 +448,22 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
+    #region Victory
+    [Command]
+    public void CmdShowVictory(bool qinWon) {
+
+        RpcShowVictory(qinWon);
+
+    }
+
+    [ClientRpc]
+    void RpcShowVictory(bool qinWon) {
+
+        localPlayer.uiManager.ShowVictory(qinWon);
+
+    }
+    #endregion
+
     [Command]
 	public void CmdDestroyGameObject(GameObject go) {
 

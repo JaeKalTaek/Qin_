@@ -80,8 +80,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
     static SC_Fight_Manager fightManager;
 
-    public SC_Menu_Manager MenuManager { get; set; }
-
     public static SC_UI_Manager Instance { get; set; }
 
     public static bool CanInteract { get {
@@ -118,8 +116,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
         fightManager = SC_Fight_Manager.Instance;
 
-        MenuManager = SC_Menu_Manager.Instance;
-
         basicSoldiers = Resources.LoadAll<SC_Soldier>("Prefabs/Characters/Soldiers/Basic");
 
         for (int i = 0; i < workshopPanel.transform.GetChild(1).childCount; i++) {
@@ -147,7 +143,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         SetupConstructPanel(false, soldierConstructPanel);
 
-        if (gameManager.Qin) {
+        if (qin) {
 
             construct.SetActive(true);
             sacrifice.SetActive(true);
@@ -734,6 +730,23 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (cancelButton.isActiveAndEnabled && Input.GetButtonDown("Cancel"))
             cancelButton.onClick.Invoke();
+
+    }
+
+    public void ActivateMenu (bool playerMenu) {
+
+        GameObject menu = playerMenu ? playerActionsPanel : characterActionsPanel;
+
+        RectTransform Rect = menu.GetComponent<RectTransform>();
+
+        Vector3 currentTileViewportPos = Camera.main.WorldToViewportPoint(TileManager.GetTileAt(SC_Cursor.Instance.gameObject).transform.position);
+
+        int offset = currentTileViewportPos.x < 0.5 ? 1 : -1;
+
+        Rect.anchorMin = new Vector3(currentTileViewportPos.x + (offset * (0.1f + (0.05f * (1 / (Mathf.Pow(Camera.main.orthographicSize, Camera.main.orthographicSize / 4)))))), currentTileViewportPos.y, currentTileViewportPos.z);
+        Rect.anchorMax = Rect.anchorMin;
+
+        menu.SetActive(true);
 
     }
 

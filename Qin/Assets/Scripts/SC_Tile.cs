@@ -99,6 +99,12 @@ public class SC_Tile : NetworkBehaviour {
 
     public static Sprite[] filters;
 
+    void Awake () {
+
+        DemonAuras = new List<DemonAura>();
+
+    }
+
     public override void OnStartClient () {
 
         base.OnStartClient();
@@ -112,9 +118,7 @@ public class SC_Tile : NetworkBehaviour {
             for (int i = 0; i < transform.GetChild(1).childCount; i++)
                 transform.GetChild(1).GetChild(i).GetComponent<SpriteRenderer>().sprite = infos.borders[i] ? Resources.Load<Sprite>("Sprites/RegionBorders/" + (Region)infos.region) : null;
 
-        }
-
-        DemonAuras = new List<DemonAura>();
+        }        
 
     }
 
@@ -214,7 +218,7 @@ public class SC_Tile : NetworkBehaviour {
                 else if (Workshop && SC_Player.localPlayer.Qin)
                     Workshop.SelectWorkshop();
                 else if (!uiManager.playerActionsPanel.activeSelf) {
-                    uiManager.MenuManager.MenuPos(SC_Menu_Manager.actionMenu.Player);
+                    uiManager.ActivateMenu(true);
                     playerMenuAlreadyActivated = false;
                 }
 

@@ -356,6 +356,12 @@ public class SC_Game_Manager : NetworkBehaviour {
         SC_Player.localPlayer.CmdResetMovement();
 
     }
+
+    public void Concede () {
+
+        Player.CmdShowVictory(!Player.Qin);
+
+    }
     #endregion
 
     #region Construction

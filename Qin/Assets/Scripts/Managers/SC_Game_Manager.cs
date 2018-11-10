@@ -216,7 +216,7 @@ public class SC_Game_Manager : NetworkBehaviour {
             
         }
 
-        foreach (SC_Tile t in tileManager.changingTiles)
+        foreach (SC_Tile t in tileManager.ChangingTiles)
             t.SetupTile();
 
         uiManager.loadingPanel.SetActive(false);

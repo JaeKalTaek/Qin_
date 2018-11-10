@@ -6,6 +6,11 @@ using static SC_Global;
 
 public class SC_Tile_Manager : NetworkBehaviour {
 
+    [Header("Tweakable Variables")]
+    [Tooltip("Number of border sprites around the board")]
+    public int borderSize;
+
+    [HideInInspector]
 	[SyncVar]
 	public int xSize, ySize;
 
@@ -13,7 +18,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     public List<SC_Tile>[] regions;
 
-    public List<SC_Tile> changingTiles;
+    public List<SC_Tile> ChangingTiles { get; set; }
 
     static SC_Game_Manager gameManager;
 
@@ -54,17 +59,54 @@ public class SC_Tile_Manager : NetworkBehaviour {
         for (int i = 0; i < regions.Length; i++)
             regions[i] = new List<SC_Tile>();
 
-        changingTiles = new List<SC_Tile>();
+        ChangingTiles = new List<SC_Tile>();
 
         foreach (SC_Tile t in FindObjectsOfType<SC_Tile>()) {
 
             tiles[t.transform.position.x.I(), t.transform.position.y.I()] = t;
 
             if (t.infos.type == "Changing")
-                changingTiles.Add(t);
+                ChangingTiles.Add(t);
 
             if(t.Region != -1)
                 regions[t.Region].Add(t);
+
+        }
+
+        for (int i = -borderSize; i <= xSize + borderSize; i++) {
+
+            for (int j = -borderSize; j <= ySize + borderSize; j++) {
+
+                Vector3 pos = new Vector3(i - .5f, j - .5f, 0) * SC_Game_Manager.TileSize;
+
+                string path = "Sprites/Borders/";
+
+                bool l = i == 0;
+                bool b = j == 0;
+                bool r = i == xSize;
+                bool t = j == ySize;
+
+                if ((i < 0) || (j < 0) || (i > xSize) || (j > ySize)) {
+
+                    path += "Full";
+
+                } else if (b || t || l || r) {
+
+                    if (b || t)
+                        path += (l || r) ? "Corner/" + (b ? "Bottom" : "Top") + (l ? "Left" : "Right") : RandomBorder(b ? "Bottom" : "Top");
+                    else
+                        path += RandomBorder(l ? "Left" : "Right");
+
+                }
+
+                if (path != "Sprites/Borders/") {
+
+                    GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Tiles/P_Border"), pos, Quaternion.identity, uiManager.bordersT);
+                    go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(path);
+
+                }
+
+            }
 
         }
 
@@ -75,6 +117,12 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         OpenList = new List<SC_Tile>();
         MovementRange = new List<SC_Tile>();
+
+    }
+
+    string RandomBorder(string folderPath) {
+
+        return folderPath + "/" + UnityEngine.Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Borders/" + folderPath).Length - 1);
 
     }
 

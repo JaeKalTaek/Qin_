@@ -20,7 +20,7 @@ public class SC_Menu_Manager : MonoBehaviour {
 
     List<Actions> actionsToDisplay = new List<Actions>();
 
-    Dictionary<Actions, int> ActionsIndex = new Dictionary<Actions, int>();
+    //Dictionary<Actions, int> ActionsIndex = new Dictionary<Actions, int>();
 
     GameObject menu; 
 
@@ -46,7 +46,7 @@ public class SC_Menu_Manager : MonoBehaviour {
 
     public void DisplayActions(List<Actions> actions)
     {
-        int actionIndex;
+        //int actionIndex;
 
         actionsToDisplay = actions;
 

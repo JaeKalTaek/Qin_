@@ -35,7 +35,7 @@ public class SC_Castle : SC_Construction {
         if(SC_Player.localPlayer.Qin)
             Setup();
 
-        foreach (SC_Tile t in tileManager.changingTiles) {
+        foreach (SC_Tile t in tileManager.ChangingTiles) {
 
             if (t.Region == Tile.Region) {
 

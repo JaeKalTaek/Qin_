@@ -59,6 +59,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     [Header("Transforms")]
     public Transform tilesT;
+    public Transform bordersT;
     public Transform soldiersT;
     public Transform heroesT;
     public Transform demonsT;

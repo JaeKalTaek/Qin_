@@ -7,6 +7,9 @@ public class SC_Demon : SC_BaseQinChara {
     [Tooltip("Range of the aura of this demon")]
     public int auraRange;
 
+    [Tooltip("Color of the aura of this demon")]
+    public Color auraColor;
+
     [Tooltip("Modifiers applied by the aura of this demon")]
     public SC_CombatModifiers auraModifiers;
 
@@ -27,6 +30,8 @@ public class SC_Demon : SC_BaseQinChara {
 
         auraRange = loadedCharacter.Demon.auraRange;
 
+        auraColor = loadedCharacter.Demon.auraColor;
+
         auraModifiers = loadedCharacter.Demon.auraModifiers;
 
         respawnTime = loadedCharacter.Demon.respawnTime;
@@ -38,6 +43,24 @@ public class SC_Demon : SC_BaseQinChara {
     protected override void Start () {
 
         base.Start();
+
+        for (int i = -auraRange; i <= auraRange; i++) {
+
+            for (int j = -auraRange; j <= auraRange; j++) {
+
+                if(SC_Tile_Manager.TileDistance(transform.position, transform.position + (new Vector3(i, j, 0) * SC_Game_Manager.TileSize)) <= auraRange) {
+
+                    SpriteRenderer sr = Instantiate(Resources.Load<SpriteRenderer>("Prefabs/Characters/Components/DemonAura"), transform);
+
+                    sr.transform.localPosition = new Vector3(i, j, transform.position.z);
+
+                    sr.color = auraColor;
+
+                }
+
+            }
+
+        }
 
         AddAura(true);
 

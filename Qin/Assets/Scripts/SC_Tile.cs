@@ -60,11 +60,11 @@ public class SC_Tile : NetworkBehaviour {
 
     public SC_Workshop Workshop { get { return Construction as SC_Workshop; } }
 
-    public SC_Pump Pump { get { return Construction.Pump; } }
+    public SC_Pump Pump { get { return Construction?.Pump; } }
 
     public bool ProductionBuilding { get { return Construction?.production ?? false; } }
 
-    public SC_Ruin Ruin { get { return Construction.Ruin; } }
+    public SC_Ruin Ruin { get { return Construction?.Ruin; } }
 
     public SC_Character Character { get; set; }
 

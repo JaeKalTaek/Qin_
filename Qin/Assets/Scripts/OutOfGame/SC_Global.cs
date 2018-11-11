@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [Serializable]
 public class SC_Global {
@@ -96,6 +97,28 @@ public class SC_Global {
             aura = a;
 
         }
+
+    }
+
+    [Serializable]
+    public class CharacterTooltip {
+
+        public GameObject panel;
+
+        public Image icon;
+
+        public Text name;
+
+        public Slider health, crit, dodge;
+
+    }
+
+    [Serializable]
+    public class CharacterFightPreview {
+
+        public Text name, constructionName;
+
+        public SC_FightValue health, constructionHealth, crit, dodge;
 
     }
 

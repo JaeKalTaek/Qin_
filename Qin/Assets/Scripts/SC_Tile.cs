@@ -74,7 +74,7 @@ public class SC_Tile : NetworkBehaviour {
 
     public SC_Qin Qin { get; set; }
 
-    public bool Empty { get { return !Construction && !Character && !Qin && !Ruin; } }
+    public bool Empty { get { return !Construction && !Character && !Qin; } }
 
     public bool Palace { get { return name.Contains("Palace"); } }
 
@@ -178,7 +178,7 @@ public class SC_Tile : NetworkBehaviour {
 
                 SC_Player.localPlayer.CmdMoveCharacterTo(transform.position.x.I(), transform.position.y.I());
 
-            } else if (CurrentDisplay == TDisplay.Attack) {
+            } else if (CurrentDisplay == TDisplay.Attack && !Empty) {
 
                 tileManager.RemoveAllFilters();
 

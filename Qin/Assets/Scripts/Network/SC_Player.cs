@@ -14,7 +14,7 @@ public class SC_Player : NetworkBehaviour {
 
     SC_UI_Manager uiManager;
 
-    SC_Fight_Manager fightManager;
+    SC_Fight_Manager FightManager { get { return SC_Fight_Manager.Instance; } }
 
 	public static SC_Player localPlayer;
 
@@ -37,8 +37,6 @@ public class SC_Player : NetworkBehaviour {
 			tileManager = FindObjectOfType<SC_Tile_Manager> ();
 
         uiManager = SC_UI_Manager.Instance;
-
-        fightManager = SC_Fight_Manager.Instance;
 
         localPlayer = this;
 		
@@ -172,10 +170,15 @@ public class SC_Player : NetworkBehaviour {
     }
 
 	[ClientRpc]
-	void RpcPrepareForAttack(int attackRange, GameObject targetTileObject, bool qin) {        
+	void RpcPrepareForAttack(int attackRange, GameObject targetTileObject, bool qin) {
+
+        /*print("Local Player : " + localPlayer +
+            "\nFight Manager : " + localPlayer.FightManager +
+            "\nAttacking character : " + SC_Character.attackingCharacter +
+            "\nTarget Tile Object : " + targetTileObject);*/
 
         if (localPlayer.Qin == qin)
-            localPlayer.fightManager.AttackRange = attackRange;
+            localPlayer.FightManager.AttackRange = attackRange;
 
         SC_Character.attackingCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
 
@@ -191,7 +194,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcAttack() {
 
-        localPlayer.fightManager.Attack();
+        localPlayer.FightManager.Attack();
 
     }
 

@@ -2,6 +2,10 @@
 
 public class SC_AdaptableMenu : MonoBehaviour {
 
+    public bool resize;
+
+    public int heightMultiplier;
+
     RectTransform RecT { get { return transform as RectTransform; } }
 
     void OnEnable () {
@@ -11,7 +15,8 @@ public class SC_AdaptableMenu : MonoBehaviour {
         foreach (Transform t in transform)
             nbr += t.gameObject.activeSelf ? 1 : 0;
 
-        RecT.sizeDelta = new Vector2(RecT.sizeDelta.x, 25 * nbr);
+        if(resize)
+            RecT.sizeDelta = new Vector2(RecT.sizeDelta.x, heightMultiplier * nbr);
 
         int index = 0;
 

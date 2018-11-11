@@ -39,30 +39,26 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         attacker.Tire();
 
-        if (!attacker.AttackTarget.Empty && attacker.AttackTarget.CanCharacterAttack(attacker)) {
+        SC_Character attacked = attacker.AttackTarget.Character;
+        SC_Construction targetConstruction = attacker.AttackTarget.Construction;
+        SC_Construction currentConstruction = attacker.Tile.Construction;
 
-            SC_Character attacked = attacker.AttackTarget.Character;
-            SC_Construction targetConstruction = attacker.AttackTarget.Construction;
-            SC_Construction currentConstruction = attacker.Tile.Construction;
+        if (attacked) {
 
-            if (attacked) {
+            bool killed = CharacterAttack(attacker, attacked, targetConstruction, false);
 
-                bool killed = CharacterAttack(attacker, attacked, targetConstruction, false);
+            if (!killed && attacked.GetActiveWeapon().Range(attacked).In(AttackRange))
+                CharacterAttack(attacked, attacker, currentConstruction, true);
 
-                if (!killed && attacked.GetActiveWeapon().Range(attacked).In(AttackRange))
-                    CharacterAttack(attacked, attacker, currentConstruction, true);
+        } else if (targetConstruction) {
 
-            } else if (targetConstruction) {
+            HitConstruction(attacker, targetConstruction, false);
 
-                HitConstruction(attacker, targetConstruction, false);
+        } else if (attacker.AttackTarget.Qin) {
 
-            } else if (attacker.AttackTarget.Qin) {
+            SC_Qin.ChangeEnergy(-attacker.BaseDamage);
 
-                SC_Qin.ChangeEnergy(-attacker.BaseDamage);
-
-            }        
-
-        }
+        }        
 
         SC_Character.Wait();
 
@@ -79,7 +75,8 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
 
-        attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
+        if (!attacked.Tile.GreatWall)
+            attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
 
         if (attacker.Hero && killed)
             IncreaseRelationships(attacker.Hero);

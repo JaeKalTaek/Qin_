@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public static class SC_ExtensionMethods {
 
@@ -35,6 +36,12 @@ public static class SC_ExtensionMethods {
     public static bool In (this Vector2 v, int i) {
 
         return (i >= v.x) && (i <= v.y);
+
+    }
+
+    public static void Set (this Slider s, float a, float b) {
+
+        s.value = a / b;
 
     }
 

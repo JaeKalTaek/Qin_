@@ -41,6 +41,9 @@ public class SC_Game_Manager : NetworkBehaviour {
     #region Setup
     private void Awake () {
 
+        uiManager = FindObjectOfType<SC_UI_Manager>();
+        uiManager.connectingPanel.SetActive(true);
+
         if (!Instance)
             Instance = this;
 
@@ -80,8 +83,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 			SetupTileManager ();
 
 		}		
-
-        uiManager = SC_UI_Manager.Instance;
+        
 		uiManager.SetupUI (FindObjectOfType<SC_Network_Manager>().IsQinHost() == isServer);
 
     }

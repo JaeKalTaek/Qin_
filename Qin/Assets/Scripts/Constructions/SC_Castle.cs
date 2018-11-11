@@ -62,7 +62,7 @@ public class SC_Castle : SC_Construction {
         base.DestroyConstruction();        
 
         foreach (SC_Tile t in tileManager.regions[Tile.Region])
-            t.Ruin?.DestroyRuin();
+            t.Ruin?.DestroyConstruction();
 
         castles[Tile.Region] = false;
 

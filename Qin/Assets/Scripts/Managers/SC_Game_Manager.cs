@@ -423,7 +423,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         }
 
-        tile.Ruin?.DestroyRuin();
+        tile.Ruin?.DestroyConstruction();
 
         if (isServer) {
 
@@ -487,7 +487,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction();
 
-        SC_Character.attackingCharacter.Tile.Ruin?.DestroyRuin();
+        SC_Character.attackingCharacter.Tile.Ruin?.DestroyConstruction();
 
         uiManager.Wait();
 

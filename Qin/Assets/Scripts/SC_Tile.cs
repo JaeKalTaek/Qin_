@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.Networking;
 using static SC_Global;
@@ -20,6 +20,8 @@ public class SC_Tile : NetworkBehaviour {
     [Tooltip("Combat modifiers for this tile")]
     public SC_CombatModifiers combatModifers;
 
+    public SC_CombatModifiers CombatModifiers { get { return Construction?.combatModifers ?? combatModifers; } }
+
     [SyncVar]
     public TileInfos infos;
 
@@ -34,7 +36,7 @@ public class SC_Tile : NetworkBehaviour {
         else if (Qin)
             return !c.Qin;
         else
-            return !Ruin;
+            return true;
 
     }
 
@@ -58,11 +60,11 @@ public class SC_Tile : NetworkBehaviour {
 
     public SC_Workshop Workshop { get { return Construction as SC_Workshop; } }
 
-    public SC_Pump Pump { get { return Construction as SC_Pump; } }
+    public SC_Pump Pump { get { return Construction.Pump; } }
 
     public bool ProductionBuilding { get { return Construction?.production ?? false; } }
 
-    public SC_Ruin Ruin { get; set; }
+    public SC_Ruin Ruin { get { return Construction.Ruin; } }
 
     public SC_Character Character { get; set; }
 
@@ -250,8 +252,13 @@ public class SC_Tile : NetworkBehaviour {
             Hero?.PreviewFight();
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
-        else if (!Empty)
-            (Character ?? Construction ?? Ruin ?? Qin ?? default(MonoBehaviour)).ShowHideInfos();
+        else {
+
+            Character?.ShowInfos();
+            Qin?.ShowInfos();
+            this.ShowInfos();
+
+        }
 
     }
 
@@ -313,6 +320,17 @@ public class SC_Tile : NetworkBehaviour {
         if (notHere)
             DemonAuras.Add(new DemonAura(demon, aura));
 
-    }    
+    }   
+    
+    public int DemonsModifier (string id, bool qin) {
+
+        int modif = 0;
+
+        foreach (DemonAura dA in DemonAuras)
+            modif += (int)dA.aura.GetType().GetField(id).GetValue(dA.aura) * (qin ? 1 : -1);
+
+        return modif;
+
+    }
 
 }

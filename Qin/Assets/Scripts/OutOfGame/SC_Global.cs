@@ -103,11 +103,11 @@ public class SC_Global {
     [Serializable]
     public class CharacterTooltip {
 
-        public GameObject panel;
+        public GameObject panel, critContainer, dodgeContainer;
 
         public Image icon;
 
-        public Text name;
+        public Text name, healthLabel;
 
         public Slider health, crit, dodge;
 
@@ -119,6 +119,17 @@ public class SC_Global {
         public Text name, constructionName;
 
         public SC_FightValue health, constructionHealth, crit, dodge;
+
+    }
+
+    [Serializable]
+    public class TileTooltip {
+
+        public GameObject panel;
+
+        public Slider health;
+
+        public Text name, power, defense, technique, reflexes, range, movement;
 
     }
 

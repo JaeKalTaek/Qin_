@@ -28,6 +28,8 @@ public class SC_Construction : NetworkBehaviour {
 
     public SC_Pump Pump { get { return this as SC_Pump; } }
 
+    public SC_Ruin Ruin { get { return this as SC_Ruin; } }
+
     public SC_Tile Tile { get { return tileManager.GetTileAt(gameObject);  } }
 
 	protected static SC_Game_Manager gameManager;
@@ -45,8 +47,8 @@ public class SC_Construction : NetworkBehaviour {
         if (!tileManager)
             tileManager = FindObjectOfType<SC_Tile_Manager>();
 
-        if (tileManager && (tileManager.tiles != null))
-            Tile.Construction = this;
+        /*if (tileManager && (tileManager.tiles != null))
+            Tile.Construction = this;*/
 
     }
 
@@ -75,12 +77,12 @@ public class SC_Construction : NetworkBehaviour {
 
 	public virtual void DestroyConstruction() {
 
-        uiManager.HideInfosIfActive(gameObject);
-
         if (GreatWall)
             Tile.Soldier?.DestroyCharacter();
 
         Tile.Construction = null;
+
+        uiManager.TryRefreshInfos(Tile.gameObject, Tile.GetType());
 
         Tile.Cost = Tile.baseCost;
 
@@ -90,12 +92,6 @@ public class SC_Construction : NetworkBehaviour {
 
 		/*if(isServer)
 			Network.Destroy (gameObject);*/
-
-	}
-
-	public bool Attackable() {
-
-		return (!GetType ().Equals (typeof(SC_Village)) && !GetType ().Equals (typeof(SC_Workshop)));
 
 	}
 

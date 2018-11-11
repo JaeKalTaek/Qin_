@@ -26,6 +26,8 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject victoryPanel;
     public GameObject playerActionsPanel;
     public GameObject toggleHealthBarsButton;
+    public Button cancelButton;
+    public TileTooltip tileTooltip;
 
     [Header("Preview Fight")]
     public GameObject previewFightPanel;
@@ -37,8 +39,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject characterActionsPanel;
     public GameObject attackButton;
     public GameObject destroyConstruButton;
-    public GameObject buildConstruButton;
-    public Button cancelButton;
+    public GameObject buildConstruButton;    
 
     [Header("Heroes")]
     public GameObject relationshipPanel;
@@ -76,7 +77,9 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Variables
-    public GameObject CurrentGameObject { get; set; }
+    public GameObject CurrentChara { get; set; }
+
+    public GameObject CurrentTile { get; set; }
 
     static SC_Game_Manager gameManager;
 
@@ -90,7 +93,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             return localPlayer.Turn && (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !gameManager.prep;
 
-        } }
+    } }
 
     public float clickSecurityDuration;
 
@@ -291,33 +294,24 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Infos
-    public void ShowInfos(GameObject g, Type t) {
-
-        CurrentGameObject = g;
+    public void ShowInfos(GameObject g, Type t) {        
 
         if (t == typeof(SC_Hero))
             ShowHeroInfos(g.GetComponent<SC_Hero>());
         else if (t.IsSubclassOf(typeof(SC_BaseQinChara)))
             ShowBaseQinCharaInfos(g.GetComponent<SC_BaseQinChara>());
-        else if (t.IsSubclassOf(typeof(SC_Construction)))
-            ShowConstructionsInfos(g.GetComponent<SC_Construction>());
         else if (t == typeof(SC_Qin))
             ShowQinInfos();
-        else if (t == typeof(SC_Ruin)) {
-
-            buildingInfosPanel.SetActive(true);
-
-            SetText("BuildingName", "Ruin");
-            SetText("BuildingHealth", "");
-
-        } else
+        else if (t == typeof(SC_Tile))
+            ShowTileTooltip(g.GetComponent<SC_Tile>());
+        else
             print("ERRROR");
 
-	}
+    }
 
     public void HideInfosIfActive(GameObject g) {
 
-        if (CurrentGameObject == g)
+        if (CurrentChara == g)
             HideInfos(true);
 
     }
@@ -332,22 +326,19 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.panel.SetActive(false);
 
+        tileTooltip.panel.SetActive(false);
+
         buildingInfosPanel.SetActive (false);
 		qinPanel.SetActive (false);
 
-        CurrentGameObject = null;
+        CurrentChara = null;
 
 	}
 
     public void TryRefreshInfos(GameObject g, Type t) {
 
-        if(CurrentGameObject == g) {
-
-            CurrentGameObject = null;
-
+        if((CurrentChara == g) || (CurrentTile == g))
             ShowInfos(g, t);
-
-        }
 
     }
 
@@ -366,15 +357,23 @@ public class SC_UI_Manager : MonoBehaviour {
         SetText("Movement", " Movement : " + GetStat(character, "Movement"));
 		SetText("WeaponsTitle", " Weapons :");*/
 
+        CurrentChara = character.gameObject;
+
         characterTooltip.icon.sprite = character.GetComponent<SpriteRenderer>().sprite;
 
         characterTooltip.name.text = character.characterName;
+
+        characterTooltip.healthLabel.text = "Health";
 
         characterTooltip.health.Set(character.Health, character.maxHealth);
 
         characterTooltip.crit.Set(character.CriticalAmount, gameManager.CommonCharactersVariables.critTrigger);
 
         characterTooltip.dodge.Set(character.DodgeAmount, gameManager.CommonCharactersVariables.dodgeTrigger);
+
+        characterTooltip.critContainer.SetActive(true);
+
+        characterTooltip.dodgeContainer.SetActive(true);
 
         characterTooltip.panel.SetActive(true);
 
@@ -424,12 +423,47 @@ public class SC_UI_Manager : MonoBehaviour {
 
 	}     
 
+    void ShowTileTooltip(SC_Tile t) {
+
+        CurrentTile = t.gameObject;
+
+        if (t.Construction)
+            ShowConstructionsInfos(t.Construction);
+        else {
+
+            tileTooltip.name.text = t.infos.type;
+            tileTooltip.health.gameObject.SetActive(false);
+
+        }
+
+        bool movingDemon = SC_Character.characterToMove?.Demon;
+
+        tileTooltip.power.text = t.CombatModifiers.strength + (movingDemon ? 0 : t.DemonsModifier("strength", localPlayer.Qin)) + "";
+        tileTooltip.defense.text = t.CombatModifiers.armor + (movingDemon ? 0 : t.DemonsModifier("armor", localPlayer.Qin)) + "";
+        tileTooltip.technique.text = t.CombatModifiers.technique + (movingDemon ? 0 : t.DemonsModifier("technique", localPlayer.Qin)) + "";
+        tileTooltip.reflexes.text = t.CombatModifiers.reflexes + (movingDemon ? 0 : t.DemonsModifier("reflexes", localPlayer.Qin)) + "";
+        tileTooltip.range.text = t.CombatModifiers.range + (movingDemon ? 0 : t.DemonsModifier("range", localPlayer.Qin)) + "";
+        tileTooltip.movement.text = t.CombatModifiers.movement + (movingDemon ? 0 : t.DemonsModifier("movement", localPlayer.Qin)) + "";
+
+        tileTooltip.panel.SetActive(true);
+
+    }
+
 	void ShowConstructionsInfos(SC_Construction construction) {
 
-		buildingInfosPanel.SetActive (true);
+        tileTooltip.name.text = construction.Name;
+
+        if (construction.Health > 0) {
+
+            tileTooltip.health.Set(construction.Health, construction.maxHealth);
+            tileTooltip.health.gameObject.SetActive(true);
+
+        }
+
+		/*buildingInfosPanel.SetActive (true);
 
 		SetText("BuildingName", construction.Name);
-		SetText("BuildingHealth", construction.Health != 0 ? "Health : " + construction.Health + " / " + construction.maxHealth : "");
+		SetText("BuildingHealth", construction.Health != 0 ? "Health : " + construction.Health + " / " + construction.maxHealth : "");*/
 
         if (SC_Tile.CanChangeFilters && construction.Pump) {
 
@@ -444,11 +478,27 @@ public class SC_UI_Manager : MonoBehaviour {
 
 	void ShowQinInfos() {
 
-		qinPanel.SetActive (true);
+        /*qinPanel.SetActive (true);
 
-		SetText("QinEnergy", SC_Qin.Energy + "");
+		SetText("QinEnergy", SC_Qin.Energy + "");*/
 
-	}
+        CurrentChara = SC_Qin.Qin.gameObject;
+
+        characterTooltip.icon.sprite = SC_Qin.Qin.GetComponent<SpriteRenderer>().sprite;
+
+        characterTooltip.name.text = "Qin";
+
+        characterTooltip.healthLabel.text = "Energy";
+
+        characterTooltip.health.Set(SC_Qin.Energy, SC_Qin.Qin.energyToWin);
+
+        characterTooltip.critContainer.SetActive(false);
+
+        characterTooltip.dodgeContainer.SetActive(false);
+
+        characterTooltip.panel.SetActive(true);
+
+    }
     #endregion
 
     #region Fight related
@@ -587,7 +637,7 @@ public class SC_UI_Manager : MonoBehaviour {
         else
             weaponChoice2.SetActive(true);
 
-        SetText("Weapon Choice " + (first ? "1" : "2") + " Text", weapon.weaponName);
+        (first ? weaponChoice1 : weaponChoice2).GetComponentInChildren<Text>().text = weapon.weaponName;
 
     }
 
@@ -860,11 +910,4 @@ public class SC_UI_Manager : MonoBehaviour {
     }
     #endregion
 
-    #region Utility functions
-    void SetText (string id, string text) {
-
-        GameObject.Find(id).GetComponent<Text>().text = text;
-
-    }
-    #endregion
 }

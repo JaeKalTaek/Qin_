@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class SC_Village : SC_Construction {
+﻿public class SC_Village : SC_Construction {
 
 	public static int number;
 

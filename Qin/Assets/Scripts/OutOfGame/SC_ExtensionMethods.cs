@@ -21,7 +21,7 @@ public static class SC_ExtensionMethods {
 
 	}
 		
-    public static void ShowHideInfos(this MonoBehaviour MB) {
+    public static void ShowInfos(this MonoBehaviour MB) {
 
         SC_UI_Manager.Instance.ShowInfos(MB.gameObject, MB.GetType());
 

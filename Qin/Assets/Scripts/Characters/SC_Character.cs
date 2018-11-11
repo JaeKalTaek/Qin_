@@ -19,41 +19,41 @@ public abstract class SC_Character : NetworkBehaviour {
     [Tooltip("Strength of this character")]
     public int baseStrength;
     public int StrengthModifiers { get; set; }
-    public int Strength { get { return Mathf.Max(0, baseStrength + StrengthModifiers + CombatModifiers().strength + DemonsModifier("strength")); } }
+    public int Strength { get { return Mathf.Max(0, baseStrength + StrengthModifiers + Tile.CombatModifiers.strength + DemonsModifier("strength")); } }
 
     [Tooltip("Chi of this character")]
     public int baseChi;
     public int ChiModifiers { get; set; }
-    public int Chi { get { return Mathf.Max(0, baseChi + ChiModifiers + CombatModifiers().chi + DemonsModifier("chi")); } }
+    public int Chi { get { return Mathf.Max(0, baseChi + ChiModifiers + Tile.CombatModifiers.chi + DemonsModifier("chi")); } }
 
     [Tooltip("Armor of this character")]
     public int baseArmor;
     public int ArmorModifiers { get; set; }
-    public int Armor { get { return baseArmor + ArmorModifiers + CombatModifiers().armor + DemonsModifier("armor"); } }
+    public int Armor { get { return baseArmor + ArmorModifiers + Tile.CombatModifiers.armor + DemonsModifier("armor"); } }
 
     [Tooltip("Resistance of this character")]
     public int baseResistance;
     public int ResistanceModifiers { get; set; }
-    public int Resistance { get { return baseResistance + ResistanceModifiers + CombatModifiers().resistance + DemonsModifier("resistance"); } }
+    public int Resistance { get { return baseResistance + ResistanceModifiers + Tile.CombatModifiers.resistance + DemonsModifier("resistance"); } }
 
     [Tooltip("Technique of this character, amount of Crits Jauge gained after attacking")]
     public int baseTechnique;
     public int TechniqueModifiers { get; set; }
-    public int Technique { get { return Mathf.Max(0, baseTechnique + TechniqueModifiers + CombatModifiers().technique + DemonsModifier("technique")); } }
+    public int Technique { get { return Mathf.Max(0, baseTechnique + TechniqueModifiers + Tile.CombatModifiers.technique + DemonsModifier("technique")); } }
 
     public int CriticalAmount { get; set; }
 
     [Tooltip("Reflexes of this character, amount of Dodge Jauge gained after being attacked")]
     public int baseReflexes;
     public int ReflexesModifiers { get; set; }
-    public int Reflexes { get { return Mathf.Max(0, baseReflexes + ReflexesModifiers + CombatModifiers().reflexes + DemonsModifier("reflexes")); } }
+    public int Reflexes { get { return Mathf.Max(0, baseReflexes + ReflexesModifiers + Tile.CombatModifiers.reflexes + DemonsModifier("reflexes")); } }
 
     public int DodgeAmount { get; set; }
 
     [Tooltip("Base movement distance of this character")]
     public int baseMovement;
     public int MovementModifiers { get; set; }
-    public int Movement { get { return Mathf.Max(0, baseMovement + MovementModifiers + CombatModifiers().movement + DemonsModifier("movement")); } }    
+    public int Movement { get { return Mathf.Max(0, baseMovement + MovementModifiers + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }    
 
     public bool CanMove { get; set; }
 
@@ -296,8 +296,16 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }
 
-        if(moved)
+        if (moved) {
+
             uiManager.TryRefreshInfos(gameObject, GetType());
+
+            SC_Tile t = uiManager.CurrentTile.GetComponent<SC_Tile>();
+
+            if (t.CursorOn)
+                uiManager.TryRefreshInfos(t.gameObject, t.GetType());
+
+        }
 
         if (SC_Player.localPlayer.Turn) {            
 
@@ -411,33 +419,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public int Range (SC_Tile t) {
 
-        return CombatModifiers(t).range + RangeModifiers + DemonsModifier("range", t);
-
-    } 
-
-    public SC_CombatModifiers CombatModifiers(SC_Tile t = null) {
-
-        if (!t)
-            t = Tile;
-
-        return t.Construction?.combatModifers ?? (t.Ruin?.combatModifers ?? t.combatModifers);
+        return t.CombatModifiers.range + RangeModifiers + DemonsModifier("range", t);
 
     }
 
     int DemonsModifier(string id, SC_Tile t = null) {
 
-        if (!t)
-            t = Tile;
-
-        if (Demon)
-            return 0;
-
-        int modif = 0;
-
-        foreach (DemonAura dA in t.DemonAuras)
-            modif += (int)dA.aura.GetType().GetField(id).GetValue(dA.aura) * (Qin ? 1 : -1);
-
-        return modif;
+        return Demon ? 0 : (t ?? Tile).DemonsModifier(id, Qin);
 
     }
 

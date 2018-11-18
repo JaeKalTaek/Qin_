@@ -40,7 +40,7 @@ public class SC_Qin : NetworkBehaviour {
 
         Energy = startEnergy;
 
-		uiManager.energyText.text = "Qin's Energy : " + Energy;
+		uiManager.qinEnergy.text = "Qin's Energy : " + Energy;
 
         tileManager.GetTileAt(gameObject).Qin = this;
 
@@ -86,7 +86,7 @@ public class SC_Qin : NetworkBehaviour {
         if (Energy >= Qin.energyToWin)
             uiManager.ShowVictory(true);
         else if (Energy > 0) {
-            uiManager.energyText.text = "Qin's Energy : " + Energy;
+            uiManager.qinEnergy.text = "Qin's Energy : " + Energy;
             uiManager.TryRefreshInfos(Qin.gameObject, Qin.GetType());
         }  else
             uiManager.ShowVictory(false);

@@ -344,11 +344,15 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
 
-    public void UnselectCharacter () {
+    public void UnselectCharacter () {        
+
+        tileManager.RemoveAllFilters();
+
+        SC_Tile t = SC_Character.characterToMove.Tile;        
 
         SC_Character.characterToMove = null;
 
-        tileManager.RemoveAllFilters();
+        t.OnCursorEnter();
 
         uiManager.cancelAction = DoNothing;
 

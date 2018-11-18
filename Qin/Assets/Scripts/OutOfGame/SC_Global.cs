@@ -105,6 +105,15 @@ public class SC_Global {
     }
 
     [Serializable]
+    public class CharacterDetails {
+
+        public GameObject panel, soldierPanel;
+
+        public Transform stats, weapons, relationshipsPanel;
+
+    }
+
+    [Serializable]
     public class CharacterFightPreview {
 
         public Text name, constructionName;

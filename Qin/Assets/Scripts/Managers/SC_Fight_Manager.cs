@@ -148,7 +148,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         int value;
         target.Relationships.TryGetValue(opponent.characterName, out value);
 
-        return 1 - RelationValue(value);
+        return 1 - CharactersVariables.relationValues.GetValue("boost", value);
 
     }
 
@@ -161,23 +161,11 @@ public class SC_Fight_Manager : MonoBehaviour {
             int value;
             target.Relationships.TryGetValue(hero.characterName, out value);
 
-            boost += RelationValue(value);
+            boost += CharactersVariables.relationValues.GetValue("boost", value);
 
         }
 
         return boost;
-
-    }
-
-    float RelationValue (int value) {
-
-        float v = 0;
-
-        for (int i = 0; i < CharactersVariables.relationBoostValues.relations.Length; i++)
-            if (value >= CharactersVariables.relationBoostValues.relations[i])
-                v = CharactersVariables.relationBoostValues.values[i];
-
-        return v;
 
     }
 

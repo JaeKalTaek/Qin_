@@ -42,7 +42,7 @@ public class SC_Common_Characters_Variables : MonoBehaviour {
     public float berserkDamageMultiplier;
 
     [Tooltip("Attack/Defense boosts added for each corresponding relation value with another nearby hero")]
-    public RelationBoostValues relationBoostValues;
+    public RelationshipValues relationValues;
 
     [Tooltip("Amount of relation value required between two heroes for one to save the other when he's about to die")]
     public int saveTriggerRelation;
@@ -51,16 +51,24 @@ public class SC_Common_Characters_Variables : MonoBehaviour {
     public int killRelationValue;
 
     [Serializable]
-    public struct RelationBoostValues {
+    public class RelationshipValues {
 
         public int[] relations;
-        public float[] values;
+        public float[] boostValues, linkValues;
 
-    }
+        public float GetValue(string id, int r) {
 
-    private void OnValidate () {
+            float v = 0;
 
-        Array.Resize(ref relationBoostValues.values, relationBoostValues.relations.Length);
+            float[] values = (float[])GetType().GetField(id + "Values").GetValue(this);
+
+            for (int i = 0; i < relations.Length; i++)
+                if (r >= relations[i])
+                    v = values[i];
+
+            return v;
+
+        }
 
     }
 

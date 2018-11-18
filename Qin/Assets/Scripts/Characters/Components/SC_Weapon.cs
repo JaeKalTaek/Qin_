@@ -16,8 +16,6 @@ public class SC_Weapon : MonoBehaviour {
     [Tooltip("Maxmimum range of this weapon")]
     public int maxRange;    
 
-    public bool CanMelee { get { return minRange <= 1; } }
-
     public Vector2 Range (SC_Character owner, SC_Tile t = null) {
 
         if (!t)

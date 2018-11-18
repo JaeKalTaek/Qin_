@@ -121,7 +121,7 @@ public class SC_Cursor : NetworkBehaviour {
         #endregion       
 
         #region Cursor Inputs
-        if (!Locked && (Input.GetButtonDown("Action") || (Input.GetMouseButtonDown(0) && Cursor.visible)))
+        if (!Locked && (Input.GetButtonDown("Submit") || (Input.GetMouseButtonDown(0) && Cursor.visible)))
             SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.CursorClick();           
         /*else if (Input.GetButtonDown("Infos"))
             SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.CursorSecondaryClick();*/

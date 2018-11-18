@@ -29,6 +29,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     [Header("Characters")]
     public CharacterTooltip characterTooltip;
+    public CharacterDetails characterDetails;
     public GameObject characterActionsPanel;
     public GameObject attackButton, destroyConstruButton, buildConstruButton;    
 
@@ -38,7 +39,7 @@ public class SC_UI_Manager : MonoBehaviour {
     // public GameObject usePower;
 
     [Header("Qin")]
-    public Text energyText;
+    public Text qinEnergy;
     public GameObject construct, constructPanel, endQinConstru, cancelSoldierConstru;
     public Transform qinConstrus, soldierConstrus;
     public CreationTooltip construTooltip, soldierTooltip;
@@ -202,10 +203,8 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Infos
     public void ShowInfos(GameObject g, Type t) {        
 
-        if (t == typeof(SC_Hero))
-            ShowHeroInfos(g.GetComponent<SC_Hero>());
-        else if (t.IsSubclassOf(typeof(SC_BaseQinChara)))
-            ShowBaseQinCharaInfos(g.GetComponent<SC_BaseQinChara>());
+        if (t.IsSubclassOf(typeof(SC_Character)))
+            ShowCharacterInfos(g.GetComponent<SC_Character>());
         else if (t == typeof(SC_Qin))
             ShowQinInfos();
         else if (t == typeof(SC_Tile))
@@ -269,19 +268,75 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-	void ShowHeroInfos(SC_Hero hero) {
+    #region Characters Details
+    public void DisplayCharacterDetails(SC_Character c) {
 
-		ShowCharacterInfos (hero);
+        ShowCharacterInfos(c);
 
-	}
+        foreach (Transform t in characterDetails.stats)
+            if(t.gameObject.activeSelf)
+                t.GetChild(1).GetComponent<Text>().text = GetStat(c, t.name);
 
-	void ShowBaseQinCharaInfos (SC_BaseQinChara baseQinChara) {
+        for (int i = 0; i < characterDetails.weapons.childCount; i++)
+            characterDetails.weapons.GetChild(i).GetComponent<Text>().text = (i == 0) ? c.GetActiveWeapon().weaponName : (i == 1) ? (c.Hero?.GetWeapon(false).weaponName) : "";
 
-		ShowCharacterInfos (baseQinChara);
+        if(c.Hero) {
 
-	}     
+            for (int i = 0; i < c.Hero.RelationshipKeys.Count; i++) {
 
-    void ShowTileTooltip(SC_Tile t) {
+                int v;
+
+                c.Hero.Relationships.TryGetValue(c.Hero.RelationshipKeys[i], out v);
+
+                Transform t = characterDetails.relationshipsPanel.GetChild(i);
+
+                t.GetChild(0).GetComponent<Image>().sprite = Resources.Load<SC_Hero>("Prefabs/Characters/Heroes/P_" + c.Hero.RelationshipKeys[i].Replace(" ", "_")).GetComponent<SpriteRenderer>().sprite;
+
+                t.GetChild(1).GetComponent<Text>().text = v.ToString();                
+
+                (t.GetChild(2) as RectTransform).sizeDelta = new Vector2(gameManager.CommonCharactersVariables.relationValues.GetValue("link", v), (t.GetChild(2) as RectTransform).sizeDelta.y);
+
+            }
+
+            characterDetails.relationshipsPanel.GetChild(5).GetComponent<Image>().sprite = c.GetComponent<SpriteRenderer>().sprite;
+
+        }
+
+        characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);
+        characterDetails.soldierPanel.SetActive(c.Soldier);
+
+        DisplayCharacterDetails(true);
+
+    }
+
+    void DisplayCharacterDetails(bool b) {
+
+        SC_Cursor.Instance.Locked = b;
+
+        returnAction = b ? (Action)(() => DisplayCharacterDetails(false)) : DoNothing;
+
+        characterDetails.panel.SetActive(b);
+
+        turnIndicator.gameObject.SetActive(!b);
+
+        qinEnergy.gameObject.SetActive(!b);
+
+    }
+
+    string GetStat(SC_Character c, string s) {
+
+        int stat = (int)c.GetType().GetProperty(s).GetValue(c);
+
+        int baseStat = (int)c.GetType().GetField("base" + s).GetValue(c);
+
+        int modifiers = stat - baseStat;
+
+        return stat + (modifiers == 0 ? "" : (" (" + baseStat + " " + (modifiers > 0 ? "+" : "-") + " " + Mathf.Abs(modifiers) + ")"));
+
+    }
+    #endregion
+
+    void ShowTileTooltip (SC_Tile t) {
 
         CurrentTile = t.gameObject;
 
@@ -737,6 +792,8 @@ public class SC_UI_Manager : MonoBehaviour {
             cancelAction();
         else if (Input.GetButtonDown("Return"))
             returnAction();
+        else if (Input.GetButtonDown("DisplayDetails") && CurrentChara?.GetComponent<SC_Character>())
+            DisplayCharacterDetails(CurrentChara.GetComponent<SC_Character>());
 
         if (draggedCastle)
             draggedCastle.transform.SetPos(WorldMousePos);

@@ -22,6 +22,9 @@ public class SC_Construction : NetworkBehaviour {
     [Tooltip("Combat modifiers for this construction")]
     public SC_CombatModifiers combatModifers;
 
+    [Tooltip("Description of the construction")]
+    public string description;
+
     public SC_Lifebar Lifebar { get; set; }
 
     public bool GreatWall { get { return (this as SC_Castle) || (this as SC_Bastion) || (this as SC_Wall); } }
@@ -47,8 +50,8 @@ public class SC_Construction : NetworkBehaviour {
         if (!tileManager)
             tileManager = FindObjectOfType<SC_Tile_Manager>();
 
-        /*if (tileManager && (tileManager.tiles != null))
-            Tile.Construction = this;*/
+        if (tileManager && (tileManager.tiles != null))
+            Tile.Construction = this;
 
     }
 
@@ -123,11 +126,18 @@ public class SC_Construction : NetworkBehaviour {
 
             }
 
-            uiManager.UpdateQinConstructPanel();
+            uiManager.UpdateCreationPanel(uiManager.qinConstrus);
 
             SC_Player.localPlayer.Busy = true;
 
-            tileManager.DisplayConstructableTiles(lastConstru.Name == "Wall");
+            if (!SC_Cursor.Instance.Locked) {
+
+                if (CanCreateConstruct(gameManager.CurrentConstru))
+                    tileManager.DisplayConstructableTiles(gameManager.CurrentConstru);
+                else
+                    uiManager.SelectConstruct();
+
+            }
 
         }
 

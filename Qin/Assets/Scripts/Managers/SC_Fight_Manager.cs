@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static SC_Global;
 
 public class SC_Fight_Manager : MonoBehaviour {
-
-    //public bool RangedAttack { get; set; }
 
     public int AttackRange { get; set; }
 
@@ -33,7 +32,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         uiManager.HideWeapons();
 
-        uiManager.cancelButton.gameObject.SetActive(false);
+        uiManager.cancelAction = DoNothing;
 
         SC_Character attacker = SC_Character.attackingCharacter;
 

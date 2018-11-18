@@ -136,11 +136,15 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 	}
 
-    SC_EditorTile currentETile;
+    public GameObject TryLoadConstruction (string c) {
 
-    GameObject TryLoadConstruction(string p = "") {
+        return TryLoadConstruction("", c) ?? TryLoadConstruction("Production/", c) ?? TryLoadConstruction("Special/", c);
 
-        return Resources.Load<GameObject>("Prefabs/Constructions/" + p + "P_" + currentETile.construction);
+    }
+
+    GameObject TryLoadConstruction(string p, string c) {
+
+        return Resources.Load<GameObject>("Prefabs/Constructions/" + p + "P_" + c);
 
     }
 
@@ -152,9 +156,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             if (eTile.construction != ConstructionType.None) {
 
-                currentETile = eTile;
-
-                GameObject constructionPrefab = TryLoadConstruction() ?? TryLoadConstruction("Production/") ?? TryLoadConstruction("Special/");
+                GameObject constructionPrefab = TryLoadConstruction(eTile.construction.ToString());
 
                 GameObject go = Instantiate(constructionPrefab, eTile.transform.position, Quaternion.identity);
 
@@ -232,8 +234,7 @@ public class SC_Game_Manager : NetworkBehaviour {
     // Called by UI
     public void NextTurn () {
 
-        if (!Player.Busy)
-            Player.CmdNextTurn();
+        Player.CmdNextTurn();
 
     }
 
@@ -241,7 +242,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 	    Turn++;
 
-        tileManager.RemoveAllFilters();        
+        SC_Cursor.SetLock(false);
+
+        // tileManager.RemoveAllFilters();        
 
         SC_Character.attackingCharacter = null;
 
@@ -268,7 +271,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 Player.Busy = true;                
 
-                tileManager.DisplayConstructableTiles(false);
+                tileManager.DisplayConstructableTiles(CurrentConstru);
 
             }
 
@@ -318,7 +321,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void CancelLastConstruction () {
 
-        uiManager.cancelButton.gameObject.SetActive(false);
+        uiManager.cancelAction = DoNothing;
 
         Player.CmdCancelLastConstru();
 
@@ -347,7 +350,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         tileManager.RemoveAllFilters();
 
-        uiManager.cancelButton.gameObject.SetActive(false);
+        uiManager.cancelAction = DoNothing;
 
     }
 
@@ -367,27 +370,27 @@ public class SC_Game_Manager : NetworkBehaviour {
     #endregion
 
     #region Construction
-    public void SoldierConstruct(int id) {
+    public void SoldierConstruct(string c) {
 
-        uiManager.soldierConstructPanel.gameObject.SetActive(false);
+        uiManager.constructPanel.SetActive(false);
 
-        uiManager.cancelButton.gameObject.SetActive(false);
+        uiManager.cancelAction = DoNothing;
 
         tileManager.RemoveAllFilters();
 
-        Player.CmdSetConstru(uiManager.SoldiersConstructions[id].Name);
+        Player.CmdSetConstru(c);
 
         Player.CmdConstructAt(SC_Character.attackingCharacter.transform.position.x.I(), SC_Character.attackingCharacter.transform.position.y.I());
 
         Player.Busy = false;
 
-        SC_Cursor.Instance.Locked = false;
+        SC_Cursor.SetLock(false);
 
     }
 
     public void ConstructAt (int x, int y) {
 
-        tileManager.RemoveAllFilters();
+        //tileManager.RemoveAllFilters();
 
         SC_Tile tile = tileManager.GetTileAt(x, y);
 
@@ -444,16 +447,13 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
 
-    public void FinishConstruction (bool qinConstru) {        
+    public void FinishConstruction (bool qinConstru) {
+
+        tileManager.RemoveAllFilters();
 
         if (QinTurnStarting) {
 
             Player.Busy = false;
-
-            uiManager.construct.gameObject.SetActive(true);
-            //uiManager.qinPower.gameObject.SetActive(true);
-            uiManager.sacrifice.gameObject.SetActive(true);
-            uiManager.endTurn.SetActive(true);
 
         } else {
 
@@ -463,10 +463,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 Player.CmdChangeQinEnergyOnClient(-SC_Qin.GetConstruCost(CurrentConstru), false);
 
-                uiManager.UpdateQinConstructPanel();
+                uiManager.UpdateCreationPanel(uiManager.qinConstrus);
 
-                if ((SC_Qin.GetConstruCost(CurrentConstru) < SC_Qin.Energy) && (tileManager.GetConstructableTiles(CurrentConstru == "Wall").Count > 0))
-                    tileManager.DisplayConstructableTiles(CurrentConstru == "Wall");
+                if (CanCreateConstruct(CurrentConstru))
+                    tileManager.DisplayConstructableTiles(CurrentConstru);
 
             } else {
 
@@ -477,7 +477,7 @@ public class SC_Game_Manager : NetworkBehaviour {
         }
 
         if (qinConstru)
-            uiManager.SetCancelButton(CancelLastConstruction);
+            uiManager.cancelAction = CancelLastConstruction;
 
     }
     #endregion

@@ -46,11 +46,14 @@ public class SC_Cursor : NetworkBehaviour {
 
         inputsMoveTimer = 0;
 
-        SC_Tile_Manager.Instance.GetTileAt(transform.position).CursorOn = true;
+        SC_Tile_Manager.Instance.GetTileAt(transform.position).OnCursorEnter();
 
     }
 
     void Update () {
+
+        if (Input.anyKeyDown && !(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
+            Cursor.visible = false;
 
         #region Cursor Movement
         inputsMoveTimer -= Time.deltaTime;
@@ -60,7 +63,7 @@ public class SC_Cursor : NetworkBehaviour {
         newMousePos = SC_Global.WorldMousePos;
 
         if ((Vector3.Distance(oldMousePos, newMousePos) >= mouseThreshold) && !cameraMoved)
-             Cursor.visible = true;
+            Cursor.visible = true;
 
         cameraMoved = false;
 
@@ -73,8 +76,6 @@ public class SC_Cursor : NetworkBehaviour {
             if ((Input.GetButton("Horizontal") || Input.GetButton("Vertical")) && (inputsMoveTimer <= 0)) {
 
                 inputsMoveTimer = inputsMoveDelay;
-
-                Cursor.visible = false;
 
                 newPos = transform.position + new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0) * TileSize;
 
@@ -120,7 +121,7 @@ public class SC_Cursor : NetworkBehaviour {
         #endregion       
 
         #region Cursor Inputs
-        if (Input.GetButtonDown("Action"))
+        if (!Locked && (Input.GetButtonDown("Action") || (Input.GetMouseButtonDown(0) && Cursor.visible)))
             SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.CursorClick();           
         /*else if (Input.GetButtonDown("Infos"))
             SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.CursorSecondaryClick();*/
@@ -133,6 +134,19 @@ public class SC_Cursor : NetworkBehaviour {
 
         return Camera.main.WorldToViewportPoint(transform.position + new Vector3(f, f, 0));
 
-    }    
+    }   
+
+    public static void SetLock(bool b) {
+
+        Instance.Locked = b;
+
+        Instance.gameObject.SetActive(!b);
+
+        if(b)
+            SC_Tile_Manager.Instance?.GetTileAt(Instance.transform.position)?.OnCursorExit();
+        else
+            SC_Tile_Manager.Instance?.GetTileAt(Instance.transform.position)?.OnCursorEnter();
+
+    }
 
 }

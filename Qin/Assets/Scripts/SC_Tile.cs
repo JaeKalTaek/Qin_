@@ -164,7 +164,7 @@ public class SC_Tile : NetworkBehaviour {
 
     public void CursorClick() {
 
-        if (SC_UI_Manager.CanInteract) {
+        if (SC_UI_Manager.CanInteract && SC_Player.localPlayer.Turn) {
 
             if (CurrentDisplay == TDisplay.Construct) {
 
@@ -172,9 +172,7 @@ public class SC_Tile : NetworkBehaviour {
 
             } else if (CurrentDisplay == TDisplay.Movement) {
 
-                SC_Cursor.Instance.Locked = true;
-
-                uiManager.cancelButton.gameObject.SetActive(false);                
+                uiManager.cancelAction = DoNothing;             
 
                 SC_Player.localPlayer.Busy = true;
 
@@ -189,7 +187,7 @@ public class SC_Tile : NetworkBehaviour {
                 SC_Player.localPlayer.CmdPrepareForAttack(fightManager.AttackRange, gameObject, !SC_Player.localPlayer.Qin);
 
                 if (attackingCharacter.Hero)
-                    attackingCharacter.Hero.ChooseWeapon();
+                    uiManager.ChooseWeapon(attackingCharacter.Hero);
                 else
                     SC_Player.localPlayer.CmdAttack();
 
@@ -211,23 +209,20 @@ public class SC_Tile : NetworkBehaviour {
 
             }*/
 
-            bool playerMenuAlreadyActivated = true;
-
             if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy) {
 
                 if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
                     Character.TryCheckMovements();
                 else if (Workshop && SC_Player.localPlayer.Qin)
                     Workshop.SelectWorkshop();
-                else if (!uiManager.playerActionsPanel.activeSelf) {
+                else
                     uiManager.ActivateMenu(true);
-                    playerMenuAlreadyActivated = false;
-                }
 
             }
 
-            if (uiManager.playerActionsPanel.activeSelf && playerMenuAlreadyActivated)
-                uiManager.playerActionsPanel.SetActive(false);
+        } else if (SC_UI_Manager.CanInteract && CurrentDisplay == TDisplay.None) {
+
+            uiManager.ActivateMenu(true);
 
         }
 

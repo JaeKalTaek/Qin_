@@ -10,23 +10,17 @@ public class SC_UI_Manager : MonoBehaviour {
 
     #region UI Elements
     [Header("Preparation")]
-    public GameObject connectingPanel;
-    public GameObject preparationPanel;
-    public GameObject qinPreparationPanel;
-    public GameObject heroesPreparationPanel;
-    public GameObject readyButton;
-    public GameObject otherPlayerReady;
+    public GameObject connectingPanel, preparationPanel;
+    public GameObject qinPreparationPanel, heroesPreparationPanel;
+    public GameObject readyButton, otherPlayerReady;
     public Color readyColor, notReadyColor;
 
     [Header("Game")]
     public GameObject gamePanel;
-    public GameObject loadingPanel;
+    public GameObject loadingPanel, victoryPanel;
     public Text turnIndicator;    
-    public GameObject endTurn;
-    public GameObject victoryPanel;
     public GameObject playerActionsPanel;
-    public GameObject toggleHealthBarsButton;
-    public Button cancelButton;
+    public GameObject toggleHealthBarsButton, endTurnButton;
     public TileTooltip tileTooltip;
 
     [Header("Preview Fight")]
@@ -35,45 +29,26 @@ public class SC_UI_Manager : MonoBehaviour {
 
     [Header("Characters")]
     public CharacterTooltip characterTooltip;
-    public GameObject statsPanel;
     public GameObject characterActionsPanel;
-    public GameObject attackButton;
-    public GameObject destroyConstruButton;
-    public GameObject buildConstruButton;    
+    public GameObject attackButton, destroyConstruButton, buildConstruButton;    
 
     [Header("Heroes")]
     public GameObject relationshipPanel;
-    public GameObject weaponChoicePanel;
-    public GameObject weaponChoice1;
-    public GameObject weaponChoice2;
-    public GameObject usePower;
-
-    [Header("Constructions")]
-    public GameObject buildingInfosPanel;
+    public GameObject weaponChoicePanel, weaponChoice1, weaponChoice2;
+    // public GameObject usePower;
 
     [Header("Qin")]
     public Text energyText;
-    public GameObject qinPanel;
-    public GameObject construct;
-    public Transform constructPanel;
-    public Transform soldierConstructPanel;
+    public GameObject construct, constructPanel, endQinConstru, cancelSoldierConstru;
+    public Transform qinConstrus, soldierConstrus;
+    public CreationTooltip construTooltip, soldierTooltip;
     public Transform qinPower;
-    public GameObject sacrifice;
-    public GameObject endSacrifice;
+    public GameObject sacrifice, endSacrifice;
     public GameObject workshopPanel;
 
     [Header("Transforms")]
     public Transform tilesT;
-    public Transform bordersT;
-    public Transform soldiersT;
-    public Transform heroesT;
-    public Transform demonsT;
-    public Transform wallsT;
-    public Transform bastionsT;
-    public Transform castlesT;
-    public Transform workshopsT;
-    public Transform ruinsT;
-    public Transform villagesT;
+    public Transform bordersT, soldiersT, heroesT, demonsT, wallsT, bastionsT, castlesT, workshopsT, ruinsT, villagesT;
     #endregion
 
     #region Variables
@@ -91,29 +66,29 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public static bool CanInteract { get {
 
-            return localPlayer.Turn && (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !gameManager.prep;
+            return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !gameManager.prep;
 
     } }
 
     public float clickSecurityDuration;
 
-    bool clickSecurity;
-
-    public SC_Soldier[] basicSoldiers;
-
-    SC_Construction[] qinConstructions;
-
-    public SC_Construction[] SoldiersConstructions { get; set; }
+    public static bool clickSecurity;
 
     GameObject grid;
 
-   public bool LifeBarsOn { get { return toggleHealthBarsButton.name == "On"; } }
+    public Action returnAction, cancelAction;    
+
+    public bool LifeBarsOn { get { return toggleHealthBarsButton.name == "On"; } }
+
+    Selectable previouslySelected;
     #endregion
 
     #region Setup
     private void Awake() {
 
         Instance = this;
+
+        returnAction = DoNothing;
 
     }
 
@@ -122,40 +97,6 @@ public class SC_UI_Manager : MonoBehaviour {
         gameManager = SC_Game_Manager.Instance;
 
         fightManager = SC_Fight_Manager.Instance;
-
-        basicSoldiers = Resources.LoadAll<SC_Soldier>("Prefabs/Characters/Soldiers/Basic");
-
-        for (int i = 0; i < workshopPanel.transform.GetChild(1).childCount; i++) {
-
-            Transform soldier = workshopPanel.transform.GetChild(1).GetChild(i);
-
-            if (i < basicSoldiers.Length) {
-
-                soldier.GetChild(0).GetComponentInChildren<Text>().text = basicSoldiers[i].characterName;
-                soldier.GetChild(1).GetComponentInChildren<Text>().text = basicSoldiers[i].cost.ToString();
-
-            } else {
-
-                Destroy(soldier.gameObject);
-
-            }
-
-        }
-
-        qinConstructions = Resources.LoadAll<SC_Construction>("Prefabs/Constructions");
-
-        SoldiersConstructions = Resources.LoadAll<SC_Construction>("Prefabs/Constructions/Production");
-
-        SetupConstructPanel(true, constructPanel);
-
-        SetupConstructPanel(false, soldierConstructPanel);
-
-        if (qin) {
-
-            construct.SetActive(true);
-            sacrifice.SetActive(true);
-
-        }
 
         if (gameManager.prep) {
 
@@ -174,31 +115,6 @@ public class SC_UI_Manager : MonoBehaviour {
         gridRenderer.size = new Vector2(size.x, size.y);
         grid = gridRenderer.gameObject;
         grid.transform.position = (size - Vector3.one * gameManager.CurrentMapPrefab.TileSize) / 2f;        
-
-    }
-
-    void SetupConstructPanel(bool qin, Transform panel) {
-
-        SC_Construction[] constructions = qin ? qinConstructions : SoldiersConstructions;
-
-        for (int i = qin ? 1 : 0; i < panel.childCount; i++) {
-
-            int index = qin ? i - 1 : i;
-
-            Transform construction = panel.GetChild(i);
-
-            if (index < constructions.Length) {
-
-                construction.GetChild(0).GetComponentInChildren<Text>().text = constructions[index].Name;
-                construction.GetChild(1).GetComponentInChildren<Text>().text = constructions[index].cost.ToString();
-
-            } else {
-
-                construction.gameObject.SetActive(false);
-
-            }
-
-        }
 
     }
     #endregion
@@ -276,21 +192,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);
 
-        cancelButton.gameObject.SetActive(false);
+        cancelAction = DoNothing;
 
         turnIndicator.text = gameManager.Qin ? "Qin's Turn" : (gameManager.Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
 
 	}
-    #endregion
-
-    #region Buttons
-    public void SetCancelButton (Action a) {
-
-        cancelButton.onClick.RemoveAllListeners();
-        cancelButton.onClick.AddListener(delegate { a(); });
-        cancelButton.gameObject.SetActive(true);
-
-    }
     #endregion
 
     #region Infos
@@ -321,15 +227,9 @@ public class SC_UI_Manager : MonoBehaviour {
         if (removeFilters)
             TileManager.RemoveAllFilters(true);
 
-        /*statsPanel.SetActive (false);
-		relationshipPanel.SetActive (false);*/
-
         characterTooltip.panel.SetActive(false);
 
         tileTooltip.panel.SetActive(false);
-
-        buildingInfosPanel.SetActive (false);
-		qinPanel.SetActive (false);
 
         CurrentChara = null;
 
@@ -343,19 +243,6 @@ public class SC_UI_Manager : MonoBehaviour {
     }
 
 	void ShowCharacterInfos(SC_Character character) {
-
-        /*statsPanel.SetActive (true);
-
-		SetText("Name", character.characterName);
-		SetText("Health", "Health : " + character.Health + " / " + character.maxHealth);
-		SetText("Strength", " Strength : " + GetStat(character, "Strength"));
-		SetText("Armor", " Armor : " + GetStat(character, "Armor"));
-		SetText("Chi", " Chi : " + GetStat(character, "Chi"));
-		SetText("Resistance", " Resistance : " + GetStat(character, "Resistance"));
-		SetText("Technique", " Technique : " + GetStat(character, "Technique") + ", Crit : " + character.CriticalAmount + "/" + gameManager.CommonCharactersVariables.critTrigger);
-		SetText("Reflexes", " Reflexes : " + GetStat(character, "Reflexes") + ", Dodge : " + character.DodgeAmount + "/" + gameManager.CommonCharactersVariables.dodgeTrigger);
-        SetText("Movement", " Movement : " + GetStat(character, "Movement"));
-		SetText("WeaponsTitle", " Weapons :");*/
 
         CurrentChara = character.gameObject;
 
@@ -382,44 +269,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    /*string GetStat(SC_Character chara, string id) {        
-
-        int stat = (int)chara.GetType().GetProperty(id).GetValue(chara);
-
-        int baseStat = (int)chara.GetType().GetField("base" + id).GetValue(chara);
-
-        int modifiers = stat - baseStat;
-
-        return stat + (modifiers == 0 ? "" : (" (" + baseStat + " " + (modifiers > 0 ? "+" : "-") + " " + Mathf.Abs(modifiers) + ")"));
-
-    }*/
-
 	void ShowHeroInfos(SC_Hero hero) {
 
 		ShowCharacterInfos (hero);
-
-		/*relationshipPanel.SetActive (true);
-
-		SetText("Weapon 1", "  - " + hero.GetWeapon(true).weaponName + " (E)");
-		SetText("Weapon 2", "  - " + hero.GetWeapon(false).weaponName);
-
-		for (int i = 0; i < hero.RelationshipKeys.Count; i++) {
-
-			int value;
-			hero.Relationships.TryGetValue(hero.RelationshipKeys [i], out value);
-			GameObject.Find ("Relation_" + (i + 1)).GetComponent<Text> ().text = "  " + hero.RelationshipKeys [i] + " : " + value;
-
-		}*/
-
 
 	}
 
 	void ShowBaseQinCharaInfos (SC_BaseQinChara baseQinChara) {
 
 		ShowCharacterInfos (baseQinChara);
-
-		/*SetText("Weapon 1", "  - " + baseQinChara.weapon.weaponName);
-		SetText("Weapon 2", "");*/
 
 	}     
 
@@ -438,12 +296,14 @@ public class SC_UI_Manager : MonoBehaviour {
 
         bool movingDemon = SC_Character.characterToMove?.Demon;
 
-        tileTooltip.power.text = t.CombatModifiers.strength + (movingDemon ? 0 : t.DemonsModifier("strength", localPlayer.Qin)) + "";
-        tileTooltip.defense.text = t.CombatModifiers.armor + (movingDemon ? 0 : t.DemonsModifier("armor", localPlayer.Qin)) + "";
-        tileTooltip.technique.text = t.CombatModifiers.technique + (movingDemon ? 0 : t.DemonsModifier("technique", localPlayer.Qin)) + "";
-        tileTooltip.reflexes.text = t.CombatModifiers.reflexes + (movingDemon ? 0 : t.DemonsModifier("reflexes", localPlayer.Qin)) + "";
-        tileTooltip.range.text = t.CombatModifiers.range + (movingDemon ? 0 : t.DemonsModifier("range", localPlayer.Qin)) + "";
-        tileTooltip.movement.text = t.CombatModifiers.movement + (movingDemon ? 0 : t.DemonsModifier("movement", localPlayer.Qin)) + "";
+        bool q = t.Character?.Qin ?? localPlayer.Qin;
+
+        tileTooltip.power.text = t.CombatModifiers.strength + (movingDemon ? 0 : t.DemonsModifier("strength", q)) + "";
+        tileTooltip.defense.text = t.CombatModifiers.armor + (movingDemon ? 0 : t.DemonsModifier("armor", q)) + "";
+        tileTooltip.technique.text = t.CombatModifiers.technique + (movingDemon ? 0 : t.DemonsModifier("technique", q)) + "";
+        tileTooltip.reflexes.text = t.CombatModifiers.reflexes + (movingDemon ? 0 : t.DemonsModifier("reflexes", q)) + "";
+        tileTooltip.range.text = t.CombatModifiers.range + (movingDemon ? 0 : t.DemonsModifier("range", q)) + "";
+        tileTooltip.movement.text = t.CombatModifiers.movement + (movingDemon ? 0 : t.DemonsModifier("movement", q)) + "";
 
         tileTooltip.panel.SetActive(true);
 
@@ -460,11 +320,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
         }
 
-		/*buildingInfosPanel.SetActive (true);
-
-		SetText("BuildingName", construction.Name);
-		SetText("BuildingHealth", construction.Health != 0 ? "Health : " + construction.Health + " / " + construction.maxHealth : "");*/
-
         if (SC_Tile.CanChangeFilters && construction.Pump) {
 
             TileManager.DisplayedPump = construction.Pump;
@@ -477,10 +332,6 @@ public class SC_UI_Manager : MonoBehaviour {
 	}
 
 	void ShowQinInfos() {
-
-        /*qinPanel.SetActive (true);
-
-		SetText("QinEnergy", SC_Qin.Energy + "");*/
 
         CurrentChara = SC_Qin.Qin.gameObject;
 
@@ -641,6 +492,20 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
+    public void ChooseWeapon (SC_Hero h) {
+
+        weaponChoicePanel.SetActive(true);
+
+        if (h.weapon1.Range(h).In(fightManager.AttackRange))
+            ShowWeapon(h.GetWeapon(true), true);
+
+        if (h.weapon2.Range(h).In(fightManager.AttackRange))
+            ShowWeapon(h.GetWeapon(false), false);
+
+        cancelAction = ResetAttackChoice;
+
+    }
+
     public void ResetAttackChoice () {
 
         HideWeapons();
@@ -668,19 +533,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
             localPlayer.Busy = true;
 
-            constructPanel.gameObject.SetActive(action == "construct");
-
-            endSacrifice.SetActive(action == "sacrifice");
-
-            workshopPanel.SetActive(action == "workshop");
-
-            localPlayer.CmdSetQinTurnStarting(false);
-
-            cancelButton.gameObject.SetActive(false);
+            localPlayer.CmdSetQinTurnStarting(false);            
 
             TileManager.RemoveAllFilters();
 
             playerActionsPanel.SetActive(false);
+
+            cancelAction = DoNothing;
 
         }
 
@@ -688,19 +547,22 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void EndQinAction(string action) {
 
-        if (action != "workshop")
-            SC_Tile_Manager.Instance.RemoveAllFilters();
+        TileManager.RemoveAllFilters();
+
+        StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
 
         if (action == "construct")
-            cancelButton.gameObject.SetActive(false);
+            cancelAction = DoNothing;
 
-        constructPanel.gameObject.SetActive(false);
+        constructPanel.SetActive(false);
 
         endSacrifice.SetActive(false);
 
         workshopPanel.SetActive(false);
 
         localPlayer.Busy = false;
+
+        returnAction = DoNothing;
 
     }
 
@@ -711,7 +573,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
             StartQinAction("sacrifice");
 
+            endSacrifice.SetActive(true);
+
             TileManager.DisplaySacrifices();
+
+            returnAction = () => EndQinAction("sacrifice");
+
+            StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
 
         }
 
@@ -732,19 +600,38 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Building
-    public void UpdateQinConstructPanel () {
+    public void DisplayConstructPanel(bool qin) {        
 
-        for (int i = 1; i < constructPanel.childCount; i++)
-            constructPanel.GetChild(i).GetComponentInChildren<Button>().interactable = (SC_Qin.GetConstruCost(qinConstructions[i].Name) < SC_Qin.Energy) && (TileManager.GetConstructableTiles(qinConstructions[i].Name == "Wall").Count > 0);
+        constructPanel.SetActive(true);
+
+        qinConstrus.gameObject.SetActive(qin);
+        soldierConstrus.gameObject.SetActive(!qin);
+
+        endQinConstru.SetActive(qin);
+        cancelSoldierConstru.SetActive(!qin);
+
+        UpdateCreationPanel(qin ? qinConstrus : soldierConstrus, true);
+
+    }
+
+    public void UpdateCreationPanel (Transform t, bool open = false) {
+
+        foreach (SC_UI_Creation c in t.GetComponentsInChildren<SC_UI_Creation>())
+            c.SetCanClick();
+
+        if (open)
+            ForceSelect(t.GetComponentInChildren<Button>().gameObject);
 
     }
 
     // Called by UI
-    public void DisplayQinConstructPanel() {        
+    public void DisplayQinConstructPanel() {
 
-        UpdateQinConstructPanel();
+        StartQinAction("construct");
 
-        StartQinAction("construct");                  
+        DisplayConstructPanel(true);
+
+        SelectConstruct();
 
     }
 
@@ -753,25 +640,56 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterActionsPanel.SetActive(false);
 
-        for (int i = 0; i < soldierConstructPanel.childCount; i++)
-            soldierConstructPanel.GetChild(i).GetComponentInChildren<Button>().interactable = (SC_Qin.GetConstruCost(SoldiersConstructions[i].Name) < SC_Qin.Energy) && (TileManager.GetConstructableTiles(SoldiersConstructions[i].Name == "Wall").Count > 0);
-
         TileManager.RemoveAllFilters();
 
-        soldierConstructPanel.gameObject.SetActive(true);
+        DisplayConstructPanel(false);
 
-        SetCancelButton(CancelAction);
+        cancelAction = CancelAction;
 
     }
 
-    // Called by UI
-    public void DisplayConstructableTiles(int id) {
+    public void UpdateCreationTooltip(string[] values, bool constru) {
 
-        localPlayer.CmdSetConstru(qinConstructions[id].Name);
+        CreationTooltip cT = constru ? construTooltip : soldierTooltip;
+
+        cT.name.text = values[0];
+
+        cT.cost.text = values[1];
+
+        cT.desc.text = values[2];
+
+    }
+
+    public void SelectConstruct () {
 
         TileManager.RemoveAllFilters();
 
-        TileManager.DisplayConstructableTiles(qinConstructions[id].Name == "Wall");
+        SC_Cursor.SetLock(true);
+
+        EventSystem.current.sendNavigationEvents = true;
+
+        previouslySelected?.Select();
+
+        returnAction = DoNothing;
+
+    }    
+
+    // Called by UI
+    public void DisplayConstructableTiles(string c) {
+
+        previouslySelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
+
+        returnAction = SelectConstruct;
+
+        EventSystem.current.sendNavigationEvents = false;
+
+        StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
+
+        localPlayer.CmdSetConstru(c);
+
+        TileManager.RemoveAllFilters();
+
+        TileManager.DisplayConstructableTiles(c);
 
     }
     #endregion
@@ -779,33 +697,27 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Workshop
     public void DisplayWorkshopPanel() {
 
-        Transform uiSoldiers = workshopPanel.transform.GetChild(1);
-
-        for (int i = 0; i < uiSoldiers.childCount; i++)
-            uiSoldiers.GetChild(i).GetComponentInChildren<Button>().interactable = basicSoldiers[i].cost < SC_Qin.Energy;
-
-        StartCoroutine(ClickSafety());
-
-        StartQinAction("workshop");     
-
-    }
-
-    IEnumerator ClickSafety() {
+        SC_Cursor.SetLock(true);        
 
         clickSecurity = true;
 
-        yield return new WaitForSeconds(clickSecurityDuration);
+        StartCoroutine(ClickSafety(() => { clickSecurity = false; }));
 
-        clickSecurity = false;
+        StartQinAction("workshop");
 
+        workshopPanel.SetActive(true);
 
-    }
+        UpdateCreationPanel(workshopPanel.transform.GetChild(1), true);
 
-    public void WorkshopCreateSoldier (int id) {
+        cancelAction = () => { EndQinAction("workshop"); };
+
+    }    
+
+    public void WorkshopCreateSoldier (string s) {
 
         if (!clickSecurity) {            
 
-            localPlayer.CmdCreateSoldier(gameManager.CurrentWorkshopPos, basicSoldiers[id].characterName);
+            localPlayer.CmdCreateSoldier(gameManager.CurrentWorkshopPos, s);
 
             EndQinAction("workshop");
 
@@ -819,31 +731,64 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Both Players  
     void Update () {
 
-        if(Input.GetButtonDown("ToggleGrid"))
+        if (Input.GetButtonDown("ToggleGrid"))
             grid.SetActive(!grid.activeSelf);
+        else if (Input.GetButtonDown("Cancel"))
+            cancelAction();
+        else if (Input.GetButtonDown("Return"))
+            returnAction();
 
-        if(draggedCastle)
+        if (draggedCastle)
             draggedCastle.transform.SetPos(WorldMousePos);
-
-        if (cancelButton.isActiveAndEnabled && Input.GetButtonDown("Cancel"))
-            cancelButton.onClick.Invoke();
 
     }
 
     public void ActivateMenu (bool playerMenu) {
 
+        SC_Cursor.SetLock(true);
+
+        if (playerMenu) {
+
+            if (localPlayer.Qin) {
+
+                construct.SetActive(localPlayer.Turn);
+                sacrifice.SetActive(localPlayer.Turn);                
+
+                if (gameManager.QinTurnStarting)
+                    localPlayer.CmdSetQinTurnStarting(false);
+
+            }
+
+            endTurnButton.SetActive(localPlayer.Turn);
+
+            cancelAction = DoNothing;
+
+            returnAction = () => {
+
+                SC_Cursor.SetLock(false);
+
+                playerActionsPanel.SetActive(false);
+                
+            };
+
+        }
+
         GameObject menu = playerMenu ? playerActionsPanel : characterActionsPanel;
 
+        #region Set Menu Pos
         RectTransform Rect = menu.GetComponent<RectTransform>();
 
-        Vector3 currentTileViewportPos = Camera.main.WorldToViewportPoint(TileManager.GetTileAt(SC_Cursor.Instance.gameObject).transform.position);
+        Vector3 currentTileViewportPos = Camera.main.WorldToViewportPoint(SC_Cursor.Instance.transform.position);
 
         int offset = currentTileViewportPos.x < 0.5 ? 1 : -1;
 
         Rect.anchorMin = new Vector3(currentTileViewportPos.x + (offset * (0.1f + (0.05f * (1 / (Mathf.Pow(Camera.main.orthographicSize, Camera.main.orthographicSize / 4)))))), currentTileViewportPos.y, currentTileViewportPos.z);
         Rect.anchorMax = Rect.anchorMin;
+        #endregion
 
         menu.SetActive(true);
+
+        ForceSelect(menu.transform.Find((playerMenu ? "EndTurn" : "Cancel") + "Button").gameObject);
 
     }
 
@@ -867,27 +812,31 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void Attack() {
 
-        SC_Cursor.Instance.Locked = false;
+        SC_Cursor.SetLock(false);
 
         characterActionsPanel.SetActive(false);
 
-        SetCancelButton(CancelAction);
+        cancelAction = CancelAction;
 
         TileManager.CheckAttack();
 
     }
 
+    public void Cancel () {
+
+        cancelAction();
+
+    }
+
     void CancelAction() {
 
-        SC_Cursor.Instance.Locked = true;
-
-        soldierConstructPanel.gameObject.SetActive(false);
+        constructPanel.SetActive(false);
 
         TileManager.RemoveAllFilters();
 
-        characterActionsPanel.SetActive(true);
+        ActivateMenu(false);
 
-        SetCancelButton(gameManager.ResetMovement);
+        cancelAction = gameManager.ResetMovement;
 
         TileManager.PreviewAttack();
 
@@ -897,15 +846,25 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void Wait() {
 
-        SC_Cursor.Instance.Locked = false;
+        SC_Cursor.SetLock(false);
 
         localPlayer.CmdWait();
 
         characterActionsPanel.SetActive(false);
 
-        cancelButton.gameObject.SetActive(false);
+        cancelAction = DoNothing;
 
         localPlayer.Busy = false;
+
+    }
+    #endregion
+
+    #region Utility
+    IEnumerator ClickSafety (Action a) {
+
+        yield return new WaitForSeconds(clickSecurityDuration);
+
+        a();
 
     }
     #endregion

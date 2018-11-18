@@ -179,7 +179,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         SC_Player.localPlayer.CmdCheckMovements(transform.position.x.I(), transform.position.y.I());
 
-        uiManager.SetCancelButton(gameManager.UnselectCharacter);
+        uiManager.cancelAction = gameManager.UnselectCharacter;
 
     }
 
@@ -302,7 +302,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
             SC_Tile t = uiManager.CurrentTile.GetComponent<SC_Tile>();
 
-            if (t.CursorOn)
+            if (t && t.CursorOn)
                 uiManager.TryRefreshInfos(t.gameObject, t.GetType());
 
         }
@@ -313,7 +313,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
             uiManager.ActivateMenu(false);
 
-            uiManager.SetCancelButton(gameManager.ResetMovement);
+            uiManager.cancelAction = gameManager.ResetMovement;
 
         }        
 
@@ -344,9 +344,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (SC_Player.localPlayer.Turn) {
 
-            SC_Cursor.Instance.Locked = false;
+            SC_Cursor.SetLock(false);
 
-            uiManager.SetCancelButton(gameManager.UnselectCharacter);
+            uiManager.cancelAction = gameManager.UnselectCharacter;
 
         }
 

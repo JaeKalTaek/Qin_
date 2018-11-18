@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [Serializable]
@@ -44,17 +45,7 @@ public class SC_Global {
 
     }
 
-    public static List<Actions> ActionsUpdate(Actions action, List<Actions> actions, bool add)
-    {
-        if(add)
-            if(!actions.Contains(action))
-                actions.Add(action);
-        else
-            if (actions.Contains(action))
-                actions.Remove(action);
-
-        return actions;
-    }
+    public static void DoNothing () { }
 
     public struct TileInfos {
 
@@ -130,6 +121,32 @@ public class SC_Global {
         public Slider health;
 
         public Text name, power, defense, technique, reflexes, range, movement;
+
+    }
+
+    [Serializable]
+    public class CreationTooltip {
+
+        public Text name, cost, desc;
+
+    }
+
+    public static bool CanCreateConstruct(string c) {
+
+        return (SC_Qin.GetConstruCost(c) < SC_Qin.Energy) && (SC_Tile_Manager.Instance.GetConstructableTiles(c).Count > 0);
+
+    }
+
+    public static bool CanCreateSoldier (string s) {
+
+        return Resources.Load<SC_Soldier>("Prefabs/Characters/Soldiers/Basic/P_" + s).cost < SC_Qin.Energy;
+
+    }
+
+    public static void ForceSelect(GameObject g) {
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(g);
 
     }
 

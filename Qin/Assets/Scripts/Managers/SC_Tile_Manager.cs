@@ -426,11 +426,11 @@ public class SC_Tile_Manager : NetworkBehaviour {
     #endregion
 
     #region Construction
-    public List<SC_Tile> GetConstructableTiles(bool wall) {
+    public List<SC_Tile> GetConstructableTiles(string c) {
 
         List<SC_Tile> constructableTiles = new List<SC_Tile>();
 
-        if (wall) {
+        if (c == "Wall") {
 
             foreach (SC_Construction construction in FindObjectsOfType<SC_Construction>()) {
 
@@ -458,9 +458,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     }
 
-    public void DisplayConstructableTiles (bool wall) {
+    public void DisplayConstructableTiles (string c) {
 
-        foreach (SC_Tile tile in GetConstructableTiles(wall))
+        foreach (SC_Tile tile in GetConstructableTiles(c))
             tile.GetComponent<SC_Tile>().ChangeDisplay(TDisplay.Construct);
 
     }

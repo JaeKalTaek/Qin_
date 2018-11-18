@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class SC_Bastion : SC_Construction {
+﻿public class SC_Bastion : SC_Construction {
 
     protected override void Start() {
 

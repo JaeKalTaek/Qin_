@@ -90,7 +90,7 @@ public class SC_Hero : SC_Character {
 
 	public void PreviewFight() {
 
-		if (!attackingCharacter.Hero && SC_UI_Manager.CanInteract) {
+		if (!attackingCharacter.Hero && SC_UI_Manager.CanInteract && SC_Player.localPlayer.Turn) {
 
             attackingCharacter.AttackTarget = Tile;
 
@@ -99,20 +99,6 @@ public class SC_Hero : SC_Character {
             uiManager.PreviewFight(true);
 
 		}
-
-	}
-
-	public void ChooseWeapon() {
-
-        uiManager.weaponChoicePanel.SetActive(true);
-
-		if (weapon1.Range(this).In(fightManager.AttackRange))
-			uiManager.ShowWeapon (GetWeapon (true), true);
-
-		if (weapon2.Range(this).In(fightManager.AttackRange))
-			uiManager.ShowWeapon (GetWeapon (false), false);
-
-        uiManager.SetCancelButton(uiManager.ResetAttackChoice);
 
 	}
 

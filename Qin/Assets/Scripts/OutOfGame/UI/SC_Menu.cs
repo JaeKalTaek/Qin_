@@ -12,13 +12,6 @@ public class SC_Menu : MonoBehaviour {
 
 	}
 
-	void Update() {
-
-		if (Input.GetKeyDown (KeyCode.Escape))
-			GameObject.Find ("Back_Button").GetComponent<Button> ().onClick.Invoke ();
-
-	}
-
 	public void ShowPanel(GameObject panel) {
 
 		foreach (Transform t in transform)

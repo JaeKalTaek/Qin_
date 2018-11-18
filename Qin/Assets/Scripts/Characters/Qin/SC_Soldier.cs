@@ -10,6 +10,9 @@ public class SC_Soldier : SC_BaseQinChara {
     [Tooltip("Energy gained by Qin when he sacrifices this unit")]
     public int sacrificeValue;
 
+    [Tooltip("Description that will be displayed at the top of the workshop panel")]
+    public string description;
+
     GameObject sacrificeValueText;
 
     public bool Builder { get { return characterName == "Builder"; } }

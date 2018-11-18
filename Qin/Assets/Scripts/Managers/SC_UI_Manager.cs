@@ -253,9 +253,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.health.Set(character.Health, character.maxHealth);
 
+        characterTooltip.health.GetComponentInChildren<Text>().text = character.Health + " / " + character.maxHealth;
+
         characterTooltip.crit.Set(character.CriticalAmount, gameManager.CommonCharactersVariables.critTrigger);
 
+        characterTooltip.crit.GetComponentInChildren<Text>().text = character.CriticalAmount + " / " + gameManager.CommonCharactersVariables.critTrigger;
+
         characterTooltip.dodge.Set(character.DodgeAmount, gameManager.CommonCharactersVariables.dodgeTrigger);
+
+        characterTooltip.dodge.GetComponentInChildren<Text>().text = character.DodgeAmount + " / " + gameManager.CommonCharactersVariables.dodgeTrigger;
 
         characterTooltip.critContainer.SetActive(true);
 
@@ -320,6 +326,8 @@ public class SC_UI_Manager : MonoBehaviour {
         turnIndicator.gameObject.SetActive(!b);
 
         qinEnergy.gameObject.SetActive(!b);
+
+        tileTooltip.panel.SetActive(!b);
 
     }
 
@@ -912,6 +920,12 @@ public class SC_UI_Manager : MonoBehaviour {
         cancelAction = DoNothing;
 
         localPlayer.Busy = false;
+
+    }
+
+    public void Return() {
+
+        returnAction();
 
     }
     #endregion

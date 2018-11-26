@@ -59,7 +59,9 @@ public class SC_Castle : SC_Construction {
 
     public override void DestroyConstruction () {
 
-        base.DestroyConstruction();        
+        base.DestroyConstruction();
+
+        tileManager.UpdateNeighborWallGraph(Tile);
 
         foreach (SC_Tile t in tileManager.regions[Tile.Region])
             t.Ruin?.DestroyConstruction();
@@ -76,6 +78,7 @@ public class SC_Castle : SC_Construction {
 
         if (victory)
             uiManager.ShowVictory(false);
+        
 
     }
 

@@ -250,10 +250,11 @@ public class SC_Tile : NetworkBehaviour {
         else {
 
             Character?.ShowInfos();
-            Qin?.ShowInfos();
-            this.ShowInfos();
+            Qin?.ShowInfos();            
 
         }
+
+        this.ShowInfos();
 
     }
 

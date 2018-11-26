@@ -406,6 +406,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.health.Set(SC_Qin.Energy, SC_Qin.Qin.energyToWin);
 
+        characterTooltip.health.GetComponentInChildren<Text>().text = SC_Qin.Energy + " / " + SC_Qin.Qin.energyToWin;
+
         characterTooltip.critContainer.SetActive(false);
 
         characterTooltip.dodgeContainer.SetActive(false);
@@ -448,6 +450,8 @@ public class SC_UI_Manager : MonoBehaviour {
                 PreviewCharacterAttack(a, attacker, true);
 
             attackedPreviewFight.crit.Set(a.CriticalAmount, Mathf.Min(a.CriticalAmount + a.Technique, cT), cT);
+
+            attackedPreviewFight.crit.gameObject.SetActive(true);
 
         } else {
 
@@ -520,6 +524,8 @@ public class SC_UI_Manager : MonoBehaviour {
             attackedPF.dodge.Set(attacked.DodgeAmount, Mathf.Min(attacked.DodgeAmount + attacked.Technique, dT), dT);
 
         }
+
+        attackedPF.dodge.gameObject.SetActive(true);
 
         return killed;
 

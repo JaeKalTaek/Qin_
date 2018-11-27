@@ -187,7 +187,7 @@ public class SC_Tile : NetworkBehaviour {
                 SC_Player.localPlayer.CmdPrepareForAttack(fightManager.AttackRange, gameObject, !SC_Player.localPlayer.Qin);
 
                 if (attackingCharacter.Hero)
-                    uiManager.ChooseWeapon(attackingCharacter.Hero);
+                    uiManager.ChooseWeapon();
                 else
                     SC_Player.localPlayer.CmdAttack();
 

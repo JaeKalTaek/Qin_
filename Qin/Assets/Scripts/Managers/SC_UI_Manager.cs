@@ -550,26 +550,27 @@ public class SC_UI_Manager : MonoBehaviour {
 	}*/
 
     #region Weapons
-    public void ShowWeapon (SC_Weapon weapon, bool first) {
+    public void ShowHideWeapon (bool firstWeapon, bool active) {
 
-        if (first)
-            weaponChoice1.SetActive(true);
-        else
-            weaponChoice2.SetActive(true);
+        SC_Hero h = SC_Character.attackingCharacter.Hero;
 
-        (first ? weaponChoice1 : weaponChoice2).GetComponentInChildren<Text>().text = weapon.weaponName;
+        (firstWeapon ? weaponChoice1 : weaponChoice2).SetActive(active);
+
+        (firstWeapon ? weaponChoice1 : weaponChoice2).GetComponentInChildren<Text>().text = h.GetWeapon(firstWeapon).weaponName;
 
     }
 
-    public void ChooseWeapon (SC_Hero h) {
+    public void ChooseWeapon () {        
+
+        SC_Hero h = SC_Character.attackingCharacter.Hero;
+
+        ShowHideWeapon(true, h.weapon1.Range(h).In(fightManager.AttackRange));
+
+        ShowHideWeapon(false, h.weapon2.Range(h).In(fightManager.AttackRange));
 
         weaponChoicePanel.SetActive(true);
 
-        if (h.weapon1.Range(h).In(fightManager.AttackRange))
-            ShowWeapon(h.GetWeapon(true), true);
-
-        if (h.weapon2.Range(h).In(fightManager.AttackRange))
-            ShowWeapon(h.GetWeapon(false), false);
+        ForceSelect(weaponChoicePanel.GetComponentInChildren<Button>().gameObject);
 
         cancelAction = ResetAttackChoice;
 

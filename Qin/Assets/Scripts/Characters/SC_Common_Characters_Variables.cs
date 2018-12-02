@@ -41,7 +41,7 @@ public class SC_Common_Characters_Variables : MonoBehaviour {
     [Tooltip("Damage are multiplied by that amount when the hero is berserker")]
     public float berserkDamageMultiplier;
 
-    [Tooltip("Attack/Defense boosts added for each corresponding relation value with another nearby hero")]
+    [Tooltip("Values linked to the relationship thresholds")]
     public RelationshipValues relationValues;
 
     [Tooltip("Amount of relation value required between two heroes for one to save the other when he's about to die")]
@@ -53,8 +53,14 @@ public class SC_Common_Characters_Variables : MonoBehaviour {
     [Serializable]
     public class RelationshipValues {
 
+        [Tooltip("Relationship thresholds")]
         public int[] relations;
-        public float[] boostValues, linkValues;
+
+        [Tooltip("Attack/Defense boosts")]
+        public float[] boostValues;
+
+        [Tooltip("Width of the link in the character details panel")]    
+        public float [] linkValues;
 
         public float GetValue(string id, int r) {
 

@@ -6,6 +6,12 @@ public class SC_BaseQinChara : SC_Character {
     [Tooltip("Weapon of this character")]
     public SC_Weapon weapon;
 
+    [Tooltip("Description for that character when you want to create it")]
+    public string description;
+
+    [Tooltip("Cost to create this character")]
+    public int cost;
+
     public override void OnStartClient () {
 
         base.OnStartClient();

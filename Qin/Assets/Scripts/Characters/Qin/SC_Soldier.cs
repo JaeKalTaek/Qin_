@@ -4,14 +4,8 @@ using UnityEngine;
 public class SC_Soldier : SC_BaseQinChara {    
 
     [Header("Soldiers Variables")]
-    [Tooltip("Cost to create this soldier in a Workshop")]
-    public int cost;
-
     [Tooltip("Energy gained by Qin when he sacrifices this unit")]
-    public int sacrificeValue;
-
-    [Tooltip("Description that will be displayed at the top of the workshop panel")]
-    public string description;
+    public int sacrificeValue;    
 
     GameObject sacrificeValueText;
 

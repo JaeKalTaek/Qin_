@@ -251,9 +251,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.healthLabel.text = "Health";
 
-        characterTooltip.health.Set(character.Health, character.maxHealth);
+        characterTooltip.health.Set(character.Health, character.MaxHealth);
 
-        characterTooltip.health.GetComponentInChildren<Text>().text = character.Health + " / " + character.maxHealth;
+        characterTooltip.health.GetComponentInChildren<Text>().text = character.Health + " / " + character.MaxHealth;
 
         characterTooltip.crit.Set(character.CriticalAmount, gameManager.CommonCharactersVariables.critTrigger);
 
@@ -503,7 +503,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             killed = c.Health - bD <= 0;
 
-            attackedPF.health.Set(killed ? 0 : attacked.Health, attacked.Health, attacked.maxHealth);
+            attackedPF.health.Set(killed ? 0 : attacked.Health, attacked.Health, attacked.MaxHealth);
 
             attackedPF.constructionName.text = c.Name;
 
@@ -519,7 +519,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             killed = lifeLeft <= 0;
 
-            attackedPF.health.Set(Mathf.Max(0, lifeLeft), attacked.Health, attacked.maxHealth);            
+            attackedPF.health.Set(Mathf.Max(0, lifeLeft), attacked.Health, attacked.MaxHealth);            
 
             attackedPF.dodge.Set(attacked.DodgeAmount, Mathf.Min(attacked.DodgeAmount + attacked.Technique, dT), dT);
 

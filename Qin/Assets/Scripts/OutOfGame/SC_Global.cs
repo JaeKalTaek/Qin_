@@ -158,4 +158,11 @@ public class SC_Global {
 
     }
 
+    [Serializable]
+    public class BaseCharacterStats {
+
+        public int maxHealth, strength, chi, armor, resistance, technique, reflexes, movement;
+
+    }
+
 }

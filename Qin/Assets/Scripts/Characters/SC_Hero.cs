@@ -116,7 +116,7 @@ public class SC_Hero : SC_Character {
 
             if (ReadyToRegen) {
 
-                Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.villageRegen, maxHealth);
+                Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.villageRegen, MaxHealth);
                 UpdateHealth();
 
             } else {

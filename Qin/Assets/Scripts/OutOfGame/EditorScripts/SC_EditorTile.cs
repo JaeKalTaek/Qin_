@@ -61,7 +61,7 @@ public class SC_EditorTile : MonoBehaviour {
 
     public enum TileType {
 
-        Plain, Forest, Mountain, Palace, River, Changing
+        Plain, Forest, Mountain, Palace, River, Desert, Snow, Changing
 
     }
 

@@ -11,54 +11,37 @@ public abstract class SC_Character : NetworkBehaviour {
     [Tooltip("Name of this character")]
     public string characterName;
 
-    [Tooltip("Base Maximum Health of this character")]
-    public int maxHealth;
+    public BaseCharacterStats baseStats;
+
+    public int MaxHealth { get { return baseStats.maxHealth; } }
     public int Health { get; set; }
     public SC_Lifebar Lifebar { get; set; }
 
-    [Tooltip("Strength of this character")]
-    public int baseStrength;
     public int StrengthModifiers { get; set; }
-    public int Strength { get { return Mathf.Max(0, baseStrength + StrengthModifiers + Tile.CombatModifiers.strength + DemonsModifier("strength")); } }
+    public int Strength { get { return Mathf.Max(0, baseStats.strength + StrengthModifiers + Tile.CombatModifiers.strength + DemonsModifier("strength")); } }
 
-    [Tooltip("Chi of this character")]
-    public int baseChi;
     public int ChiModifiers { get; set; }
-    public int Chi { get { return Mathf.Max(0, baseChi + ChiModifiers + Tile.CombatModifiers.chi + DemonsModifier("chi")); } }
+    public int Chi { get { return Mathf.Max(0, baseStats.chi + ChiModifiers + Tile.CombatModifiers.chi + DemonsModifier("chi")); } }
 
-    [Tooltip("Armor of this character")]
-    public int baseArmor;
     public int ArmorModifiers { get; set; }
-    public int Armor { get { return baseArmor + ArmorModifiers + Tile.CombatModifiers.armor + DemonsModifier("armor"); } }
+    public int Armor { get { return baseStats.armor + ArmorModifiers + Tile.CombatModifiers.armor + DemonsModifier("armor"); } }
 
-    [Tooltip("Resistance of this character")]
-    public int baseResistance;
     public int ResistanceModifiers { get; set; }
-    public int Resistance { get { return baseResistance + ResistanceModifiers + Tile.CombatModifiers.resistance + DemonsModifier("resistance"); } }
+    public int Resistance { get { return baseStats.resistance + ResistanceModifiers + Tile.CombatModifiers.resistance + DemonsModifier("resistance"); } }
 
-    [Tooltip("Technique of this character, amount of Crits Jauge gained after attacking")]
-    public int baseTechnique;
     public int TechniqueModifiers { get; set; }
-    public int Technique { get { return Mathf.Max(0, baseTechnique + TechniqueModifiers + Tile.CombatModifiers.technique + DemonsModifier("technique")); } }
-
+    public int Technique { get { return Mathf.Max(0, baseStats.technique + TechniqueModifiers + Tile.CombatModifiers.technique + DemonsModifier("technique")); } }
     public int CriticalAmount { get; set; }
 
-    [Tooltip("Reflexes of this character, amount of Dodge Jauge gained after being attacked")]
-    public int baseReflexes;
     public int ReflexesModifiers { get; set; }
-    public int Reflexes { get { return Mathf.Max(0, baseReflexes + ReflexesModifiers + Tile.CombatModifiers.reflexes + DemonsModifier("reflexes")); } }
-
+    public int Reflexes { get { return Mathf.Max(0, baseStats.reflexes + ReflexesModifiers + Tile.CombatModifiers.reflexes + DemonsModifier("reflexes")); } }
     public int DodgeAmount { get; set; }
-
-    [Tooltip("Base movement distance of this character")]
-    public int baseMovement;
-    public int MovementModifiers { get; set; }
-    public int Movement { get { return Mathf.Max(0, baseMovement + MovementModifiers + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }    
-
-    public bool CanMove { get; set; }
 
     [Tooltip("Time for a character to walk one tile of distance")]
     public float moveDuration;
+    public int MovementModifiers { get; set; }
+    public int Movement { get { return Mathf.Max(0, baseStats.movement + MovementModifiers + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }
+    public bool CanMove { get; set; }    
 
     public int RangeModifiers { get; set; }      
 
@@ -129,27 +112,14 @@ public abstract class SC_Character : NetworkBehaviour {
 
         characterName = loadedCharacter.characterName;
 
-        baseMovement = loadedCharacter.baseMovement;
+        baseStats = loadedCharacter.baseStats;
 
         moveDuration = loadedCharacter.moveDuration;
 
-        maxHealth = loadedCharacter.maxHealth;
-        Health = maxHealth;
+        Health = baseStats.maxHealth;
 
         Lifebar = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Components/P_Lifebar"), transform).GetComponent<SC_Lifebar>();
         Lifebar.transform.position += new Vector3(0, -.44f, 0);        
-
-        baseStrength = loadedCharacter.baseStrength;
-
-        baseArmor = loadedCharacter.baseArmor;
-
-        baseChi = loadedCharacter.baseChi;
-
-        baseResistance = loadedCharacter.baseResistance;
-
-        baseTechnique = loadedCharacter.baseTechnique;
-
-        baseReflexes = loadedCharacter.baseReflexes;
 
         tiredColor = loadedCharacter.tiredColor;
 
@@ -280,7 +250,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         } else if (Soldier) {
 
-            uiManager.buildConstruButton.SetActive(SC_Player.localPlayer.Qin && (target.Ruin || (Soldier.Builder && target.Constructable(true))));
+            uiManager.buildConstruButton.SetActive(SC_Player.localPlayer.Qin && (target.Ruin || (Soldier.Builder && !target.Construction)));
 
         } else if (Demon) {
 
@@ -398,7 +368,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
     protected void UpdateHealth() {
 
-        Lifebar.UpdateGraph(Health, maxHealth);
+        Lifebar.UpdateGraph(Health, MaxHealth);
         uiManager.TryRefreshInfos(gameObject, GetType());
 
     }	

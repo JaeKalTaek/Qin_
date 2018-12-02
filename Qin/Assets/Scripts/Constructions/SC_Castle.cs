@@ -3,6 +3,10 @@ using UnityEngine.Networking;
 
 public class SC_Castle : SC_Construction {
 
+    [Header("Castles variables")]
+    [Tooltip("Energy gained by Qin when he sacrifices this castle")]
+    public int sacrificeValue;
+
     [HideInInspector]
     [SyncVar]
     public string CastleType;

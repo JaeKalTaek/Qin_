@@ -16,6 +16,11 @@ public class SC_Demon : SC_BaseQinChara {
     [Tooltip("Number of turns for this demon to respawn at its castle after being killed")]
     public int respawnTime;
 
+    [Tooltip("Stats for this demon when it is unlinked")]
+    public BaseCharacterStats unlinkedStats;
+
+    public bool Linked { get; set; }
+
     public int Alive { get; set; }
 
     SC_Tile spawnTile;
@@ -119,7 +124,7 @@ public class SC_Demon : SC_BaseQinChara {
 
                 Alive = -1;
 
-                Health = maxHealth;
+                Health = MaxHealth;
 
                 UpdateHealth();
 
@@ -162,13 +167,13 @@ public class SC_Demon : SC_BaseQinChara {
 
     public override bool CanCharacterGoThrough (SC_Tile t) {
 
-        return base.CanCharacterGoThrough(t) && (t.Region == Region);
+        return base.CanCharacterGoThrough(t) && ((t.Region == Region) || !Linked);
 
     }
 
     public override bool CanCharacterSetOn (SC_Tile t) {
 
-        return base.CanCharacterSetOn(t) && (t.Region == Region);
+        return base.CanCharacterSetOn(t) && ((t.Region == Region) || !Linked);
 
     }
 

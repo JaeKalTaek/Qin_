@@ -160,13 +160,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 GameObject go = Instantiate(constructionPrefab, eTile.transform.position, Quaternion.identity);
 
-                if ((eTile.construction == ConstructionType.Castle) && !prep) {
-
+                if ((eTile.construction == ConstructionType.Castle) && !prep)
                     go.GetComponent<SC_Castle>().CastleType = eTile.castleType.ToString();
-
-                    SpawnDemon(eTile.transform.position, eTile.castleType.ToString());
-
-                }
 
                 NetworkServer.Spawn (go);                
 
@@ -210,15 +205,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void Load() {
 
-        foreach (SC_Castle castle in FindObjectsOfType<SC_Castle>()) {
-
+        foreach (SC_Castle castle in FindObjectsOfType<SC_Castle>())
             if (!Player.Qin)
                 castle.Setup();
-
-            if(isServer)
-                SpawnDemon(castle.transform.position, castle.CastleType);
-            
-        }
 
         foreach (SC_Tile t in tileManager.ChangingTiles)
             t.SetupTile();

@@ -139,6 +139,37 @@ public class SC_Global {
 
     }
 
+    [Serializable]
+    public class CreateDemonPanel {
+
+        public GameObject panel;
+
+        public Text name, cost;
+
+        public Button create;
+
+    }
+
+    public struct CreateDemonInfos {
+
+        public string type;
+
+        public int cost;
+
+        public Vector3 pos;
+
+        public CreateDemonInfos (string t, int c, Vector3 p) {
+
+            type = t;
+
+            cost = c;
+
+            pos = p;
+
+        }
+
+    }
+
     public static bool CanCreateConstruct(string c) {
 
         return (SC_Qin.GetConstruCost(c) < SC_Qin.Energy) && (SC_Tile_Manager.Instance.GetConstructableTiles(c).Count > 0);

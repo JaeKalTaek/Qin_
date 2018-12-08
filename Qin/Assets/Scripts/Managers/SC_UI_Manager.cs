@@ -46,6 +46,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public Transform qinPower;
     public GameObject sacrifice, endSacrifice;
     public GameObject workshopPanel;
+    public CreateDemonPanel createDemonPanel;
 
     [Header("Transforms")]
     public Transform tilesT;
@@ -596,32 +597,25 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Qin
-    public void StartQinAction(string action) {
+    public void StartQinAction() {        
 
-        if (!localPlayer.Busy) {
+        TileManager.RemoveAllFilters();
 
-            localPlayer.Busy = true;
+        playerActionsPanel.SetActive(false);
 
-            localPlayer.CmdSetQinTurnStarting(false);            
-
-            TileManager.RemoveAllFilters();
-
-            playerActionsPanel.SetActive(false);
-
-            cancelAction = DoNothing;
-
-        }
+        cancelAction = DoNothing;
 
     }
 
-    public void EndQinAction(string action) {
+    public void EndQinAction() {
 
         TileManager.RemoveAllFilters();
 
         StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
 
-        if (action == "construct")
-            cancelAction = DoNothing;
+        returnAction = DoNothing;
+
+        cancelAction = DoNothing;
 
         constructPanel.SetActive(false);
 
@@ -629,9 +623,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         workshopPanel.SetActive(false);
 
-        localPlayer.Busy = false;
+        createDemonPanel.panel.SetActive(false);
 
-        returnAction = DoNothing;
+        localPlayer.Busy = false;        
 
     }
 
@@ -640,13 +634,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (!localPlayer.Busy) {
 
-            StartQinAction("sacrifice");
+            StartQinAction();
 
             endSacrifice.SetActive(true);
 
             TileManager.DisplaySacrifices();
 
-            returnAction = () => EndQinAction("sacrifice");
+            returnAction = EndQinAction;
 
             StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
 
@@ -667,14 +661,50 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }*/
 
-    public void CastleMenu() {
+    void DisplayUnitCreationPanel() {
+
+        SC_Cursor.SetLock(true);
+
+        clickSecurity = true;
+
+        StartCoroutine(ClickSafety(() => { clickSecurity = false; }));
+
+        StartQinAction();
+
+        returnAction = EndQinAction;
+
+    }
+
+    public void CreateDemon(SC_Castle castle) {
+
+        DisplayUnitCreationPanel();
+
+        int cost = Resources.Load<SC_Demon>("Prefabs/Characters/Demons/P_" + castle.CastleType + "Demon").cost;
+
+        gameManager.CurrentCreateDemonInfos = new CreateDemonInfos(castle.CastleType, cost, castle.transform.position);
+
+        createDemonPanel.name.text = castle.CastleType + " Demon";
+
+        createDemonPanel.create.image.sprite = Resources.Load<Sprite>("Sprites/Characters/Demons/" + castle.CastleType);
+
+        createDemonPanel.cost.text = "Cost : " + cost + " vital energy";        
+
+        createDemonPanel.panel.SetActive(true);
+
+        createDemonPanel.create.Select();
+
+    }
+
+    public void SacrificeCastle () {
 
 
 
     }
 
     #region Building
-    public void DisplayConstructPanel(bool qin) {        
+    public void DisplayConstructPanel(bool qin) {
+
+        localPlayer.Busy = true;
 
         constructPanel.SetActive(true);
 
@@ -701,7 +731,7 @@ public class SC_UI_Manager : MonoBehaviour {
     // Called by UI
     public void DisplayQinConstructPanel() {
 
-        StartQinAction("construct");
+        StartQinAction();
 
         DisplayConstructPanel(true);
 
@@ -771,19 +801,11 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Workshop
     public void DisplayWorkshopPanel() {
 
-        SC_Cursor.SetLock(true);        
-
-        clickSecurity = true;
-
-        StartCoroutine(ClickSafety(() => { clickSecurity = false; }));
-
-        StartQinAction("workshop");
+        DisplayUnitCreationPanel();
 
         workshopPanel.SetActive(true);
 
         UpdateCreationPanel(workshopPanel.transform.GetChild(1), true);
-
-        cancelAction = () => { EndQinAction("workshop"); };
 
     }    
 
@@ -793,7 +815,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             localPlayer.CmdCreateSoldier(gameManager.CurrentWorkshopPos, s);
 
-            EndQinAction("workshop");
+            EndQinAction();
 
         }
 

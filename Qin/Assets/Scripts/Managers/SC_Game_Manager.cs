@@ -30,6 +30,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 	public Vector3 CurrentWorkshopPos { get; set; }
 
+    public CreateDemonInfos CurrentCreateDemonInfos { get; set; }
+
 	public SC_Player Player { get; set; }
 
 	SC_UI_Manager uiManager;
@@ -184,13 +186,30 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 	}
 
-    public void SpawnDemon(Vector3 pos, string type) {
+    public void CreateDemon () {
 
-        GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Demons/P_BaseDemon"), pos, Quaternion.identity);
+        if (!SC_UI_Manager.clickSecurity && (SC_Qin.Energy > CurrentCreateDemonInfos.cost)) {
 
-        go.GetComponent<SC_Character>().characterPath = "Prefabs/Characters/Demons/P_" + type + "Demon";
+            if (isServer)
+                CreateDemonFunction();
+            else
+                Player.CmdCreateDemon(CurrentCreateDemonInfos);
 
-        NetworkServer.Spawn(go);
+            uiManager.EndQinAction();
+
+        }
+
+    }
+
+    public void CreateDemonFunction() {
+
+        Player.CmdChangeQinEnergy(-CurrentCreateDemonInfos.cost);
+
+        GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Demons/P_BaseDemon"), CurrentCreateDemonInfos.pos, Quaternion.identity);
+
+        go.GetComponent<SC_Character>().characterPath = "Prefabs/Characters/Demons/P_" + CurrentCreateDemonInfos.type + "Demon";
+
+        NetworkServer.Spawn(go);       
 
     }
 
@@ -249,7 +268,7 @@ public class SC_Game_Manager : NetworkBehaviour {
                  p.Drain();
 
             foreach(SC_Demon d in SC_Demon.demons)
-                if(d.Alive != -1)
+                if(d && d.Alive != -1)
                     d.TryRespawn();
 
             SC_Qin.ChangeEnergy(SC_Qin.Qin.regenPerVillage * SC_Village.number);

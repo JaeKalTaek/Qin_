@@ -419,6 +419,17 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
+    #region Create Demon
+    [Command]
+    public void CmdCreateDemon(SC_Global.CreateDemonInfos infos) {
+
+        localPlayer.gameManager.CurrentCreateDemonInfos = infos;
+
+        localPlayer.gameManager.CreateDemonFunction();
+
+    }
+    #endregion
+
     #region Wait
     [Command]
     public void CmdWait() {

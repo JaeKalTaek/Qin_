@@ -12,6 +12,9 @@
 
         gameManager.CurrentWorkshopPos = transform.position;
 
+        if (gameManager.QinTurnStarting)
+            SC_Player.localPlayer.CmdSetQinTurnStarting(false);
+
         uiManager.DisplayWorkshopPanel();
 
 	}

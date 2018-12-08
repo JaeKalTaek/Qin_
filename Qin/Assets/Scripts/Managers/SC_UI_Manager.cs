@@ -596,7 +596,6 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Qin
-    #region Actions
     public void StartQinAction(string action) {
 
         if (!localPlayer.Busy) {
@@ -667,7 +666,12 @@ public class SC_UI_Manager : MonoBehaviour {
         }
 
     }*/
-    #endregion
+
+    public void CastleMenu() {
+
+
+
+    }
 
     #region Building
     public void DisplayConstructPanel(bool qin) {        
@@ -846,17 +850,6 @@ public class SC_UI_Manager : MonoBehaviour {
         }
 
         GameObject menu = playerMenu ? playerActionsPanel : characterActionsPanel;
-
-        #region Set Menu Pos
-        RectTransform Rect = menu.GetComponent<RectTransform>();
-
-        Vector3 currentTileViewportPos = Camera.main.WorldToViewportPoint(SC_Cursor.Instance.transform.position);
-
-        int offset = currentTileViewportPos.x < 0.5 ? 1 : -1;
-
-        Rect.anchorMin = new Vector3(currentTileViewportPos.x + (offset * (0.1f + (0.05f * (1 / (Mathf.Pow(Camera.main.orthographicSize, Camera.main.orthographicSize / 4)))))), currentTileViewportPos.y, currentTileViewportPos.z);
-        Rect.anchorMax = Rect.anchorMin;
-        #endregion
 
         menu.SetActive(true);
 

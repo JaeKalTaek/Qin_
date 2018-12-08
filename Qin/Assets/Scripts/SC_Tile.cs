@@ -213,9 +213,12 @@ public class SC_Tile : NetworkBehaviour {
 
                 if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
                     Character.TryCheckMovements();
-                else if (Workshop && SC_Player.localPlayer.Qin)
-                    Workshop.SelectWorkshop();
-                else
+                else if (SC_Player.localPlayer.Qin) {
+                    if (Workshop)
+                        Workshop.SelectWorkshop();
+                    else if (Castle && !Character)
+                        uiManager.CastleMenu();
+                } else
                     uiManager.ActivateMenu(true);
 
             }
@@ -227,17 +230,6 @@ public class SC_Tile : NetworkBehaviour {
         }
 
     }
-
-    /*public void CursorSecondaryClick() {
-
-        if (Character)
-            Character.ShowHideInfos();
-        else if (Construction)
-            Construction.ShowHideInfos();
-        else
-            Qin?.ShowHideInfos();
-
-    }*/
 
     public void OnCursorEnter() {
 

@@ -6,16 +6,21 @@ public class SC_Menu : MonoBehaviour {
 
 	public GameObject mainPanel, onlinePanel, qmPanel, searchGamePanel, emptyPanel;
 
-	void Awake() {
-		
-		mainPanel.SetActive (true);
+    public Button online;
 
-	}
+	void Awake() {
+
+        ShowPanel(mainPanel);
+
+
+    }
 
 	public void ShowPanel(GameObject panel) {
 
 		foreach (Transform t in transform)
 			t.gameObject.SetActive (t.name.Equals (panel.name));
+
+        panel.GetComponentInChildren<Button>()?.Select();
 
 	}
 

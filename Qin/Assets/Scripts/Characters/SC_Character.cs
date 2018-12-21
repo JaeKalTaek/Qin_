@@ -366,7 +366,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	}
 
-    protected void UpdateHealth() {
+    public void UpdateHealth() {
 
         Lifebar.UpdateGraph(Health, MaxHealth);
         uiManager.TryRefreshInfos(gameObject, GetType());

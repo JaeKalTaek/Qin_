@@ -53,26 +53,12 @@ public class SC_Common_Characters_Variables : MonoBehaviour {
     [Serializable]
     public class RelationshipValues {
 
-        [Tooltip("Relationship thresholds")]
-        public int[] relations;
-
-        [Tooltip("Attack/Defense boosts")]
-        public float[] boostValues;
-
-        [Tooltip("Width of the link in the character details panel")]    
-        public float [] linkValues;
+        [Tooltip("Relationship threshold values")]
+        public SC_Global.ThresholdValues relationships;
 
         public float GetValue(string id, int r) {
 
-            float v = 0;
-
-            float[] values = (float[])GetType().GetField(id + "Values").GetValue(this);
-
-            for (int i = 0; i < relations.Length; i++)
-                if (r >= relations[i])
-                    v = values[i];
-
-            return v;
+            return relationships.GetValue(id == "boost" ? 0 : 1, r);
 
         }
 

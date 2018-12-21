@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 using static SC_EditorTile;
 using static SC_Global;
+using System.Reflection;
 
 public class SC_Game_Manager : NetworkBehaviour {
 
@@ -15,6 +16,8 @@ public class SC_Game_Manager : NetworkBehaviour {
     public SC_MapEditorScript CurrentMapPrefab { get; set; }
 
     public SC_Common_Characters_Variables CommonCharactersVariables { get; set; }
+
+    public SC_CommonQinVariables CommonQinVariables { get; set; }
 
     public static SC_Game_Manager Instance { get; set; }  
 
@@ -30,7 +33,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 	public Vector3 CurrentWorkshopPos { get; set; }
 
-    public CreateDemonInfos CurrentCreateDemonInfos { get; set; }
+    public SC_Castle CurrentCastle { get; set; }
 
 	public SC_Player Player { get; set; }
 
@@ -66,6 +69,8 @@ public class SC_Game_Manager : NetworkBehaviour {
         TileSize = CurrentMapPrefab.TileSize;
 
         CommonCharactersVariables = Resources.Load<SC_Common_Characters_Variables>("Prefabs/Characters/P_Common_Characters_Variables");
+
+        CommonQinVariables = Resources.Load<SC_CommonQinVariables>("Prefabs/P_CommonQinVariables");
 
         Turn = 1;
 
@@ -188,12 +193,12 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void CreateDemon () {
 
-        if (!SC_UI_Manager.clickSecurity && (SC_Qin.Energy > CurrentCreateDemonInfos.cost)) {
+        if (!SC_UI_Manager.clickSecurity && (SC_Qin.Energy > CurrentCastle.DemonCost)) {
 
             if (isServer)
                 CreateDemonFunction();
             else
-                Player.CmdCreateDemon(CurrentCreateDemonInfos);
+                Player.CmdCreateDemon(CurrentCastle.gameObject);
 
             uiManager.EndQinAction();
 
@@ -203,11 +208,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void CreateDemonFunction() {
 
-        Player.CmdChangeQinEnergy(-CurrentCreateDemonInfos.cost);
+        Player.CmdChangeQinEnergy(-CurrentCastle.DemonCost);
 
-        GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Demons/P_BaseDemon"), CurrentCreateDemonInfos.pos, Quaternion.identity);
+        GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Demons/P_BaseDemon"), CurrentCastle.transform.position, Quaternion.identity);
 
-        go.GetComponent<SC_Character>().characterPath = "Prefabs/Characters/Demons/P_" + CurrentCreateDemonInfos.type + "Demon";
+        go.GetComponent<SC_Character>().characterPath = "Prefabs/Characters/Demons/P_" + CurrentCastle.CastleType + "Demon";
 
         NetworkServer.Spawn(go);       
 
@@ -495,7 +500,7 @@ public class SC_Game_Manager : NetworkBehaviour {
     #endregion
 
     #region Players Actions  
-    public void DestroyOnCase () {
+    public void AttackingCharacterDestroy () {
 
         SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction();
 
@@ -535,6 +540,28 @@ public class SC_Game_Manager : NetworkBehaviour {
         NetworkServer.Spawn(go);
 
         Player.CmdSetupNewSoldier(go);
+
+    }
+    
+    public void SacrificeCastle () {
+
+        Player.CmdChangeQinEnergy(CurrentCastle.sacrificeValue);
+
+        SC_Demon demon = SC_Demon.demons[CurrentCastle.Tile.Region];
+
+        foreach (FieldInfo fI in demon.baseStats.GetType().GetFields()) {
+
+            float percent = 1f + CommonQinVariables.castleSacrifice.GetValue(Mathf.CeilToInt(CurrentCastle.Health / CurrentCastle.maxHealth)) / 100;
+
+            fI.SetValue(demon, Mathf.CeilToInt(((int)fI.GetValue(demon)) * percent));
+
+        }
+
+        demon.Health = demon.MaxHealth;
+
+        demon.UpdateHealth();
+
+        Player.CmdDestroyConstruction(CurrentCastle.gameObject);
 
     }
     #endregion

@@ -47,6 +47,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject sacrifice, endSacrifice;
     public GameObject workshopPanel;
     public CreateDemonPanel createDemonPanel;
+    public SacrificeCastlePanel sacrificeCastlePanel;
 
     [Header("Transforms")]
     public Transform tilesT;
@@ -625,6 +626,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         createDemonPanel.panel.SetActive(false);
 
+        sacrificeCastlePanel.panel.SetActive(false);
+
         localPlayer.Busy = false;        
 
     }
@@ -661,7 +664,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }*/
 
-    void DisplayUnitCreationPanel() {
+    void DisplayActionPanel() {
 
         SC_Cursor.SetLock(true);
 
@@ -677,17 +680,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void CreateDemon(SC_Castle castle) {
 
-        DisplayUnitCreationPanel();
+        gameManager.CurrentCastle = castle;
 
-        int cost = Resources.Load<SC_Demon>("Prefabs/Characters/Demons/P_" + castle.CastleType + "Demon").cost;
-
-        gameManager.CurrentCreateDemonInfos = new CreateDemonInfos(castle.CastleType, cost, castle.transform.position);
+        DisplayActionPanel();
 
         createDemonPanel.name.text = castle.CastleType + " Demon";
 
         createDemonPanel.create.image.sprite = Resources.Load<Sprite>("Sprites/Characters/Demons/" + castle.CastleType);
 
-        createDemonPanel.cost.text = "Cost : " + cost + " vital energy";        
+        createDemonPanel.cost.text = "Cost : " + castle.DemonCost + " vital energy";        
 
         createDemonPanel.panel.SetActive(true);
 
@@ -695,9 +696,33 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    public void SacrificeCastle () {
+    public void SacrificeCastle (SC_Castle castle) {
 
+        gameManager.CurrentCastle = castle;
 
+        DisplayActionPanel();
+
+        int value = Mathf.RoundToInt(gameManager.CommonQinVariables.castleSacrifice.GetValue(Mathf.CeilToInt(castle.Health / castle.maxHealth)));
+
+        bool can = value >= 0;
+
+        if (can) {
+
+            sacrificeCastlePanel.type.text = castle.CastleType + "Demon buff : ";
+
+            sacrificeCastlePanel.buff.text = (value == 0) ? "None" : "+" + value + "% stats";
+
+            returnAction = DoNothing;
+
+            cancelAction = EndQinAction;
+
+        }       
+
+        sacrificeCastlePanel.panel.SetActive(true);
+
+        (can ? sacrificeCastlePanel.canPanel : sacrificeCastlePanel.cantPanel).SetActive(true);
+
+        (can ? sacrificeCastlePanel.yes : sacrificeCastlePanel.close).Select();
 
     }
 
@@ -801,7 +826,7 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Workshop
     public void DisplayWorkshopPanel() {
 
-        DisplayUnitCreationPanel();
+        DisplayActionPanel();
 
         workshopPanel.SetActive(true);
 

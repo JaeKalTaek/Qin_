@@ -19,6 +19,8 @@ public class SC_EditorTileEditor : Editor {
 
                 string s = (tile.IsChanging ? "Changing" : (tile.IsRiver ? "River/" + tile.riverSprite : tile.tileType + "/0"));
 
+                Debug.Log("Sprites/Tiles/" + s);
+
                 tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Tiles/" + s);
 
                 tile.SetSprite(0, tile.construction == ConstructionType.None ? "" : (tile.construction == ConstructionType.Castle ? ("Sprites/Constructions/Castles/" + tile.castleType) : ("Sprites/Constructions/" + tile.construction)));

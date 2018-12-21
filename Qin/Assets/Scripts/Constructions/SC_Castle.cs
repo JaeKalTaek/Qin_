@@ -13,6 +13,8 @@ public class SC_Castle : SC_Construction {
 
     public static bool[] castles;
 
+    public int DemonCost { get { return Resources.Load<SC_Demon>("Prefabs/Characters/Demons/P_" + CastleType + "Demon").cost; } }
+
     protected override void Start () {
 
         if (!SC_Game_Manager.Instance.prep)

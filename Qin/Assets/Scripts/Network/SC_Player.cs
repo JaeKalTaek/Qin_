@@ -391,7 +391,23 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcDestroyProductionBuilding () {
 
-        localPlayer.gameManager.DestroyOnCase();
+        localPlayer.gameManager.AttackingCharacterDestroy();
+
+    }
+    #endregion
+
+    #region Destroy Construction
+    [Command]
+    public void CmdDestroyConstruction (GameObject c) {
+
+        RpcDestroyConstruction(c);
+
+    }
+
+    [ClientRpc]
+    void RpcDestroyConstruction (GameObject c) {
+
+        c.GetComponent<SC_Construction>().DestroyConstruction();
 
     }
     #endregion
@@ -421,9 +437,9 @@ public class SC_Player : NetworkBehaviour {
 
     #region Create Demon
     [Command]
-    public void CmdCreateDemon(SC_Global.CreateDemonInfos infos) {
+    public void CmdCreateDemon(GameObject castle) {
 
-        localPlayer.gameManager.CurrentCreateDemonInfos = infos;
+        localPlayer.gameManager.CurrentCastle = castle.GetComponent<SC_Castle>();
 
         localPlayer.gameManager.CreateDemonFunction();
 

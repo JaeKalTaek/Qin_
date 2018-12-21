@@ -216,10 +216,10 @@ public class SC_Tile : NetworkBehaviour {
                 else if (Workshop && SC_Player.localPlayer.Qin)
                         Workshop.SelectWorkshop();
                 else if (Castle && !Character && SC_Player.localPlayer.Qin) {
-                    if (SC_Demon.demons[Region])
-                        DoNothing(); //uiManager.SacrificeCastle();
-                    else
+                    if (!SC_Demon.demons[Region])                        
                         uiManager.CreateDemon(Castle);
+                    else if (SC_Demon.demons[Region].Alive != -1)
+                        uiManager.SacrificeCastle(Castle);
                 } else
                     uiManager.ActivateMenu(true);
 

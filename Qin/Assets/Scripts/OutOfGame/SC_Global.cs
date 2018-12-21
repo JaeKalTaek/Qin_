@@ -150,23 +150,14 @@ public class SC_Global {
 
     }
 
-    public struct CreateDemonInfos {
+    [Serializable]
+    public class SacrificeCastlePanel {
 
-        public string type;
+        public GameObject panel, canPanel, cantPanel;
 
-        public int cost;
+        public Text type, buff;
 
-        public Vector3 pos;
-
-        public CreateDemonInfos (string t, int c, Vector3 p) {
-
-            type = t;
-
-            cost = c;
-
-            pos = p;
-
-        }
+        public Button yes, close;
 
     }
 
@@ -193,6 +184,40 @@ public class SC_Global {
     public class BaseCharacterStats {
 
         public int maxHealth, strength, chi, armor, resistance, technique, reflexes, movement;
+
+    }   
+    
+    [Serializable]
+    public class ThresholdValues {
+
+        public int[] thresholds;
+
+        public Values[] values;
+
+        [Serializable]
+        public class Values {
+
+            public float[] values;
+
+        }
+
+        public float GetValue (int threshold) {
+
+            return GetValue(0, threshold);
+
+        }
+
+        public float GetValue (int index, int threshold) {
+
+            float v = 0;
+
+            for (int i = 0; i < thresholds.Length; i++)
+                if (threshold >= thresholds[i])
+                    v = values[index].values[i];
+
+            return v;
+
+        }
 
     }
 

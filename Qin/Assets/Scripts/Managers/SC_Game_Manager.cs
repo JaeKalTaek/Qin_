@@ -189,34 +189,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         }
 
-	}
-
-    public void CreateDemon () {
-
-        if (!SC_UI_Manager.clickSecurity && (SC_Qin.Energy > CurrentCastle.DemonCost)) {
-
-            if (isServer)
-                CreateDemonFunction();
-            else
-                Player.CmdCreateDemon(CurrentCastle.gameObject);
-
-            uiManager.EndQinAction();
-
-        }
-
-    }
-
-    public void CreateDemonFunction() {
-
-        Player.CmdChangeQinEnergy(-CurrentCastle.DemonCost);
-
-        GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Demons/P_BaseDemon"), CurrentCastle.transform.position, Quaternion.identity);
-
-        go.GetComponent<SC_Character>().characterPath = "Prefabs/Characters/Demons/P_" + CurrentCastle.CastleType + "Demon";
-
-        NetworkServer.Spawn(go);       
-
-    }
+	}    
 
     public IEnumerator FinishConnecting() {
 
@@ -542,7 +515,34 @@ public class SC_Game_Manager : NetworkBehaviour {
         Player.CmdSetupNewSoldier(go);
 
     }
-    
+
+    public void CreateDemon () {
+
+        if (!SC_UI_Manager.clickSecurity && (SC_Qin.Energy > CurrentCastle.DemonCost)) {
+
+            if (isServer)
+                CreateDemonFunction();
+            else
+                Player.CmdCreateDemon(CurrentCastle.gameObject);
+
+            uiManager.EndQinAction();
+
+        }
+
+    }
+
+    public void CreateDemonFunction () {
+
+        Player.CmdChangeQinEnergy(-CurrentCastle.DemonCost);
+
+        GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Demons/P_BaseDemon"), CurrentCastle.transform.position, Quaternion.identity);
+
+        go.GetComponent<SC_Character>().characterPath = "Prefabs/Characters/Demons/P_" + CurrentCastle.CastleType + "Demon";
+
+        NetworkServer.Spawn(go);
+
+    }
+
     public void SacrificeCastle () {
 
         Player.CmdChangeQinEnergy(CurrentCastle.sacrificeValue);
@@ -562,6 +562,12 @@ public class SC_Game_Manager : NetworkBehaviour {
         demon.UpdateHealth();
 
         Player.CmdDestroyConstruction(CurrentCastle.gameObject);
+
+    }
+
+    public void SacrificeCastle(SC_Castle castle) {
+
+
 
     }
     #endregion

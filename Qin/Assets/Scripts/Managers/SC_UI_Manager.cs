@@ -93,6 +93,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         returnAction = DoNothing;
 
+        cancelAction = DoNothing;
+
     }
 
     public void SetupUI(bool qin) {       
@@ -337,7 +339,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         int stat = (int)c.GetType().GetProperty(s).GetValue(c);
 
-        int baseStat = (int)c.baseStats.GetType().GetField(s).GetValue(c.baseStats);
+        int baseStat = (int)c.baseStats.GetType().GetField(s.ToLower()).GetValue(c.baseStats);
 
         int modifiers = stat - baseStat;
 

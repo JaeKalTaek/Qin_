@@ -218,7 +218,7 @@ public class SC_Tile : NetworkBehaviour {
                 else if (Castle && !Character && SC_Player.localPlayer.Qin) {
                     if (!SC_Demon.demons[Region])                        
                         uiManager.CreateDemon(Castle);
-                    else if (SC_Demon.demons[Region].Alive != -1)
+                    else if (SC_Demon.demons[Region].Alive == -1)
                         uiManager.SacrificeCastle(Castle);
                 } else
                     uiManager.ActivateMenu(true);

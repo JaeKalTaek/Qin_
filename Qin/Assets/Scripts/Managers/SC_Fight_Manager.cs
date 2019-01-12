@@ -61,6 +61,8 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         SC_Character.Wait();
 
+        SC_Cursor.SetLock(false);
+
     }
 
     bool CharacterAttack(SC_Character attacker, SC_Character attacked, SC_Construction attackedConstru, bool counter) {
@@ -69,10 +71,12 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         if (attacked.Tile.GreatWall)
             HitConstruction(attacker, attackedConstru, counter);
-        else
-            killed = attacked.Hit(CalcDamages(attacker, attacked, counter), false);
+        else {
 
-        attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
+            killed = attacked.Hit(CalcDamages(attacker, attacked, counter), false);
+            attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
+
+        }
 
         if (!attacked.Tile.GreatWall)
             attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);

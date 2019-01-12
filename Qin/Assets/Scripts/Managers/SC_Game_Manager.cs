@@ -551,7 +551,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         foreach (FieldInfo fI in demon.baseStats.GetType().GetFields()) {
 
-            float percent = 1f + CommonQinVariables.castleSacrifice.GetValue(Mathf.CeilToInt(CurrentCastle.Health / CurrentCastle.maxHealth)) / 100;
+            float percent = 1f + (GetCurrentCastleSacrificeValue() / 100);
 
             fI.SetValue(demon, Mathf.CeilToInt(((int)fI.GetValue(demon)) * percent));
 
@@ -571,5 +571,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
     #endregion
+
+    public static float GetCurrentCastleSacrificeValue() {
+
+        return Instance.CommonQinVariables.castleSacrifice.GetValue(Mathf.CeilToInt(((float)Instance.CurrentCastle.Health / Instance.CurrentCastle.maxHealth) * 100));
+
+    }
 
 }

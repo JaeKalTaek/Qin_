@@ -30,6 +30,8 @@ public class SC_Demon : SC_BaseQinChara {
 
         base.OnStartClient();
 
+        Linked = true;
+
         auraRange = loadedCharacter.Demon.auraRange;
 
         auraColor = loadedCharacter.Demon.auraColor;

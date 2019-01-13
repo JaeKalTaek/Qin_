@@ -44,7 +44,7 @@ public class SC_Global {
 
     }
 
-    public static void DoNothing () { }
+    public static void DoNothing() { }
 
     public struct TileInfos {
 
@@ -58,7 +58,7 @@ public class SC_Global {
 
         public bool[] borders;
 
-        public TileInfos (string t, int s, int rS, int r, bool[] b) {
+        public TileInfos(string t, int s, int rS, int r, bool[] b) {
 
             type = t;
 
@@ -80,7 +80,7 @@ public class SC_Global {
 
         public SC_CombatModifiers aura;
 
-        public DemonAura (string d, SC_CombatModifiers a) {
+        public DemonAura(string d, SC_CombatModifiers a) {
 
             demon = d;
 
@@ -129,6 +129,17 @@ public class SC_Global {
         public Slider health;
 
         public Text name, power, defense, technique, reflexes, range, movement;
+
+    }
+
+    [Serializable]
+    public class FightPanel {
+
+        public GameObject panel;
+
+        public Slider attackerSlider, attackedSlider;
+
+        public Text attackerName, attackedName, attackerHealth, attackedHealth;
 
     }
 

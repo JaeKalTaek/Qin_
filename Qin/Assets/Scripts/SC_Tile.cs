@@ -184,7 +184,7 @@ public class SC_Tile : NetworkBehaviour {
 
                 fightManager.AttackRange = SC_Tile_Manager.TileDistance(attackingCharacter.transform.position, this);
 
-                SC_Player.localPlayer.CmdPrepareForAttack(fightManager.AttackRange, gameObject, !SC_Player.localPlayer.Qin);
+                SC_Player.localPlayer.CmdPrepareForAttack(fightManager.AttackRange, gameObject);
 
                 if (attackingCharacter.Hero)
                     uiManager.ChooseWeapon();

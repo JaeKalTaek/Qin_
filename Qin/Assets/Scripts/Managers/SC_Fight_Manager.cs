@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using static SC_Global;
+using static SC_Character;
 
 public class SC_Fight_Manager : MonoBehaviour {
 
@@ -26,60 +27,68 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     }
 
-    public void Attack () {
-
-        SC_Player.localPlayer.Busy = false;
+    public void Attack () {        
 
         uiManager.HideWeapons();
 
-        uiManager.cancelAction = DoNothing;
+        uiManager.cancelAction = DoNothing;        
 
-        SC_Character attacker = SC_Character.attackingCharacter;
+        SC_Character attacked = attackingCharacter.AttackTarget.Character;
+        SC_Construction targetConstruction = attackingCharacter.AttackTarget.Construction;
 
-        attacker.Tire();
+        uiManager.fightPanel.attackerName.text = attackingCharacter.characterName;
+        uiManager.fightPanel.attackedName.text = targetConstruction?.Name ?? attacked?.characterName ?? "Qin";
 
-        SC_Character attacked = attacker.AttackTarget.Character;
-        SC_Construction targetConstruction = attacker.AttackTarget.Construction;
-        SC_Construction currentConstruction = attacker.Tile.Construction;
+        int currentAttackedHealth = targetConstruction?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-        if (attacked) {
+        uiManager.fightPanel.attackerHealth.text = attackingCharacter.Health.ToString();
+        uiManager.fightPanel.attackedHealth.text = currentAttackedHealth.ToString();
 
-            bool killed = CharacterAttack(attacker, attacked, targetConstruction, false);
+        uiManager.fightPanel.attackerSlider.Set(attackingCharacter.Health, attackingCharacter.MaxHealth);
+        uiManager.fightPanel.attackedSlider.Set(currentAttackedHealth, targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
-            if (!killed && attacked.GetActiveWeapon().Range(attacked).In(AttackRange))
-                CharacterAttack(attacked, attacker, currentConstruction, true);
+        float y = Mathf.Min(attackingCharacter.transform.position.y, attackingCharacter.AttackTarget.transform.position.y);
+        float x = Mathf.Lerp(attackingCharacter.transform.position.x, attackingCharacter.AttackTarget.transform.position.x, .5f);
+        Vector3 pos = new Vector3(x, y, 0);
+
+        uiManager.fightPanel.panel.transform.position = Camera.main.WorldToScreenPoint(pos);
+
+        // uiManager.fightPanel.panel.SetActive(true);
+
+        if (attacked) {            
+
+            if (!CharacterAttack(attackingCharacter, attacked, false) && attacked.GetActiveWeapon().Range(attacked).In(AttackRange))
+                CharacterAttack(attacked, attackingCharacter, true);                
 
         } else if (targetConstruction) {
 
-            HitConstruction(attacker, targetConstruction, false);
+            HitConstruction(attackingCharacter, targetConstruction, false);
 
-        } else if (attacker.AttackTarget.Qin) {
+        } else if (attackingCharacter.AttackTarget.Qin) {
 
-            SC_Qin.ChangeEnergy(-attacker.BaseDamage);
+            SC_Qin.ChangeEnergy(-attackingCharacter.BaseDamage);
 
-        }        
+        }
 
-        SC_Character.Wait();
+        Wait();
 
         SC_Cursor.SetLock(false);
 
     }
 
-    bool CharacterAttack(SC_Character attacker, SC_Character attacked, SC_Construction attackedConstru, bool counter) {
+    bool CharacterAttack(SC_Character attacker, SC_Character attacked, bool counter) {
 
         bool killed = false;
 
         if (attacked.Tile.GreatWall)
-            HitConstruction(attacker, attackedConstru, counter);
+            killed = HitConstruction(attacker, attacked.Tile.Construction, counter);
         else {
 
             killed = attacked.Hit(CalcDamages(attacker, attacked, counter), false);
             attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
+            attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
 
         }
-
-        if (!attacked.Tile.GreatWall)
-            attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
 
         if (attacker.Hero && killed)
             IncreaseRelationships(attacker.Hero);
@@ -93,17 +102,21 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     }
 
-    void HitConstruction(SC_Character attacker, SC_Construction construction, bool counter) {
+    bool HitConstruction(SC_Character attacker, SC_Construction construction, bool counter) {
 
         construction.Health -= Mathf.CeilToInt(attacker.BaseDamage / (counter ? CharactersVariables.counterFactor : 1));
 
         construction.Lifebar.UpdateGraph(construction.Health, construction.maxHealth);
 
-        if (construction.Health <= 0)
-            construction.DestroyConstruction();
-        else
-            uiManager.TryRefreshInfos(construction.gameObject, construction.GetType());
+        if (construction.Health <= 0) {
 
+            construction.DestroyConstruction();
+            return true;
+
+        } else
+            return false;
+            // uiManager.TryRefreshInfos(construction.gameObject, construction.GetType());          
+    
     }
 
     public int CalcDamages (SC_Character attacker, SC_Character attacked, bool counter) {
@@ -115,7 +128,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         if (attacker.Hero)
             damages += Mathf.CeilToInt(damages * RelationBoost(attacker.Hero));
 
-        if (attacker.Hero && attacked.Hero && attacked.Qin)
+        if (attacker.Hero && attacked.Hero)
             damages = Mathf.CeilToInt(damages * RelationMalus(attacker.Hero, attacked.Hero));
 
         if (attacker.CriticalAmount == CharactersVariables.critTrigger)

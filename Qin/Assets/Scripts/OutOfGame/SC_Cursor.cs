@@ -61,7 +61,7 @@ public class SC_Cursor : NetworkBehaviour {
 
     void Update () {
 
-        if (Input.anyKeyDown && !(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
+        if (Input.GetButton("Horizontal") || Input.GetButton("Vertical"))
             Cursor.visible = false;
 
         #region Cursor Movement

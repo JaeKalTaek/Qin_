@@ -23,9 +23,10 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject toggleHealthBarsButton, endTurnButton;
     public TileTooltip tileTooltip;
 
-    [Header("Preview Fight")]
+    [Header("Fight UI")]
     public GameObject previewFightPanel;
     public CharacterFightPreview attackerPreviewFight, attackedPreviewFight;
+    public FightPanel fightPanel;
 
     [Header("Characters")]
     public CharacterTooltip characterTooltip;

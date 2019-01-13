@@ -67,6 +67,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public static SC_UI_Manager Instance { get; set; }
 
+    public static Vector2 Size { get { return Instance.GetComponent<RectTransform>().sizeDelta; } }
+
     public static bool CanInteract { get {
 
             return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !gameManager.prep;
@@ -447,11 +449,8 @@ public class SC_UI_Manager : MonoBehaviour {
         } else if (a) {
 
             attackedPreviewFight.name.text = a.characterName;
-
-            // /*if (!*/PreviewCharacterAttack(attacker, a, false);/*&& a.GetActiveWeapon().Range(a).In(fightManager.AttackRange))*/
+         
             PreviewCharacterAttack(a, attacker, true, PreviewCharacterAttack(attacker, a, false) || !a.GetActiveWeapon().Range(a).In(fightManager.AttackRange));
-
-
 
             attackedPreviewFight.crit.gameObject.SetActive(true);
 
@@ -466,8 +465,6 @@ public class SC_UI_Manager : MonoBehaviour {
             NonCharacterAttackPreview();
 
         }
-
-        // attackerPreviewFight.crit.Set(attacker.CriticalAmount, Mathf.Min(attacker.CriticalAmount + attacker.Technique, cT), cT);
 
         attacker.Hero?.SetWeapon(activeWeapon);
 

@@ -553,7 +553,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             float percent = 1f + (GetCurrentCastleSacrificeValue() / 100);
 
-            fI.SetValue(demon, Mathf.CeilToInt(((int)fI.GetValue(demon)) * percent));
+            fI.SetValue(demon, Mathf.CeilToInt(((int)fI.GetValue(demon.baseStats)) * percent));
 
         }
 

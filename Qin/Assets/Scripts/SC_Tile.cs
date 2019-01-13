@@ -248,7 +248,8 @@ public class SC_Tile : NetworkBehaviour {
 
         }
 
-        this.ShowInfos();
+        if(!uiManager.previewFightPanel.activeSelf)
+            this.ShowInfos();
 
     }
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using static SC_Game_Manager;
+using static SC_Global;
 
 public class SC_Cursor : NetworkBehaviour {
 
@@ -13,7 +14,13 @@ public class SC_Cursor : NetworkBehaviour {
     float inputsMoveTimer;
 
     [Tooltip("Distance between the border of the cursor and the border of the camera (except when the camera is at the border of the board)")]
-    public float cursorMargin;    
+    public float cursorMargin;
+
+    [Tooltip("Distance from the center to move the tile tooltip to the other side of the screen")]
+    [Range(.01f, .49f)]
+    public float moveTileTooltipDistance;
+
+    bool right;
 
     public bool Locked { get; set; }
 
@@ -26,6 +33,8 @@ public class SC_Cursor : NetworkBehaviour {
     Rect screenRect = new Rect(0, 0, Screen.width, Screen.height);
 
     public static SC_Cursor Instance { get; set; }
+
+    Camera Cam { get { return Camera.main; } }
 
     private void OnValidate () {
 
@@ -40,7 +49,7 @@ public class SC_Cursor : NetworkBehaviour {
 
         cam = FindObjectOfType<SC_Camera>();
 
-        oldMousePos = SC_Global.WorldMousePos;
+        oldMousePos = WorldMousePos;
 
         newMousePos = oldMousePos;
 
@@ -60,7 +69,7 @@ public class SC_Cursor : NetworkBehaviour {
 
         oldMousePos = newMousePos;
 
-        newMousePos = SC_Global.WorldMousePos;
+        newMousePos = WorldMousePos;
 
         if ((Vector3.Distance(oldMousePos, newMousePos) >= mouseThreshold) && !cameraMoved)
             Cursor.visible = true;
@@ -81,7 +90,7 @@ public class SC_Cursor : NetworkBehaviour {
 
             } else if (Cursor.visible && screenRect.Contains(Input.mousePosition)) {
 
-                newPos = SC_Global.WorldMousePos;
+                newPos = WorldMousePos;
 
             }            
 
@@ -100,7 +109,9 @@ public class SC_Cursor : NetworkBehaviour {
 
                 SC_Tile_Manager.Instance?.GetTileAt(oldPos)?.OnCursorExit();
 
-                SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.OnCursorEnter();                
+                SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.OnCursorEnter();
+
+                SetTileTooltipPos();
 
                 if (!Cursor.visible) {
 
@@ -132,7 +143,7 @@ public class SC_Cursor : NetworkBehaviour {
 
         float f = ((TileSize / 2) + cursorMargin) * (sign ? 1 : -1);
 
-        return Camera.main.WorldToViewportPoint(transform.position + new Vector3(f, f, 0));
+        return Cam.WorldToViewportPoint(transform.position + new Vector3(f, f, 0));
 
     }   
 
@@ -146,6 +157,22 @@ public class SC_Cursor : NetworkBehaviour {
             SC_Tile_Manager.Instance?.GetTileAt(Instance.transform.position)?.OnCursorExit();
         else
             SC_Tile_Manager.Instance?.GetTileAt(Instance.transform.position)?.OnCursorEnter();
+
+    }
+
+    void SetTileTooltipPos() {
+
+        float x = Cam.WorldToViewportPoint(transform.position).x;
+
+        if (((x < .5f - moveTileTooltipDistance) && right) || ((x > .5f + moveTileTooltipDistance) && !right)) {
+
+            right ^= true;
+
+            RectTransform rectT = SC_UI_Manager.Instance.tileTooltip.panel.GetComponent<RectTransform>();
+
+            rectT.anchoredPosition = new Vector2(right ? 0 : SC_UI_Manager.Size.x  - rectT.sizeDelta.x, rectT.anchoredPosition.y);            
+
+        }
 
     }
 

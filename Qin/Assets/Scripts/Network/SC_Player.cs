@@ -446,6 +446,22 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
+    #region Sacrifice Castle
+    [Command]
+    public void CmdSacrificeCastle (GameObject castle) {
+
+        RpcSacrificeCastle(castle);
+
+    }
+
+    [ClientRpc]
+    void RpcSacrificeCastle (GameObject castle) {
+
+        localPlayer.gameManager.SacrificeCastle(castle.GetComponent<SC_Castle>());
+
+    }
+    #endregion
+
     #region Wait
     [Command]
     public void CmdWait() {

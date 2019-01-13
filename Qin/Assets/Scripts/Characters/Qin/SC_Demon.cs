@@ -149,12 +149,6 @@ public class SC_Demon : SC_BaseQinChara {
 
     }
 
-    public void Unlink (int castleHealth) {
-
-        Linked = false;
-
-    }
-
     public override void DestroyCharacter () {
 
         RemoveAura(true);

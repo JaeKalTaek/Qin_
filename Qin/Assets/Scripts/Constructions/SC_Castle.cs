@@ -63,21 +63,27 @@ public class SC_Castle : SC_Construction {
 
     }
 
-    public void Sacrifice () {
+    /* Move code here ?
+     * 
+     * public void Sacrifice () {
 
-        SC_Player.localPlayer.CmdChangeQinEnergy(sacrificeValue);
+        
 
-        BaseDestroy();
-
-        SC_Demon.demons[Tile.Region].Unlink(Health);
-
-    }
+    }*/
 
     public override void DestroyConstruction () {
 
-        BaseDestroy();
+        base.DestroyConstruction();
 
-        SC_Demon.demons[Tile.Region].DestroyCharacter();
+        tileManager.UpdateNeighborWallGraph(Tile);
+
+        foreach (SC_Tile t in tileManager.regions[Tile.Region])
+            t.Ruin?.DestroyConstruction();
+
+        castles[Tile.Region] = false;
+
+        if (Health <= 0)
+            SC_Demon.demons[Tile.Region].DestroyCharacter();
 
         bool victory = true;
 
@@ -88,19 +94,6 @@ public class SC_Castle : SC_Construction {
         if (victory)
             uiManager.ShowVictory(false);
         
-
-    }
-
-    void BaseDestroy () {
-
-        base.DestroyConstruction();
-
-        tileManager.UpdateNeighborWallGraph(Tile);
-
-        foreach (SC_Tile t in tileManager.regions[Tile.Region])
-            t.Ruin?.DestroyConstruction();
-
-        castles[Tile.Region] = false;        
 
     }
 

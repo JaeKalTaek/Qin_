@@ -545,7 +545,15 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void SacrificeCastle () {
 
-        Player.CmdChangeQinEnergy(CurrentCastle.sacrificeValue);
+        Player.CmdSacrificeCastle(CurrentCastle.gameObject);
+
+        uiManager.EndQinAction();
+
+    }
+
+    public void SacrificeCastle (SC_Castle castle) {
+
+        SC_Qin.ChangeEnergy(CurrentCastle.sacrificeValue);
 
         SC_Demon demon = SC_Demon.demons[CurrentCastle.Tile.Region];
 
@@ -553,7 +561,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             float percent = 1f + (GetCurrentCastleSacrificeValue() / 100);
 
-            fI.SetValue(demon, Mathf.CeilToInt(((int)fI.GetValue(demon.baseStats)) * percent));
+            fI.SetValue(demon.baseStats, Mathf.CeilToInt(((int)fI.GetValue(demon.baseStats)) * percent));
 
         }
 
@@ -561,15 +569,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         demon.UpdateHealth();
 
-        Player.CmdDestroyConstruction(CurrentCastle.gameObject);
+        demon.Linked = false;
 
-    }
+        castle.DestroyConstruction();
 
-    public void SacrificeCastle(SC_Castle castle) {
-
-
-
-    }
+    }    
     #endregion
 
     public static float GetCurrentCastleSacrificeValue() {

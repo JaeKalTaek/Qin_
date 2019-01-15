@@ -30,7 +30,7 @@ public class SC_Cursor : NetworkBehaviour {
 
     SC_Camera cam;
 
-    Rect screenRect = new Rect(0, 0, Screen.width, Screen.height);
+    // Rect screenRect = new Rect(0, 0, Screen.width, Screen.height);
 
     public static SC_Cursor Instance { get; set; }
 
@@ -88,17 +88,17 @@ public class SC_Cursor : NetworkBehaviour {
 
                 newPos = transform.position + new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0) * TileSize;
 
-            } else if (Cursor.visible && screenRect.Contains(Input.mousePosition)) {
+            } else if (Cursor.visible) {
 
-                newPos = WorldMousePos;
+                newPos = WorldMousePos; // screenRect.Contains(Input.mousePosition) ? WorldMousePos : oldPos;
 
             }            
 
             int x = newPos.x.I();
             int y = newPos.y.I();
 
-            if ((x >= 0) && (y >= 0) && (x < SC_Tile_Manager.Instance.xSize) && (y < SC_Tile_Manager.Instance.ySize))
-                transform.SetPos(new Vector2(x, y) * TileSize);
+            // if ((x >= 0) && (y >= 0) && (x < SC_Tile_Manager.Instance.xSize) && (y < SC_Tile_Manager.Instance.ySize))
+                transform.SetPos(new Vector2(Mathf.Clamp(x, 0, SC_Tile_Manager.Instance.xSize - 1), Mathf.Clamp(y, 0, SC_Tile_Manager.Instance.ySize - 1)) * TileSize);
 
             /*cam.minX = x == 0;
             cam.maxX = x == SC_Tile_Manager.Instance.xSize;

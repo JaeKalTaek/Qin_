@@ -2,6 +2,7 @@
 using UnityEngine;
 using static SC_Global;
 using static SC_Character;
+using System.Collections;
 
 public class SC_Fight_Manager : MonoBehaviour {
 
@@ -14,6 +15,16 @@ public class SC_Fight_Manager : MonoBehaviour {
     SC_Common_Characters_Variables CharactersVariables { get { return SC_Game_Manager.Instance.CommonCharactersVariables; } }
 
     public static SC_Fight_Manager Instance;
+
+    [Header("Fight Animation Variables")]
+    [Tooltip("Cooldown between fight panel appearing and first attack anim")]
+    public float fightDelay;
+
+    [Tooltip("Time for the character to move towards its target")]
+    public float animTime;
+
+    [Tooltip("Time for the health bar to get to its final value")]
+    public float healthBarAnimTime;
 
     void Awake () {
 
@@ -29,6 +40,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public void Attack () {        
 
+        // Show Fight Panel
         uiManager.HideWeapons();
 
         uiManager.cancelAction = DoNothing;        
@@ -48,14 +60,59 @@ public class SC_Fight_Manager : MonoBehaviour {
         uiManager.fightPanel.attackedSlider.Set(currentAttackedHealth, targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
         float y = Mathf.Min(attackingCharacter.transform.position.y, attackingCharacter.AttackTarget.transform.position.y);
-        float x = Mathf.Lerp(attackingCharacter.transform.position.x, attackingCharacter.AttackTarget.transform.position.x, .5f);
-        Vector3 pos = new Vector3(x, y, 0);
+        float x = Mathf.Lerp(attackingCharacter.transform.position.x, attackingCharacter.AttackTarget.transform.position.x, .5f);        
 
-        uiManager.fightPanel.panel.transform.position = Camera.main.WorldToScreenPoint(pos);
+        uiManager.fightPanel.panel.transform.position = new Vector3(x, y, 0);
 
-        // uiManager.fightPanel.panel.SetActive(true);
+        uiManager.fightPanel.panel.GetComponent<RectTransform>().anchoredPosition -= new Vector2(0, uiManager.fightPanel.panel.GetComponent<RectTransform>().sizeDelta.y);
 
-        if (attacked) {            
+        uiManager.fightPanel.panel.SetActive(true);
+
+        Vector3 distance = attackingCharacter.AttackTarget.transform.position - attackingCharacter.transform.position;
+
+        Vector3 pos = Vector3.zero;
+
+        if (distance.x >= 0) {
+
+            if (distance.y >= 0) {
+
+                if (distance.x >= distance.y)
+                    pos = Vector3.right;
+                else
+                    pos = Vector3.up;
+
+            } else {
+
+                if (distance.x >= -distance.y)
+                    pos = Vector3.right;
+                else
+                    pos = Vector3.down;
+
+            }
+
+        } else {
+
+            if (distance.y >= 0) {
+
+                if (-distance.x >= distance.y)
+                    pos = Vector3.left;
+                else
+                    pos = Vector3.up;
+
+            } else {
+
+                if (-distance.x >= -distance.y)
+                    pos = Vector3.left;
+                else
+                    pos = Vector3.down;
+
+            }
+
+        }
+
+        StartCoroutine(FightAnim(attackingCharacter, pos * .5f * SC_Game_Manager.Instance.CurrentMapPrefab.TileSize, true));
+
+        /*if (attacked) {            
 
             if (!CharacterAttack(attackingCharacter, attacked, false) && attacked.GetActiveWeapon().Range(attacked).In(AttackRange))
                 CharacterAttack(attacked, attackingCharacter, true);                
@@ -72,7 +129,83 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         Wait();
 
-        SC_Cursor.SetLock(false);
+        SC_Cursor.SetLock(false);*/
+
+    }
+
+    IEnumerator FightAnim(SC_Character c, Vector3 travel, bool attacking) {
+
+        Vector3 basePos = c.transform.position;
+
+        yield return new WaitForSeconds(fightDelay);
+
+        float timer = 0;
+
+        while (timer < animTime) {
+
+            timer += Time.deltaTime;
+
+            c.transform.position = Vector3.Lerp(basePos, basePos + travel, Mathf.Min(timer, animTime) / animTime);
+
+            yield return new WaitForEndOfFrame();
+
+        }
+
+        yield return new WaitForSeconds(fightDelay);
+
+        if (attacking) {
+
+            SC_Character attacked = attackingCharacter.AttackTarget.Character;
+            SC_Construction targetConstruction = attackingCharacter.AttackTarget.Construction;
+
+            float baseValue = uiManager.fightPanel.attackedSlider.value;
+
+            float endValue = 0;
+
+            if (attacked) {
+
+                CharacterAttack(attackingCharacter, attacked, false);
+
+                endValue = targetConstruction?.Health ?? attacked.Health;
+
+                /*if (!CharacterAttack(attackingCharacter, attacked, false) && attacked.GetActiveWeapon().Range(attacked).In(AttackRange))
+                    CharacterAttack(attacked, attackingCharacter, true);*/
+
+            } else if (targetConstruction) {
+
+                HitConstruction(attackingCharacter, targetConstruction, false);
+
+                endValue = targetConstruction.Health;
+
+            } else if (attackingCharacter.AttackTarget.Qin) {
+
+                SC_Qin.ChangeEnergy(-attackingCharacter.BaseDamage);
+
+                endValue = SC_Qin.Energy;
+
+            }
+
+            timer = 0;
+
+            while (timer < healthBarAnimTime) {
+
+                timer += Time.deltaTime;
+
+                uiManager.fightPanel.attackedSlider.Set(Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime), targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+
+                yield return new WaitForEndOfFrame();
+
+            }
+
+            StartCoroutine(FightAnim(attackingCharacter, -travel, false));
+
+        } else {
+
+            // If attacked -> anim attacked
+
+            // Else -> Finish fight               
+
+        }
 
     }
 

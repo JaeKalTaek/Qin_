@@ -41,11 +41,12 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public void Attack () {        
 
-        // Show Fight Panel
         uiManager.HideWeapons();
 
-        uiManager.cancelAction = DoNothing;        
+        uiManager.cancelAction = DoNothing;
 
+        #region Setup Fight Panel
+        #region Setup Values
         SC_Character attacked = attackingCharacter.AttackTarget.Character;
         SC_Construction targetConstruction = attackingCharacter.AttackTarget.Construction;
 
@@ -61,58 +62,26 @@ public class SC_Fight_Manager : MonoBehaviour {
         uiManager.fightPanel.attackedSlider.Set(currentAttackedHealth, targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
         float y = Mathf.Min(attackingCharacter.transform.position.y, attackingCharacter.AttackTarget.transform.position.y);
-        float x = Mathf.Lerp(attackingCharacter.transform.position.x, attackingCharacter.AttackTarget.transform.position.x, .5f);        
+        float x = Mathf.Lerp(attackingCharacter.transform.position.x, attackingCharacter.AttackTarget.transform.position.x, .5f);
+        #endregion
 
+        #region Setup pos
         uiManager.fightPanel.panel.transform.position = new Vector3(x, y, 0);
 
         uiManager.fightPanel.panel.GetComponent<RectTransform>().anchoredPosition -= new Vector2(0, uiManager.fightPanel.panel.GetComponent<RectTransform>().sizeDelta.y);
+        #endregion
 
         uiManager.fightPanel.panel.SetActive(true);
+        #endregion
 
+        #region Setup attack direction
         Vector3 distance = attackingCharacter.AttackTarget.transform.position - attackingCharacter.transform.position;
 
-        Vector3 pos = Vector3.zero;
-
-        if (distance.x >= 0) {
-
-            if (distance.y >= 0) {
-
-                if (distance.x >= distance.y)
-                    pos = Vector3.right;
-                else
-                    pos = Vector3.up;
-
-            } else {
-
-                if (distance.x >= -distance.y)
-                    pos = Vector3.right;
-                else
-                    pos = Vector3.down;
-
-            }
-
-        } else {
-
-            if (distance.y >= 0) {
-
-                if (-distance.x >= distance.y)
-                    pos = Vector3.left;
-                else
-                    pos = Vector3.up;
-
-            } else {
-
-                if (-distance.x >= -distance.y)
-                    pos = Vector3.left;
-                else
-                    pos = Vector3.down;
-
-            }
-
-        }
+        Vector3 travel = (Mathf.Abs(distance.x) >= Mathf.Abs(distance.y) ? Vector3.right * Mathf.Sign(distance.x) : Vector3.up * Mathf.Sign(distance.y));
+        #endregion
 
         // Attacking character attacks
-        StartCoroutine(FightAnim(attackingCharacter, pos * .5f * SC_Game_Manager.Instance.CurrentMapPrefab.TileSize, true));        
+        StartCoroutine(FightAnim(attackingCharacter, travel * .5f * SC_Game_Manager.Instance.CurrentMapPrefab.TileSize, true));        
 
     }
 
@@ -188,20 +157,16 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         } else {
 
-            #region Counter attack, don't counter counter attack
-            if ((attacked != null) && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
+            #region Counter attack
+            if (attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
 
                 StartCoroutine(FightAnim(attacked, travel, true));
 
             } else {
 
-                SC_Player.localPlayer.Busy = false;
-
                 uiManager.fightPanel.panel.SetActive(false);
 
-                FinishCharacterAction();
-
-                SC_Cursor.SetLock(false);
+                SC_Game_Manager.Instance.FinishAction();
 
             }
             #endregion
@@ -224,8 +189,15 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         }
 
-        if (attacker.Hero && killed)
-            IncreaseRelationships(attacker.Hero);
+        if (attacker.Hero) {
+
+            if(killed)
+                attacker.Hero.IncreaseRelationships(CharactersVariables.relationGains.kill);
+
+            if (attacker != attackingCharacter)
+                attacker.Hero.IncreaseRelationships(CharactersVariables.relationGains.counterAttack);
+
+        }
 
         uiManager.TryRefreshInfos(attacker.gameObject, attacker.GetType());
 
@@ -262,14 +234,14 @@ public class SC_Fight_Manager : MonoBehaviour {
         if (attacker.Hero)
             damages += Mathf.CeilToInt(damages * RelationBoost(attacker.Hero));
 
-        if (attacker.Hero && attacked.Hero)
-            damages = Mathf.CeilToInt(damages * RelationMalus(attacker.Hero, attacked.Hero));
+        /*if (attacker.Hero && attacked.Hero)
+            damages = Mathf.CeilToInt(damages * RelationMalus(attacker.Hero, attacked.Hero));*/
 
         if (attacker.CriticalAmount == CharactersVariables.critTrigger)
             damages = Mathf.CeilToInt(damages * CharactersVariables.critMultiplier);
 
-        if (attacker.Hero?.Berserk ?? false)
-            damages = Mathf.CeilToInt(damages * CharactersVariables.berserkDamageMultiplier);
+        /*if (attacker.Hero?.Berserk ?? false)
+            damages = Mathf.CeilToInt(damages * CharactersVariables.berserkDamageMultiplier);*/
 
         if (attacked.DodgeAmount == CharactersVariables.dodgeTrigger)
             damages = Mathf.FloorToInt(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100));
@@ -294,14 +266,14 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     }
 
-    float RelationMalus (SC_Hero target, SC_Hero opponent) {
+    /*float RelationMalus (SC_Hero target, SC_Hero opponent) {
 
         int value;
         target.Relationships.TryGetValue(opponent.characterName, out value);
 
-        return 1 - CharactersVariables.relationValues.GetValue("boost", value);
+        return 1 - (CharactersVariables.relationValues.GetValue("boost", value) / 100);
 
-    }
+    }*/
 
     float RelationBoost (SC_Hero target) {
 
@@ -316,11 +288,11 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         }
 
-        return boost;
+        return boost / 100f;
 
     }
 
-    public SC_Hero CheckHeroSaved (SC_Hero toSave, bool alreadySaved) {
+    /*public SC_Hero CheckHeroSaved (SC_Hero toSave, bool alreadySaved) {
 
         SC_Hero saver = null;
 
@@ -364,19 +336,6 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         return saver;
 
-    }
-
-    void IncreaseRelationships (SC_Hero killer) {
-
-        List<SC_Hero> heroesInRange = TileManager.HeroesInRange(killer);
-
-        foreach (SC_Hero hero in heroesInRange) {
-
-            killer.Relationships[hero.characterName] += Mathf.CeilToInt(CharactersVariables.killRelationValue / heroesInRange.Count);
-            hero.Relationships[killer.characterName] += Mathf.CeilToInt(CharactersVariables.killRelationValue / heroesInRange.Count);
-
-        }
-
-    }    
+    }*/
 
 }

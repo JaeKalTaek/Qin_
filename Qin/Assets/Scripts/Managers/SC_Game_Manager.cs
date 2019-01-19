@@ -271,7 +271,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 character.Hero.Regen();
 
-                if (Qin) {
+                character.Hero.IncreaseRelationships(CommonCharactersVariables.relationGains.finishTurn);
+
+                /*if (Qin) {
 
                     if (character.Hero.PowerUsed)
                         character.Hero.PowerBacklash++;
@@ -283,7 +285,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                     character.Hero.BerserkTurn = false;
 
-                }
+                }*/
 
             }
 
@@ -408,9 +410,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 }
 
-            } else {                                
+            } else {
 
-                uiManager.Wait();
+                FinishAction(true);
 
             }
 
@@ -473,16 +475,6 @@ public class SC_Game_Manager : NetworkBehaviour {
     #endregion
 
     #region Players Actions  
-    public void AttackingCharacterDestroy () {
-
-        SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction();
-
-        SC_Character.attackingCharacter.Tile.Ruin?.DestroyConstruction();
-
-        uiManager.Wait();
-
-    }
-
     /*public void SpawnConvoy(Vector3 pos) {
 
 		if (pos.x >= 0) {
@@ -573,8 +565,34 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         castle.DestroyConstruction();
 
-    }    
+    }
     #endregion
+
+    public void FinishAction() {
+
+        if (SC_Cursor.Instance.Locked)
+            FinishAction(false);
+        else
+            SC_Character.FinishCharacterAction();
+
+    }
+
+    public void FinishAction (bool sync) {
+
+        SC_Cursor.SetLock(false);
+
+        if (sync)
+            Player.CmdFinishCharacterAction();
+        else
+            SC_Character.FinishCharacterAction();
+
+        uiManager.characterActionsPanel.SetActive(false);
+
+        uiManager.cancelAction = DoNothing;
+
+        Player.Busy = false;
+
+    }
 
     public static float GetCurrentCastleSacrificeValue() {
 

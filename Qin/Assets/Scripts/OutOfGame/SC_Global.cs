@@ -230,6 +230,6 @@ public class SC_Global {
 
         }
 
-    }
+    }    
 
 }

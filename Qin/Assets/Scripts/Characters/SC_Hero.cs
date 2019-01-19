@@ -10,8 +10,8 @@ public class SC_Hero : SC_Character {
 	bool saved;
 
 	//Berserk	
-	public bool Berserk { get; set; }
-    public bool BerserkTurn { get; set; }
+	/*public bool Berserk { get; set; }
+    public bool BerserkTurn { get; set; }*/
 
 	//Weapons
     [Header("Heroes Variables")]
@@ -19,11 +19,11 @@ public class SC_Hero : SC_Character {
 	public SC_Weapon weapon1, weapon2;
 
 	//power	
-	public bool PowerUsed { get; set; }
+	/*public bool PowerUsed { get; set; }
 	public int PowerBacklash { get; set; }
 
     [Tooltip("Color applied when the character is berserker")]
-    public Color berserkColor;
+    public Color berserkColor;*/
 
     public bool ReadyToRegen { get; set; }
 
@@ -39,7 +39,7 @@ public class SC_Hero : SC_Character {
 
         weapon2 = loadedCharacter.Hero.weapon2;
 
-        berserkColor = loadedCharacter.Hero.berserkColor;
+        // berserkColor = loadedCharacter.Hero.berserkColor;
 
         if (heroes == null)
             heroes = new List<SC_Hero>();
@@ -83,7 +83,7 @@ public class SC_Hero : SC_Character {
 
     public override void TryCheckMovements () {
 
-		if (CanMove || (Berserk && !BerserkTurn))
+		if (CanMove /*|| (Berserk && !BerserkTurn)*/)
             base.TryCheckMovements();
 
 	}
@@ -129,7 +129,7 @@ public class SC_Hero : SC_Character {
 
 	}
 
-	public override bool Hit(int damages, bool saving) {
+	/*public override bool Hit(int damages, bool saving) {
 
 		bool dead = false;
 
@@ -197,7 +197,7 @@ public class SC_Hero : SC_Character {
 		else
 			base.UnTired ();
 
-	}
+	}*/
 
 	public override void DestroyCharacter() {
 
@@ -207,7 +207,7 @@ public class SC_Hero : SC_Character {
 
 		gameManager.LastHeroDead = this;        
 
-		foreach (SC_Hero hero in heroes) {
+		/*foreach (SC_Hero hero in heroes) {
 
 			int value = 0;
 			Relationships.TryGetValue (hero.characterName, out value);
@@ -222,7 +222,7 @@ public class SC_Hero : SC_Character {
 
 			}
 
-		}
+		}*/
 
 		gameObject.SetActive (false);
 
@@ -258,6 +258,19 @@ public class SC_Hero : SC_Character {
             t = Tile;
 
         return new Vector2(Mathf.Min(weapon1.minRange, weapon2.minRange), Mathf.Max(weapon1.MaxRange(this, t), weapon2.MaxRange(this, t)));
+
+    }
+
+    public void IncreaseRelationships (int amount) {
+
+        List<SC_Hero> heroesInRange = tileManager.HeroesInRange(this);
+
+        foreach (SC_Hero hero in heroesInRange) {
+
+            Relationships[hero.characterName] += Mathf.CeilToInt(amount / heroesInRange.Count);
+            hero.Relationships[characterName] += Mathf.CeilToInt(amount / heroesInRange.Count);
+
+        }
 
     }
 

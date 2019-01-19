@@ -358,7 +358,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             if (list.Contains(tile) || OpenList.Contains(tile) || !target.CanCharacterGoThrough(tile))
                 continue;
 
-            int points = parentPoints - ((target.Hero?.Berserk ?? false) ? 1 : tile.Cost);
+            int points = parentPoints - tile.Cost; //((target.Hero?.Berserk ?? false) ? 1 : tile.Cost);
 
             if (points >= 0) {
 

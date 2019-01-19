@@ -236,7 +236,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (Hero) {
 
-            CanMove = (Hero.Berserk && !Hero.BerserkTurn);
+            // CanMove = (Hero.Berserk && !Hero.BerserkTurn);
 
             uiManager.destroyConstruButton.SetActive(!SC_Player.localPlayer.Qin && (target.ProductionBuilding || target.Ruin));
 
@@ -329,14 +329,19 @@ public abstract class SC_Character : NetworkBehaviour {
 
         tileManager.RemoveAllFilters();
 
+        if (!characterToMove)
+            print("ERROR CHARACTERTOMOVE IS NULL");
+        else
+            characterToMove.Hero?.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
+
         characterToMove = null;
 
         if(attackingCharacter) {
 
             attackingCharacter.Tire();
 
-            if(attackingCharacter.Hero)
-                attackingCharacter.Hero.BerserkTurn = attackingCharacter.Hero.Berserk;
+            /*if(attackingCharacter.Hero)
+                attackingCharacter.Hero.BerserkTurn = attackingCharacter.Hero.Berserk;*/
 
             attackingCharacter = null;
 

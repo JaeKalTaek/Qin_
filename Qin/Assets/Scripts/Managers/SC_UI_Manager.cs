@@ -566,9 +566,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    public void ChooseWeapon () {
-
-        SC_Cursor.SetLock(true);
+    public void ChooseWeapon () {        
 
         ShowHideWeapon(true, attackingCharacter.Hero.weapon1.Range(attackingCharacter.Hero).In(fightManager.AttackRange));
 
@@ -956,21 +954,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         previewFightPanel.SetActive(false);
 
-    }
-
-    public void Wait() {
-
-        SC_Cursor.SetLock(false);
-
-        localPlayer.CmdWait();
-
-        characterActionsPanel.SetActive(false);
-
-        cancelAction = DoNothing;
-
-        localPlayer.Busy = false;
-
-    }
+    }    
 
     public void Return() {
 

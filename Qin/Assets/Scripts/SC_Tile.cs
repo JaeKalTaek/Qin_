@@ -180,6 +180,8 @@ public class SC_Tile : NetworkBehaviour {
 
             } else if (CurrentDisplay == TDisplay.Attack && !Empty) {
 
+                SC_Cursor.SetLock(true);
+
                 tileManager.RemoveAllFilters();
 
                 fightManager.AttackRange = SC_Tile_Manager.TileDistance(attackingCharacter.transform.position, this);

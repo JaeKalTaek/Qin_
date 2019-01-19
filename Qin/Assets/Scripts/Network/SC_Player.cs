@@ -385,7 +385,9 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcDestroyProductionBuilding () {
 
-        localPlayer.gameManager.AttackingCharacterDestroy();
+        localPlayer.gameManager.FinishAction();
+
+        SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction();
 
     }
     #endregion
@@ -458,14 +460,14 @@ public class SC_Player : NetworkBehaviour {
 
     #region Wait
     [Command]
-    public void CmdWait() {
+    public void CmdFinishCharacterAction() {
 
-        RpcWait();
+        RpcFinishCharacterAction();
 
     }
 
     [ClientRpc]
-    void RpcWait() {
+    void RpcFinishCharacterAction() {
 
         SC_Character.FinishCharacterAction();
 

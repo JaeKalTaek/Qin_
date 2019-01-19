@@ -467,7 +467,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcWait() {
 
-        SC_Character.Wait();
+        SC_Character.FinishCharacterAction();
 
     }
     #endregion

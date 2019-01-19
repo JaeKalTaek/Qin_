@@ -325,7 +325,7 @@ public abstract class SC_Character : NetworkBehaviour {
     }
     #endregion
 
-    public static void Wait() {
+    public static void FinishCharacterAction() {
 
         tileManager.RemoveAllFilters();
 

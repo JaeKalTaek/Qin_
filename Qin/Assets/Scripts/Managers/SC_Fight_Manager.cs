@@ -3,6 +3,7 @@ using UnityEngine;
 using static SC_Global;
 using static SC_Character;
 using System.Collections;
+using UnityEngine.UI;
 
 public class SC_Fight_Manager : MonoBehaviour {
 
@@ -56,7 +57,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         uiManager.fightPanel.attackerHealth.text = attackingCharacter.Health.ToString();
         uiManager.fightPanel.attackedHealth.text = currentAttackedHealth.ToString();
 
-        uiManager.fightPanel.attackerSlider.Set(attackingCharacter.Health, attackingCharacter.MaxHealth);
+        uiManager.fightPanel.attackerSlider.Set(attackingCharacter.Tile.Construction?.Health ?? attackingCharacter.Health, attackingCharacter.Tile.Construction?.maxHealth ?? attackingCharacter.MaxHealth);
         uiManager.fightPanel.attackedSlider.Set(currentAttackedHealth, targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
         float y = Mathf.Min(attackingCharacter.transform.position.y, attackingCharacter.AttackTarget.transform.position.y);
@@ -110,31 +111,14 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         }
 
-        StartCoroutine(FightAnim(attackingCharacter, pos * .5f * SC_Game_Manager.Instance.CurrentMapPrefab.TileSize, true));
-
-        /*if (attacked) {            
-
-            if (!CharacterAttack(attackingCharacter, attacked, false) && attacked.GetActiveWeapon().Range(attacked).In(AttackRange))
-                CharacterAttack(attacked, attackingCharacter, true);                
-
-        } else if (targetConstruction) {
-
-            HitConstruction(attackingCharacter, targetConstruction, false);
-
-        } else if (attackingCharacter.AttackTarget.Qin) {
-
-            SC_Qin.ChangeEnergy(-attackingCharacter.BaseDamage);
-
-        }
-
-        Wait();
-
-        SC_Cursor.SetLock(false);*/
+        // Attacking character attacks
+        StartCoroutine(FightAnim(attackingCharacter, pos * .5f * SC_Game_Manager.Instance.CurrentMapPrefab.TileSize, true));        
 
     }
 
-    IEnumerator FightAnim(SC_Character c, Vector3 travel, bool attacking) {
+    IEnumerator FightAnim(SC_Character c, Vector3 travel, bool attacking, bool killed = false) {
 
+        #region Character who is currently attacking moves
         Vector3 basePos = c.transform.position;
 
         yield return new WaitForSeconds(fightDelay);
@@ -152,34 +136,36 @@ public class SC_Fight_Manager : MonoBehaviour {
         }
 
         yield return new WaitForSeconds(fightDelay);
+        #endregion
 
+        bool counter = attackingCharacter != c;
+
+        SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
+
+        #region If the current character is attacking
         if (attacking) {
 
-            SC_Character attacked = attackingCharacter.AttackTarget.Character;
-            SC_Construction targetConstruction = attackingCharacter.AttackTarget.Construction;
+            SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
 
-            float baseValue = uiManager.fightPanel.attackedSlider.value;
+            float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy; 
 
             float endValue = 0;
 
             if (attacked) {
 
-                CharacterAttack(attackingCharacter, attacked, false);
+                CharacterAttack(c, attacked);
 
-                endValue = targetConstruction?.Health ?? attacked.Health;
+                endValue = attackedConstru?.Health ?? attacked.Health;
 
-                /*if (!CharacterAttack(attackingCharacter, attacked, false) && attacked.GetActiveWeapon().Range(attacked).In(AttackRange))
-                    CharacterAttack(attacked, attackingCharacter, true);*/
+            } else if (attackedConstru) {
 
-            } else if (targetConstruction) {
+                HitConstruction(c, attackedConstru);
 
-                HitConstruction(attackingCharacter, targetConstruction, false);
+                endValue = attackedConstru.Health;
 
-                endValue = targetConstruction.Health;
+            } else {
 
-            } else if (attackingCharacter.AttackTarget.Qin) {
-
-                SC_Qin.ChangeEnergy(-attackingCharacter.BaseDamage);
+                SC_Qin.ChangeEnergy(-c.BaseDamage);
 
                 endValue = SC_Qin.Energy;
 
@@ -191,33 +177,48 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 timer += Time.deltaTime;
 
-                uiManager.fightPanel.attackedSlider.Set(Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime), targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+                (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime), attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
                 yield return new WaitForEndOfFrame();
 
             }
 
-            StartCoroutine(FightAnim(attackingCharacter, -travel, false));
+            StartCoroutine(FightAnim(c, -travel, false, endValue <= 0));
+            #endregion
 
         } else {
 
-            // If attacked -> anim attacked
+            #region Counter attack, don't counter counter attack
+            if ((attacked != null) && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
 
-            // Else -> Finish fight               
+                StartCoroutine(FightAnim(attacked, travel, true));
+
+            } else {
+
+                SC_Player.localPlayer.Busy = false;
+
+                uiManager.fightPanel.panel.SetActive(false);
+
+                FinishCharacterAction();
+
+                SC_Cursor.SetLock(false);
+
+            }
+            #endregion
 
         }
 
     }
 
-    bool CharacterAttack(SC_Character attacker, SC_Character attacked, bool counter) {
+    bool CharacterAttack(SC_Character attacker, SC_Character attacked) {
 
         bool killed = false;
 
         if (attacked.Tile.GreatWall)
-            killed = HitConstruction(attacker, attacked.Tile.Construction, counter);
+            killed = HitConstruction(attacker, attacked.Tile.Construction);
         else {
 
-            killed = attacked.Hit(CalcDamages(attacker, attacked, counter), false);
+            killed = attacked.Hit(CalcDamage(attacker, attacked), false);
             attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
             attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
 
@@ -235,9 +236,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     }
 
-    bool HitConstruction(SC_Character attacker, SC_Construction construction, bool counter) {
+    bool HitConstruction(SC_Character attacker, SC_Construction construction) {
 
-        construction.Health -= Mathf.CeilToInt(attacker.BaseDamage / (counter ? CharactersVariables.counterFactor : 1));
+        construction.Health -= Mathf.CeilToInt(attacker.BaseDamage / (attacker != attackingCharacter ? CharactersVariables.counterFactor : 1));
 
         construction.Lifebar.UpdateGraph(construction.Health, construction.maxHealth);
 
@@ -252,7 +253,7 @@ public class SC_Fight_Manager : MonoBehaviour {
     
     }
 
-    public int CalcDamages (SC_Character attacker, SC_Character attacked, bool counter) {
+    public int CalcDamage (SC_Character attacker, SC_Character attacked) {
 
         int damages = attacker.BaseDamage;
 
@@ -286,7 +287,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         damages -= (attacker.GetActiveWeapon().physical) ? armor : resistance;
 
-        if (counter)
+        if (attacker != attackingCharacter)
             damages = Mathf.CeilToInt(damages / CharactersVariables.counterFactor);
 
         return Mathf.Max(0, damages);

@@ -61,6 +61,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         uiManager.fightPanel.attackerSlider.Set(attackingCharacter.Tile.Construction?.Health ?? attackingCharacter.Health, attackingCharacter.Tile.Construction?.maxHealth ?? attackingCharacter.MaxHealth);
         uiManager.fightPanel.attackedSlider.Set(currentAttackedHealth, targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
+
         float y = Mathf.Min(attackingCharacter.transform.position.y, attackingCharacter.AttackTarget.transform.position.y);
         float x = Mathf.Lerp(attackingCharacter.transform.position.x, attackingCharacter.AttackTarget.transform.position.x, .5f);
         #endregion
@@ -87,6 +88,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     IEnumerator FightAnim(SC_Character c, Vector3 travel, bool attacking, bool killed = false) {
 
+        
         #region Character who is currently attacking moves
         Vector3 basePos = c.transform.position;
 
@@ -118,7 +120,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy; 
 
-            float endValue = 0;
+            float endValue = 0;            
 
             if (attacked) {
 
@@ -146,7 +148,10 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 timer += Time.deltaTime;
 
-                (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime), attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+                float HealthValue = Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
+
+                (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(HealthValue, attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+                (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = Mathf.CeilToInt(HealthValue).ToString();               
 
                 yield return new WaitForEndOfFrame();
 

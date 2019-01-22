@@ -11,6 +11,9 @@ public abstract class SC_Character : NetworkBehaviour {
     [Tooltip("Name of this character")]
     public string characterName;
 
+    [Tooltip("Offset of the sprite of this character")]
+    public Vector2 spriteOffset;
+
     public BaseCharacterStats baseStats;
 
     public int MaxHealth { get { return baseStats.maxHealth; } }
@@ -100,7 +103,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         Qin = !Hero;
 
-		BaseColor = GetComponent<SpriteRenderer> ().color;
+		BaseColor = GetComponentInChildren<SpriteRenderer> ().color;
 
         CanMove = Qin == gameManager.Qin;        
 
@@ -123,7 +126,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
         tiredColor = loadedCharacter.tiredColor;
 
-        GetComponent<SpriteRenderer>().sprite = loadedCharacter.GetComponent<SpriteRenderer>().sprite;
+        SpriteRenderer s = GetComponentInChildren<SpriteRenderer>();
+        s.sprite = loadedCharacter.GetComponent<SpriteRenderer>().sprite;
+        s.transform.localPosition += new Vector3(loadedCharacter.spriteOffset.x, loadedCharacter.spriteOffset.y, 0);
 
     }
 
@@ -380,13 +385,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	public virtual void Tire() {
 
-		GetComponent<SpriteRenderer> ().color = tiredColor;
+		GetComponentInChildren<SpriteRenderer> ().color = tiredColor;
 
 	}
 
 	public virtual void UnTired() {
 
-		GetComponent<SpriteRenderer> ().color = BaseColor;
+		GetComponentInChildren<SpriteRenderer> ().color = BaseColor;
 
 	}
 

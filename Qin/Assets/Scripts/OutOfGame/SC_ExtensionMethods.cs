@@ -23,7 +23,8 @@ public static class SC_ExtensionMethods {
 		
     public static void ShowInfos(this MonoBehaviour MB) {
 
-        SC_UI_Manager.Instance.ShowInfos(MB.gameObject, MB.GetType());
+        if(MB)
+            SC_UI_Manager.Instance.ShowInfos(MB.gameObject, MB.GetType());
 
     }
 
@@ -39,9 +40,12 @@ public static class SC_ExtensionMethods {
 
     }
 
-    public static void Set (this Slider s, float a, float b) {
+    public static void Set (this Slider s, float a, float b, bool c = true) {
 
         s.value = a / b;
+
+        if(c)
+            s.image.color = Color.Lerp(SC_UI_Manager.Instance.minHealthColor, SC_UI_Manager.Instance.maxHealthColor, s.value);
 
     }
 

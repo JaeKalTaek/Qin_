@@ -29,6 +29,10 @@ public class SC_UI_Manager : MonoBehaviour {
     public CharacterFightPreview attackerPreviewFight, attackedPreviewFight;
     public FightPanel fightPanel;
 
+    [Header("Colors")]
+    public Color maxHealthColor;
+    public Color minHealthColor;
+
     [Header("Characters")]
     public CharacterTooltip characterTooltip;
     public CharacterDetails characterDetails;
@@ -253,7 +257,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         CurrentChara = character.gameObject;
 
-        characterTooltip.icon.sprite = character.GetComponent<SpriteRenderer>().sprite;
+        characterTooltip.icon.sprite = character.GetComponentInChildren<SpriteRenderer>().sprite;
 
         characterTooltip.name.text = character.characterName;
 
@@ -263,11 +267,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.health.GetComponentInChildren<Text>().text = character.Health + " / " + character.MaxHealth;
 
-        characterTooltip.crit.Set(character.CriticalAmount, gameManager.CommonCharactersVariables.critTrigger);
+        characterTooltip.crit.Set(character.CriticalAmount, gameManager.CommonCharactersVariables.critTrigger, false);
 
         characterTooltip.crit.GetComponentInChildren<Text>().text = character.CriticalAmount + " / " + gameManager.CommonCharactersVariables.critTrigger;
 
-        characterTooltip.dodge.Set(character.DodgeAmount, gameManager.CommonCharactersVariables.dodgeTrigger);
+        characterTooltip.dodge.Set(character.DodgeAmount, gameManager.CommonCharactersVariables.dodgeTrigger, false);
 
         characterTooltip.dodge.GetComponentInChildren<Text>().text = character.DodgeAmount + " / " + gameManager.CommonCharactersVariables.dodgeTrigger;
 

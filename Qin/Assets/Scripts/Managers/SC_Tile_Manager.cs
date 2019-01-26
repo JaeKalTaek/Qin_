@@ -48,6 +48,13 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         SC_Fight_Manager.Instance.TileManager = this;
 
+        SC_Cursor.Instance = Instantiate(Resources.Load<SC_Cursor>("Prefabs/P_Cursor"));
+
+        if ((FindObjectOfType<SC_Network_Manager>().IsQinHost() == Instance.isServer))
+            SC_Cursor.Instance.transform.position = new Vector3(xSize - 1, ySize - 1, 0) * SC_Game_Manager.TileSize;
+        else
+            SC_Cursor.Instance.transform.position = Vector3.zero;
+
         FindObjectOfType<SC_Camera>().Setup(xSize, ySize);
 
         tiles = new SC_Tile[xSize, ySize];
@@ -77,7 +84,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
                 Vector3 pos = new Vector3(i - .5f, j - .5f, 0) * SC_Game_Manager.TileSize;
 
-                string path = "Sprites/Borders/";
+                string path = "";
 
                 bool l = i == 0;
                 bool b = j == 0;
@@ -97,10 +104,10 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
                 }
 
-                if (path != "Sprites/Borders/") {
+                if (path != "") {
 
                     GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Tiles/P_Border"), pos, Quaternion.identity, uiManager.bordersT);
-                    go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(path);
+                    go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Borders/" + path);
 
                 }
 

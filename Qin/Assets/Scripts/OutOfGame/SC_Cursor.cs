@@ -11,41 +11,24 @@ public class SC_Cursor : NetworkBehaviour {
 
     [Tooltip("Delay between two movements of the cursor when using keys")]
     public float inputsMoveDelay;
-    float inputsMoveTimer;
-
-    [Tooltip("Distance between the border of the cursor and the border of the camera (except when the camera is at the border of the board)")]
-    public float cursorMargin;
+    float inputsMoveTimer;    
 
     [Tooltip("Distance from the center to move the tile tooltip to the other side of the screen")]
     [Range(.01f, .49f)]
     public float moveTileTooltipDistance;
-
     bool right;
 
     public bool Locked { get; set; }
 
-    Vector3 oldMousePos, newMousePos;
-
-    bool cameraMoved;
+    Vector3 oldMousePos, newMousePos, oldCamPos;
 
     SC_Camera cam;
 
-    // Rect screenRect = new Rect(0, 0, Screen.width, Screen.height);
-
-    public static SC_Cursor Instance { get; set; }
-
-    Camera Cam { get { return Camera.main; } }
-
-    private void OnValidate () {
-
-        if (cursorMargin < 0)
-            cursorMargin = 0;
-
-    }
+    public static SC_Cursor Instance { get; set; }    
 
     void Start() {
 
-        Instance = this;
+        Locked = true;
 
         cam = FindObjectOfType<SC_Camera>();
 
@@ -53,34 +36,32 @@ public class SC_Cursor : NetworkBehaviour {
 
         newMousePos = oldMousePos;
 
-        inputsMoveTimer = 0;
-
-        SC_Tile_Manager.Instance.GetTileAt(transform.position).OnCursorEnter();
-
     }
 
-    void Update () {
+    void Update () {    
 
+        #region Set mouse cursor visibility
         if (Input.GetButton("Horizontal") || Input.GetButton("Vertical"))
-            Cursor.visible = false;
-
-        #region Cursor Movement
-        inputsMoveTimer -= Time.deltaTime;
-
+            Cursor.visible = false;      
+        
         oldMousePos = newMousePos;
 
         newMousePos = WorldMousePos;
 
-        if ((Vector3.Distance(oldMousePos, newMousePos) >= mouseThreshold) && !cameraMoved)
+        if ((Vector3.Distance(oldMousePos, newMousePos) >= mouseThreshold) && (oldCamPos == cam.transform.position))
             Cursor.visible = true;
 
-        cameraMoved = false;
+        oldCamPos = cam.transform.position;
+        #endregion
+
+        #region Cursor Movement
+        inputsMoveTimer -= Time.deltaTime;
 
         if (!Locked) {
 
             Vector3 oldPos = transform.position;
 
-            Vector3 newPos = -Vector3.one;            
+            Vector3 newPos = transform.position;
 
             if ((Input.GetButton("Horizontal") || Input.GetButton("Vertical")) && (inputsMoveTimer <= 0)) {
 
@@ -90,20 +71,14 @@ public class SC_Cursor : NetworkBehaviour {
 
             } else if (Cursor.visible) {
 
-                newPos = WorldMousePos; // screenRect.Contains(Input.mousePosition) ? WorldMousePos : oldPos;
+                newPos = WorldMousePos;
 
             }            
 
             int x = newPos.x.I();
             int y = newPos.y.I();
 
-            // if ((x >= 0) && (y >= 0) && (x < SC_Tile_Manager.Instance.xSize) && (y < SC_Tile_Manager.Instance.ySize))
-                transform.SetPos(new Vector2(Mathf.Clamp(x, 0, SC_Tile_Manager.Instance.xSize - 1), Mathf.Clamp(y, 0, SC_Tile_Manager.Instance.ySize - 1)) * TileSize);
-
-            /*cam.minX = x == 0;
-            cam.maxX = x == SC_Tile_Manager.Instance.xSize;
-            cam.minY = y == 0;
-            cam.maxY = y == SC_Tile_Manager.Instance.ySize;*/
+            transform.SetPos(new Vector2(Mathf.Clamp(x, 0, SC_Tile_Manager.Instance.xSize - 1), Mathf.Clamp(y, 0, SC_Tile_Manager.Instance.ySize - 1)) * TileSize);
 
             if (oldPos != transform.position) {
 
@@ -111,20 +86,7 @@ public class SC_Cursor : NetworkBehaviour {
 
                 SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.OnCursorEnter();
 
-                SetTileTooltipPos();
-
-                if (!Cursor.visible) {
-
-                    Vector3 oldCamPos = cam.TargetPosition;
-
-                    Vector3 topRight = CursorCamPos(true);
-                    Vector3 bottomLeft = CursorCamPos(false);
-
-                    cam.TargetPosition += new Vector3(topRight.x > 1 ? 1 : bottomLeft.x < 0 ? -1 : 0, topRight.y > 1 ? 1 : bottomLeft.y < 0 ? -1 : 0, 0) * TileSize;
-
-                    cameraMoved = oldCamPos != cam.TargetPosition;
-
-                }
+                SetTileTooltipPos();             
 
             }            
 
@@ -134,19 +96,9 @@ public class SC_Cursor : NetworkBehaviour {
         #region Cursor Inputs
         if (!Locked && (Input.GetButtonDown("Submit") || (Input.GetMouseButtonDown(0) && Cursor.visible)))
             SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.CursorClick();           
-        /*else if (Input.GetButtonDown("Infos"))
-            SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.CursorSecondaryClick();*/
         #endregion
     }
-
-    Vector3 CursorCamPos(bool sign) {
-
-        float f = ((TileSize / 2) + cursorMargin) * (sign ? 1 : -1);
-
-        return Cam.WorldToViewportPoint(transform.position + new Vector3(f, f, 0));
-
-    }   
-
+    
     public static void SetLock(bool b) {
 
         Instance.Locked = b;
@@ -162,7 +114,7 @@ public class SC_Cursor : NetworkBehaviour {
 
     void SetTileTooltipPos() {
 
-        float x = Cam.WorldToViewportPoint(transform.position).x;
+        float x = Camera.main.WorldToViewportPoint(transform.position).x;
 
         if (((x < .5f - moveTileTooltipDistance) && right) || ((x > .5f + moveTileTooltipDistance) && !right)) {
 

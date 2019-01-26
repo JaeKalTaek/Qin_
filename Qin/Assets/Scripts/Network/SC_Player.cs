@@ -55,7 +55,9 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcFinishConnecting() {
 
-        Instantiate(Resources.Load<GameObject>("Prefabs/P_Cursor"));
+        //Instantiate(Resources.Load<GameObject>("Prefabs/P_Cursor"));
+
+        SC_Cursor.SetLock(false);
 
         localPlayer.uiManager.connectingPanel.SetActive(false);
 

@@ -87,7 +87,6 @@ public class SC_Fight_Manager : MonoBehaviour {
     }
 
     IEnumerator FightAnim(SC_Character c, Vector3 travel, bool attacking, bool killed = false) {
-
         
         #region Character who is currently attacking moves
         Vector3 basePos = c.transform.position;
@@ -109,38 +108,20 @@ public class SC_Fight_Manager : MonoBehaviour {
         yield return new WaitForSeconds(fightDelay);
         #endregion
 
+        #region Setting up variables
         bool counter = attackingCharacter != c;
 
         SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
 
+        SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
+        #endregion
+
         #region If the current character is attacking
-        if (attacking) {
+        if (attacking) {            
 
-            SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
+            float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-            float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy; 
-
-            float endValue = 0;            
-
-            if (attacked) {
-
-                CharacterAttack(c, attacked);
-
-                endValue = attackedConstru?.Health ?? attacked.Health;
-
-            } else if (attackedConstru) {
-
-                HitConstruction(c, attackedConstru);
-
-                endValue = attackedConstru.Health;
-
-            } else {
-
-                SC_Qin.ChangeEnergy(-c.BaseDamage);
-
-                endValue = SC_Qin.Energy;
-
-            }
+            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru?.Health ?? SC_Qin.Energy) - c.BaseDamage);
 
             timer = 0;
 
@@ -160,7 +141,17 @@ public class SC_Fight_Manager : MonoBehaviour {
             StartCoroutine(FightAnim(c, -travel, false, endValue <= 0));
             #endregion
 
+        #region Else, the current character has finished his return
         } else {
+
+            #region Applying damage
+            if (attacked)
+                CharacterAttack(c, attacked);
+            else if (attackedConstru)
+                HitConstruction(c, attackedConstru);
+            else
+                SC_Qin.ChangeEnergy(-c.BaseDamage);
+            #endregion
 
             #region Counter attack
             if (attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
@@ -177,6 +168,7 @@ public class SC_Fight_Manager : MonoBehaviour {
             #endregion
 
         }
+        #endregion
 
     }
 

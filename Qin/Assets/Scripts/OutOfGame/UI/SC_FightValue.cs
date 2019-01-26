@@ -13,9 +13,9 @@ public class SC_FightValue : MonoBehaviour {
 
         Values.text = (a == b) ? a.ToString() : a + " " + (((name == "Crit") || (name == "Dodge")) ? "=>" : "<=") + " " + b;
 
-        NewGauge.Set(a, c);
+        NewGauge.Set(a, c, false);
 
-        PrevGauge.Set(b, c);
+        PrevGauge.Set(b, c, false);
 
     }
 

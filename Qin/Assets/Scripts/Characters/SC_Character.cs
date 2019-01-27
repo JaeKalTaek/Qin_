@@ -43,7 +43,7 @@ public abstract class SC_Character : NetworkBehaviour {
     [Tooltip("Time for a character to walk one tile of distance")]
     public float moveDuration;
     public int MovementModifiers { get; set; }
-    public int Movement { get { return Mathf.Max(0, baseStats.movement + MovementModifiers + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }
+    public int Movement { get { return Mathf.Max(0, baseStats.movement + MovementModifiers - (Hero?.PumpSlow ?? 0) + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }
     public bool CanMove { get; set; }    
 
     public int RangeModifiers { get; set; }      
@@ -309,16 +309,14 @@ public abstract class SC_Character : NetworkBehaviour {
 
         LastPos.Character = this;
 
-        uiManager.TryRefreshInfos(gameObject, GetType());
-
-        CanMove = true;
-
-        tileManager.CheckMovements(this);
+        CanMove = true;        
 
         UnTired();
 
         if(Hero)
             SC_Pump.UpdateHeroSlow(Hero);
+
+        tileManager.CheckMovements(this);
 
         if (SC_Player.localPlayer.Turn) {
 

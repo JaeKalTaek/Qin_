@@ -41,8 +41,6 @@ public class SC_Pump : SC_Construction {
 
             TrySlowHero(hero);
 
-            uiManager.TryRefreshInfos(hero.gameObject, typeof(SC_Hero));
-
         });
 
     }
@@ -67,15 +65,11 @@ public class SC_Pump : SC_Construction {
 
             if (hero.PumpSlow == slowAmount) {
 
-                hero.MovementModifiers += slowAmount;
-
                 hero.PumpSlow = 0;
 
                 foreach (SC_Pump pump in pumps)
                     if(pump != this)
                         TrySlowHero(hero);
-
-                uiManager.TryRefreshInfos(hero.gameObject, typeof(SC_Hero));
 
             }
 
@@ -89,18 +83,16 @@ public class SC_Pump : SC_Construction {
 
     public static void UpdateHeroSlow(SC_Hero hero) {
 
-        if (pumps != null) {
+        hero.PumpSlow = 0;
 
-            int pumpSlow = 0;
+        if (pumps != null) {
 
             foreach (SC_Pump pump in pumps) {
 
-                if ((SC_Tile_Manager.TileDistance(hero.transform.position, pump.transform.position) <= pump.range) && (pumpSlow < pump.slowAmount))
-                    pumpSlow = pump.slowAmount;
+                if ((SC_Tile_Manager.TileDistance(hero.transform.position, pump.transform.position) <= pump.range) && (hero.PumpSlow < pump.slowAmount))
+                    hero.PumpSlow = pump.slowAmount;
 
-            }
-
-            hero.MovementModifiers -= (pumpSlow - hero.PumpSlow);
+            }    
 
         }
 
@@ -108,13 +100,8 @@ public class SC_Pump : SC_Construction {
 
     void TrySlowHero(SC_Hero hero) {
 
-        if (hero.PumpSlow < slowAmount) {
-
-            hero.MovementModifiers -= slowAmount - hero.PumpSlow;
-
-            hero.PumpSlow = slowAmount;
-
-        }
+        if (hero.PumpSlow < slowAmount)
+           hero.PumpSlow = slowAmount;
 
     }
 

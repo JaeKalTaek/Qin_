@@ -96,6 +96,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
     protected SC_Character loadedCharacter;
 
+    public SpriteRenderer Sprite { get; set; }
+
     protected virtual void Awake() {
 
         if (!gameManager)
@@ -103,7 +105,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
         Qin = !Hero;
 
-		BaseColor = GetComponentInChildren<SpriteRenderer> ().color;
+        Sprite = GetComponentInChildren<SpriteRenderer>();
+
+        BaseColor = Sprite.color;
 
         CanMove = Qin == gameManager.Qin;        
 
@@ -126,9 +130,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
         tiredColor = loadedCharacter.tiredColor;
 
-        SpriteRenderer s = GetComponentInChildren<SpriteRenderer>();
-        s.sprite = loadedCharacter.GetComponent<SpriteRenderer>().sprite;
-        s.transform.localPosition += new Vector3(loadedCharacter.spriteOffset.x, loadedCharacter.spriteOffset.y, 0);
+        Sprite.sprite = loadedCharacter.GetComponentInChildren<SpriteRenderer>().sprite;
+        Sprite.transform.localPosition += new Vector3(loadedCharacter.spriteOffset.x, loadedCharacter.spriteOffset.y, 0);
 
     }
 
@@ -385,13 +388,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	public virtual void Tire() {
 
-		GetComponentInChildren<SpriteRenderer> ().color = tiredColor;
+		Sprite.color = tiredColor;
 
 	}
 
 	public virtual void UnTired() {
 
-		GetComponentInChildren<SpriteRenderer> ().color = BaseColor;
+        Sprite.color = BaseColor;
 
 	}
 

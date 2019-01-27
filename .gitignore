@@ -34,6 +34,8 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
-Qin/Assets/Resources/FMODStudioSettings\.asset
 
-Qin/fmod_editor\.log
+Assets/FMODStudioCache.asset
+Assets/StreamingAssets/*.bank
+fmod.log
+fmod_editor.log

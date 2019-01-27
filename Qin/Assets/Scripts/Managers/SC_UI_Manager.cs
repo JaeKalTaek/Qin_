@@ -257,7 +257,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         CurrentChara = character.gameObject;
 
-        characterTooltip.icon.sprite = character.GetComponentInChildren<SpriteRenderer>().sprite;
+        characterTooltip.icon.sprite = character.Sprite.sprite;
 
         characterTooltip.name.text = character.characterName;
 
@@ -308,7 +308,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 Transform t = characterDetails.relationshipsPanel.GetChild(i);
 
-                t.GetChild(0).GetComponent<Image>().sprite = Resources.Load<SC_Hero>("Prefabs/Characters/Heroes/P_" + c.Hero.RelationshipKeys[i].Replace(" ", "_")).GetComponent<SpriteRenderer>().sprite;
+                t.GetChild(0).GetComponent<Image>().sprite = Resources.Load<SC_Hero>("Prefabs/Characters/Heroes/P_" + c.Hero.RelationshipKeys[i].Replace(" ", "_")).GetComponentInChildren<SpriteRenderer>().sprite;
 
                 t.GetChild(1).GetComponent<Text>().text = v.ToString();                
 
@@ -316,7 +316,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             }
 
-            characterDetails.relationshipsPanel.GetChild(5).GetComponent<Image>().sprite = c.GetComponent<SpriteRenderer>().sprite;
+            characterDetails.relationshipsPanel.GetChild(5).GetComponent<Image>().sprite = c.Sprite.sprite;
 
         }
 

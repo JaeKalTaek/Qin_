@@ -23,8 +23,8 @@ public class SC_Camera : MonoBehaviour {
     [Tooltip("Distance between the border of the cursor and the border of the camera (except when the camera is at the border of the board)")]
     public float cursorMargin;
 
-    [Tooltip("Margin between the board and the camera border")]
-    public float boardMargin;
+    [Tooltip("Margins between the board and the camera border depending on the zoom")]
+    public float[] boardMargins;
 
     Vector3 CursorPos { get { return SC_Cursor.Instance.transform.position; } }
 
@@ -88,13 +88,13 @@ public class SC_Camera : MonoBehaviour {
 
     Vector3 ClampedPos(Vector3 p) {        
 
-        float xMax = (SC_Tile_Manager.Instance.xSize - cam.orthographicSize * cam.aspect + boardMargin) * TileSize;
-        float xMin = (cam.orthographicSize * cam.aspect - boardMargin) * TileSize;
+        float xMax = (SC_Tile_Manager.Instance.xSize - cam.orthographicSize * cam.aspect + boardMargins[zoomIndex]) * TileSize;
+        float xMin = (cam.orthographicSize * cam.aspect - boardMargins[zoomIndex]) * TileSize;
 
         float x = (CursorPos.x == 0) ? xMin : (CursorPos.x.I() == SC_Tile_Manager.Instance.xSize - 1) ? xMax : Mathf.Clamp(p.x, xMin, xMax);
 
-        float yMax = (SC_Tile_Manager.Instance.ySize - cam.orthographicSize + boardMargin) * TileSize;
-        float yMin = (cam.orthographicSize - boardMargin) * TileSize;
+        float yMax = (SC_Tile_Manager.Instance.ySize - cam.orthographicSize + boardMargins[zoomIndex]) * TileSize;
+        float yMin = (cam.orthographicSize - boardMargins[zoomIndex]) * TileSize;
 
         float y = (CursorPos.y == 0) ? yMin : (CursorPos.y.I() == SC_Tile_Manager.Instance.ySize - 1) ? yMax : Mathf.Clamp(p.y, yMin, yMax);
     

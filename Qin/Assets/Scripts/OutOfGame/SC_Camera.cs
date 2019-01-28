@@ -20,10 +20,10 @@ public class SC_Camera : MonoBehaviour {
     /*[Tooltip("Speed at which the camera lerps to its target position when the player is zooming wider")]
     public float widerZoomSpeedMultiplier;*/
 
-    [Tooltip("Distance between the border of the cursor and the border of the camera (except when the camera is at the border of the board)")]
-    public float cursorMargin;
+    [Tooltip("Distance between the border of the cursor and the border of the camera (except when the camera is at the border of the board), depending on the current zoom")]
+    public float[] cursorMargins;
 
-    [Tooltip("Margins between the board and the camera border depending on the zoom")]
+    [Tooltip("Margins between the board and the camera border, depending on the current zoom")]
     public float[] boardMargins;
 
     Vector3 CursorPos { get { return SC_Cursor.Instance.transform.position; } }
@@ -62,7 +62,7 @@ public class SC_Camera : MonoBehaviour {
             Vector3 topRight = CursorCornerCamPos(true);
             Vector3 bottomLeft = CursorCornerCamPos(false);
 
-            targetPos = ClampedPos(targetPos + new Vector3(topRight.x > 1 ? 1 : bottomLeft.x < 0 ? -1 : 0, topRight.y > 1 ? 1 : bottomLeft.y < 0 ? -1 : 0, 0));
+            targetPos = ClampedPos(targetPos + new Vector3(topRight.x > 1 ? 1 : bottomLeft.x < 0 ? -1 : 0, topRight.y > 1 ? 1 : bottomLeft.y < 0 ? -1 : 0, 0) * TileSize);
 
             transform.position = Vector3.Lerp(transform.position, targetPos, moveSpeed * Time.deltaTime);
 
@@ -72,7 +72,7 @@ public class SC_Camera : MonoBehaviour {
 
     Vector3 CursorCornerCamPos (bool sign) {
 
-        float f = ((.5f + cursorMargin) * TileSize) * (sign ? 1 : -1);
+        float f = ((.5f + cursorMargins[zoomIndex]) * TileSize) * (sign ? 1 : -1);
 
         Vector3 oldPos = transform.position;
 
@@ -86,18 +86,24 @@ public class SC_Camera : MonoBehaviour {
 
     }
 
-    Vector3 ClampedPos(Vector3 p) {        
+    Vector3 ClampedPos(Vector3 p) {
 
-        float xMax = (SC_Tile_Manager.Instance.xSize - cam.orthographicSize * cam.aspect + boardMargins[zoomIndex]) * TileSize;
-        float xMin = (cam.orthographicSize * cam.aspect - boardMargins[zoomIndex]) * TileSize;
+        /*float width = cam.orthographicSize * 2f * cam.aspect;
+
+        print(width + ", " + (width % TileSize));*/
+
+        // print(cam.orthographicSize * cam.aspect);
+
+        float xMax = (SC_Tile_Manager.Instance.xSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize * cam.aspect;
+        float xMin = (-boardMargins[zoomIndex] - .5f) * TileSize + cam.orthographicSize * cam.aspect;
 
         float x = (CursorPos.x == 0) ? xMin : (CursorPos.x.I() == SC_Tile_Manager.Instance.xSize - 1) ? xMax : Mathf.Clamp(p.x, xMin, xMax);
 
-        float yMax = (SC_Tile_Manager.Instance.ySize - cam.orthographicSize + boardMargins[zoomIndex]) * TileSize;
-        float yMin = (cam.orthographicSize - boardMargins[zoomIndex]) * TileSize;
+        float yMax = (SC_Tile_Manager.Instance.ySize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize;
+        float yMin = (-.5f - boardMargins[zoomIndex]) * TileSize + cam.orthographicSize;
 
         float y = (CursorPos.y == 0) ? yMin : (CursorPos.y.I() == SC_Tile_Manager.Instance.ySize - 1) ? yMax : Mathf.Clamp(p.y, yMin, yMax);
-    
+
         return new Vector3(x, y, -16);
 
     }

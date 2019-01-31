@@ -118,7 +118,7 @@ public class SC_Tile : NetworkBehaviour {
         if (infos.region != -1) {
 
             for (int i = 0; i < transform.GetChild(1).childCount; i++)
-                transform.GetChild(1).GetChild(i).GetComponent<SpriteRenderer>().sprite = infos.borders[i] ? Resources.Load<Sprite>("Sprites/RegionBorders/" + (Region)infos.region) : null;
+                transform.GetChild(1).GetChild(i).gameObject.SetActive(infos.borders[i] && (i % 2 == 0));
 
         }        
 

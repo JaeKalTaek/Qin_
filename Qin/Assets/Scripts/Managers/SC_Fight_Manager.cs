@@ -180,7 +180,7 @@ public class SC_Fight_Manager : MonoBehaviour {
             killed = HitConstruction(attacker, attacked.Tile.Construction);
         else {
 
-            killed = attacked.Hit(CalcDamage(attacker, attacked), false);
+            killed = attacked.Hit(CalcDamage(attacker, attacked));
             attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
             attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
 

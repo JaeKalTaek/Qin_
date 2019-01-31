@@ -32,7 +32,7 @@ public class SC_BaseQinChara : SC_Character {
 
     }
 
-    public override bool Hit (int damages, bool saving) {
+    /*public override bool Hit (int damages, bool saving) {
 
         base.Hit(damages, saving);
 
@@ -43,7 +43,7 @@ public class SC_BaseQinChara : SC_Character {
 
         return (Health <= 0);
 
-    }
+    }*/
 
     public override Vector2 GetRange (SC_Tile t = null) {
 

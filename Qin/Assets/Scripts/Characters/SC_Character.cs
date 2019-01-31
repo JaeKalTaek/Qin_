@@ -369,11 +369,16 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	}	
 
-	public virtual bool Hit(int damages, bool saving) {
+	public virtual bool Hit(int damages) {
 
 		Health -= damages;
 
-		return false;
+        if (Health <= 0)
+            DestroyCharacter();
+        else
+            UpdateHealth();
+
+        return (Health <= 0);
 
 	}
 

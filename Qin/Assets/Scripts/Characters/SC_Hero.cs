@@ -228,7 +228,6 @@ public class SC_Hero : SC_Character {
 
         heroes.Remove(this);
 
-
         if (heroes.Count <= 0)
 			uiManager.ShowVictory (true);
 

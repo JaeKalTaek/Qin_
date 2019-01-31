@@ -51,7 +51,7 @@ public class SC_Pump : SC_Construction {
 
             SC_Qin.ChangeEnergy(Mathf.Min(hero.Health, drainAmount));
 
-            hero.Hit(drainAmount, false);
+            hero.Hit(drainAmount);
 
         });
 

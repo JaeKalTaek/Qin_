@@ -486,10 +486,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackedPreviewFight.dodge.gameObject.SetActive(false);
 
+        attackerPreviewFight.crit.Set(attackingCharacter.CriticalAmount, Mathf.Min(attackingCharacter.CriticalAmount + attackingCharacter.Technique, gameManager.CommonCharactersVariables.critTrigger), gameManager.CommonCharactersVariables.critTrigger);
+
         attackerPreviewFight.dodge.Set(attackingCharacter.DodgeAmount, attackingCharacter.DodgeAmount, gameManager.CommonCharactersVariables.dodgeTrigger);
-
-        attackerPreviewFight.crit.Set(attackingCharacter.CriticalAmount, attackingCharacter.CriticalAmount, gameManager.CommonCharactersVariables.critTrigger);
-
+        
     }
 
     bool PreviewCharacterAttack(SC_Character attacker, SC_Character attacked, bool cantCounter = false) {

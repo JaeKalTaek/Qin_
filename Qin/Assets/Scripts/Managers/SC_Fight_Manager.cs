@@ -153,6 +153,9 @@ public class SC_Fight_Manager : MonoBehaviour {
                 SC_Qin.ChangeEnergy(-c.BaseDamage);
             #endregion
 
+            // Augment attacker's crit amount
+            c.CriticalAmount = (c.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((c.CriticalAmount + c.Technique), CharactersVariables.critTrigger);
+
             #region Counter attack
             if (attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
 
@@ -180,8 +183,7 @@ public class SC_Fight_Manager : MonoBehaviour {
             killed = HitConstruction(attacker, attacked.Tile.Construction);
         else {
 
-            killed = attacked.Hit(CalcDamage(attacker, attacked));
-            attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
+            killed = attacked.Hit(CalcDamage(attacker, attacked));            
             attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
 
         }

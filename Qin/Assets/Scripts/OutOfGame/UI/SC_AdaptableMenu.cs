@@ -2,6 +2,10 @@
 
 public class SC_AdaptableMenu : MonoBehaviour {
 
+    public Transform subPanel;
+
+    public int offset;
+
     public bool resize;
 
     public int heightMultiplier;
@@ -12,15 +16,17 @@ public class SC_AdaptableMenu : MonoBehaviour {
 
         float nbr = 0;
 
-        foreach (Transform t in transform)
+        Transform container = subPanel ?? transform;
+
+        foreach (Transform t in container)
             nbr += t.gameObject.activeSelf ? 1 : 0;
 
         if(resize)
-            RecT.sizeDelta = new Vector2(RecT.sizeDelta.x, heightMultiplier * nbr);
+            RecT.sizeDelta = new Vector2(RecT.sizeDelta.x, heightMultiplier * nbr + offset);
 
         int index = 0;
 
-        foreach (Transform t in transform) {
+        foreach (Transform t in container) {
 
             if (t.gameObject.activeSelf) {
 

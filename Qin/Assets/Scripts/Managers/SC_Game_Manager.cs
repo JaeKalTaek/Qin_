@@ -545,6 +545,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void SacrificeCastle (SC_Castle castle) {
 
+        CurrentCastle = castle;
+
         SC_Qin.ChangeEnergy(CurrentCastle.sacrificeValue);
 
         SC_Demon demon = SC_Demon.demons[CurrentCastle.Tile.Region];

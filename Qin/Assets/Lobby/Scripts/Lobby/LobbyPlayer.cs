@@ -10,12 +10,13 @@ namespace Prototype.NetworkLobby {
 
     public class LobbyPlayer : NetworkLobbyPlayer {
 
-        static Color[] Colors = new Color[] { Color.magenta, Color.red, Color.cyan, Color.blue, Color.green, Color.yellow };
+        // static Color[] Colors = new Color[] { Color.magenta, Color.red, Color.cyan, Color.blue, Color.green, Color.yellow };
         //used on server to avoid assigning the same color to two player
-        static List<int> _colorInUse = new List<int>();
+        // static List<int> _colorInUse = new List<int>();
 
-        public Button colorButton;
-        public InputField nameInput;
+        // public Button colorButton;
+        public Button sideButton;
+        //public InputField nameInput;
         public Button readyButton;
         public Button waitingPlayerButton;
         public Button removePlayerButton;
@@ -24,15 +25,19 @@ namespace Prototype.NetworkLobby {
         public GameObject remoteIcone;
 
         //OnMyName function will be invoked on clients when server change the value of playerName
+        /*[HideInInspector]
         [SyncVar(hook = "OnMyName")]
         public string playerName = "";
-        [SyncVar(hook = "OnMyColor")]
-        public Color playerColor = Color.white;
+        /*[SyncVar(hook = "OnMyColor")]
+        public Color playerColor = Color.white;*/
+        [HideInInspector]
+        [SyncVar(hook = "OnMySide")]
+        public bool playerSide = true;
 
         public Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
         public Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
 
-        static Color JoinColor = new Color(255.0f/255.0f, 0.0f, 101.0f/255.0f,1.0f);
+        static Color JoinColor = new Color(255.0f / 255.0f, 0.0f, 101.0f / 255.0f, 1.0f);
         static Color NotReadyColor = new Color(34.0f / 255.0f, 44 / 255.0f, 55.0f / 255.0f, 1.0f);
         static Color ReadyColor = new Color(0.0f, 204.0f / 255.0f, 204.0f / 255.0f, 1.0f);
         static Color TransparentColor = new Color(0, 0, 0, 0);
@@ -40,14 +45,16 @@ namespace Prototype.NetworkLobby {
         //static Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
         //static Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
 
+        public bool CanGetReady { get { return isLocalPlayer && LobbyPlayerList._instance.CanGetReady(); } }
+
         public override void OnClientEnterLobby() {
 
             base.OnClientEnterLobby();
 
-            if (LobbyManager.s_Singleton != null) LobbyManager.s_Singleton.OnPlayersNumberModified(1);
+            LobbyManager.s_Singleton?.OnPlayersNumberModified(1);
 
             LobbyPlayerList._instance.AddPlayer(this);
-            LobbyPlayerList._instance.DisplayDirectServerWarning(isServer && LobbyManager.s_Singleton.matchMaker == null);
+            LobbyPlayerList._instance.DisplayDirectServerWarning(isServer && !LobbyManager.s_Singleton.matchMaker);
 
             if (isLocalPlayer)            
                 SetupLocalPlayer();
@@ -56,8 +63,9 @@ namespace Prototype.NetworkLobby {
 
             //setup the player data on UI. The value are SyncVar so the player
             //will be created with the right value currently on server
-            OnMyName(playerName);
-            OnMyColor(playerColor);
+            //OnMyName(playerName);
+            OnMySide(playerSide);
+            //OnMyColor(playerColor);
 
         }
 
@@ -68,7 +76,7 @@ namespace Prototype.NetworkLobby {
             //if we return from a game, color of text can still be the one for "Ready"
             readyButton.transform.GetChild(0).GetComponent<Text>().color = Color.white;
 
-           SetupLocalPlayer();
+            SetupLocalPlayer();
 
         }
 
@@ -85,7 +93,8 @@ namespace Prototype.NetworkLobby {
 
         void SetupOtherPlayer() {
 
-            nameInput.interactable = false;
+            sideButton.interactable = false;
+            //nameInput.interactable = false;
             removePlayerButton.interactable = NetworkServer.active;
 
             ChangeReadyButtonColor(NotReadyColor);
@@ -97,35 +106,34 @@ namespace Prototype.NetworkLobby {
 
         }
 
-        void SetupLocalPlayer() {
+        void SetupLocalPlayer() {            
 
-            nameInput.interactable = true;
             remoteIcone.gameObject.SetActive(false);
             localIcone.gameObject.SetActive(true);
 
             CheckRemoveButton();
 
-            if (playerColor == Color.white)
-                CmdColorChange();
+            /*if (playerColor == Color.white)
+                CmdColorChange();*/
 
-            ChangeReadyButtonColor(JoinColor);
-
-            readyButton.transform.GetChild(0).GetComponent<Text>().text = "JOIN";
-            readyButton.interactable = true;
+            SetReadyButton();
 
             //have to use child count of player prefab already setup as "this.slot" is not set yet
-            if (playerName == "")
+            /*if (playerName == "")
                 CmdNameChanged("Player" + (LobbyPlayerList._instance.playerListContentTransform.childCount-1));
 
             //we switch from simple name display to name input
-            colorButton.interactable = true;
-            nameInput.interactable = true;
-
-            nameInput.onEndEdit.RemoveAllListeners();
-            nameInput.onEndEdit.AddListener(OnNameChanged);
-
+            //colorButton.interactable = true;
             colorButton.onClick.RemoveAllListeners();
-            colorButton.onClick.AddListener(OnColorClicked);
+            colorButton.onClick.AddListener(OnColorClicked);*/
+
+            sideButton.onClick.RemoveAllListeners();
+            sideButton.onClick.AddListener(OnSideChanged);
+            sideButton.interactable = true;            
+
+            /*nameInput.interactable = true;
+            nameInput.onEndEdit.RemoveAllListeners();
+            nameInput.onEndEdit.AddListener(OnNameChanged);*/
 
             readyButton.onClick.RemoveAllListeners();
             readyButton.onClick.AddListener(OnReadyClicked);
@@ -161,19 +169,17 @@ namespace Prototype.NetworkLobby {
                 textComponent.text = "READY";
                 textComponent.color = ReadyColor;
                 readyButton.interactable = false;
-                colorButton.interactable = false;
-                nameInput.interactable = false;
+                //colorButton.interactable = false;
+                sideButton.interactable = false;
+                //nameInput.interactable = false;
 
             } else {
 
-                ChangeReadyButtonColor(isLocalPlayer ? JoinColor : NotReadyColor);
+                SetReadyButton(); 
 
-                Text textComponent = readyButton.transform.GetChild(0).GetComponent<Text>();
-                textComponent.text = isLocalPlayer ? "JOIN" : "...";
-                textComponent.color = Color.white;
-                readyButton.interactable = isLocalPlayer;
-                colorButton.interactable = isLocalPlayer;
-                nameInput.interactable = isLocalPlayer;
+                //colorButton.interactable = isLocalPlayer;
+                sideButton.interactable = isLocalPlayer;
+                //nameInput.interactable = isLocalPlayer;
 
             }
 
@@ -186,17 +192,26 @@ namespace Prototype.NetworkLobby {
         }
 
         ///===== callback from sync var
-        public void OnMyName(string newName) {
+        /*public void OnMyName(string newName) {
 
             playerName = newName;
             nameInput.text = playerName;
 
-        }
+        }*/
 
-        public void OnMyColor(Color newColor) {
+        /*public void OnMyColor(Color newColor) {
 
             playerColor = newColor;
             colorButton.GetComponent<Image>().color = newColor;
+
+        }*/
+
+        public void OnMySide (bool newSide) {
+
+            playerSide = newSide;
+            sideButton.GetComponentInChildren<Text>().text = newSide ? "Qin" : "Heroes";
+
+            LobbyPlayerList._instance.UpdateReadyButtons();
 
         }
 
@@ -204,9 +219,15 @@ namespace Prototype.NetworkLobby {
 
         //Note that those handler use Command function, as we need to change the value on the server not locally
         //so that all client get the new value throught syncvar
-        public void OnColorClicked() {
+        /*public void OnColorClicked() {
 
             CmdColorChange();
+
+        }*/
+
+        public void OnSideChanged() {
+
+            CmdSideChange();
 
         }
 
@@ -216,11 +237,11 @@ namespace Prototype.NetworkLobby {
 
         }
 
-        public void OnNameChanged(string str) {
+        /*public void OnNameChanged(string str) {
 
             CmdNameChanged(str);
 
-        }
+        }*/
 
         public void OnRemovePlayerClick() {
 
@@ -246,7 +267,7 @@ namespace Prototype.NetworkLobby {
         }
 
         //====== Server Command
-        [Command]
+        /*[Command]
         public void CmdColorChange() {
 
             int idx = System.Array.IndexOf(Colors, playerColor);
@@ -283,14 +304,21 @@ namespace Prototype.NetworkLobby {
 
             playerColor = Colors[idx];
 
-        }
+        }*/
 
         [Command]
+        public void CmdSideChange() {
+
+            playerSide ^= true;            
+
+        }
+
+        /*[Command]
         public void CmdNameChanged(string name) {
 
             playerName = name;
-
-        }
+            
+        }*/
 
         //Cleanup thing when get destroy (which happen when client kick or disconnect)
         public void OnDestroy() {
@@ -299,7 +327,7 @@ namespace Prototype.NetworkLobby {
 
             LobbyManager.s_Singleton?.OnPlayersNumberModified(-1);
 
-            int idx = System.Array.IndexOf(Colors, playerColor);
+            /*int idx = System.Array.IndexOf(Colors, playerColor);
 
             if (idx < 0)
                 return;
@@ -311,6 +339,23 @@ namespace Prototype.NetworkLobby {
                     _colorInUse.RemoveAt(i);
                     break;
                 }
+
+            }*/
+
+        }
+
+        public void SetReadyButton() {
+
+            if (readyButton.transform.GetChild(0).GetComponent<Text>().color != ReadyColor) {
+
+                bool b = CanGetReady;
+
+                ChangeReadyButtonColor(b ? JoinColor : NotReadyColor);
+
+                Text textComponent = readyButton.transform.GetChild(0).GetComponent<Text>();
+                textComponent.text = b ? "JOIN" : "...";
+                textComponent.color = Color.white;
+                readyButton.interactable = b;
 
             }
 

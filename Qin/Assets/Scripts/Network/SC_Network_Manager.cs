@@ -47,9 +47,9 @@ public class SC_Network_Manager : NetworkLobbyManager {
 
 		if (newScene.name.Equals(offlineScene) && stoppedMatchmaking) {
 
-			SC_Menu menu = FindObjectOfType<SC_Menu> ();
+			// SC_Menu menu = FindObjectOfType<SC_Menu> ();
 			
-			menu.ShowPanel (menu.qmPanel);
+			// menu.ShowPanel (menu.qmPanel);
 
 			stoppedMatchmaking = false;
 
@@ -88,9 +88,9 @@ public class SC_Network_Manager : NetworkLobbyManager {
 
 	public override void OnStartHost () {
 		
-		SC_Menu menu = FindObjectOfType<SC_Menu> ();
+		// SC_Menu menu = FindObjectOfType<SC_Menu> ();
 
-		menu.ShowPanel (menu.searchGamePanel);
+		// menu.ShowPanel (menu.searchGamePanel);
 
 	}
 

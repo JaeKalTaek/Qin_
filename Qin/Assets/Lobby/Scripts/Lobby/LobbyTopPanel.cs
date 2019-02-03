@@ -5,24 +5,14 @@ namespace Prototype.NetworkLobby {
 
     public class LobbyTopPanel : MonoBehaviour {
 
-        public bool isInGame = false;
+        public bool isInGame;
 
-        protected bool isDisplayed = true;
+        /*protected bool isDisplayed = true;
         protected Image panelImage;
 
         void Start() {
 
             panelImage = GetComponent<Image>();
-
-        }
-
-        void Update() {
-
-            if (!isInGame)
-                return;
-
-            if (Input.GetKeyDown(KeyCode.Escape))            
-                ToggleVisibility(!isDisplayed);            
 
         }
 
@@ -36,7 +26,7 @@ namespace Prototype.NetworkLobby {
             if (panelImage)            
                 panelImage.enabled = isDisplayed;
             
-        }
+        }*/
 
     }
 

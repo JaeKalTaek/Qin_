@@ -50,7 +50,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         SC_Cursor.Instance = Instantiate(Resources.Load<SC_Cursor>("Prefabs/P_Cursor"));
 
-        if ((FindObjectOfType<SC_Network_Manager>().IsQinHost() == Instance.isServer))
+        if (gameManager.Player.Qin)
             SC_Cursor.Instance.transform.position = new Vector3(xSize - 1, ySize - 1, 0) * SC_Game_Manager.TileSize;
         else
             SC_Cursor.Instance.transform.position = Vector3.zero;
@@ -116,9 +116,6 @@ public class SC_Tile_Manager : NetworkBehaviour {
         }
 
 		gameManager.FinishSetup ();
-
-		if (gameManager.Player)
-			gameManager.Player.SetTileManager (this);
 
         OpenList = new List<SC_Tile>();
         MovementRange = new List<SC_Tile>();

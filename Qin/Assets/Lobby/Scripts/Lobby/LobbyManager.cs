@@ -43,15 +43,17 @@ namespace Prototype.NetworkLobby {
         
         protected ulong _currentMatchID;
 
-        protected LobbyHook _lobbyHooks;
+        SC_Menu menu;
 
         void Start() {
 
             s_Singleton = this;
-            _lobbyHooks = GetComponent<LobbyHook>();
+
             currentPanel = mainMenuPanel;
 
-            backButton.gameObject.SetActive(false);
+            menu = GetComponent<SC_Menu>();
+            backDelegate = () => { menu.ShowPanel(menu.mainPanel); };
+
             GetComponent<Canvas>().enabled = true;
 
             DontDestroyOnLoad(gameObject);
@@ -69,7 +71,7 @@ namespace Prototype.NetworkLobby {
                 if (topPanel.isInGame)
                     backDelegate = (_isMatchmaking == conn.playerControllers[0].unetView.isServer) ? (Action)StopHostClbk : StopClientClbk;
 
-                topPanel.ToggleVisibility(true);
+                topPanel.gameObject.SetActive(true);
                 topPanel.isInGame = false;
 
             } else {
@@ -81,7 +83,7 @@ namespace Prototype.NetworkLobby {
                 //backDelegate = StopGameClbk;
 
                 topPanel.isInGame = true;
-                topPanel.ToggleVisibility(false);
+                topPanel.gameObject.SetActive(false);
 
             }
 
@@ -95,9 +97,9 @@ namespace Prototype.NetworkLobby {
 
             currentPanel = newPanel;
 
-            backButton.gameObject.SetActive(currentPanel != mainMenuPanel);
-
             if (currentPanel == mainMenuPanel) {
+
+                backDelegate = () => { menu.ShowPanel(menu.mainPanel); };
 
                 SetServerInfo("Offline", "None");
 
@@ -132,11 +134,11 @@ namespace Prototype.NetworkLobby {
 
         // ----------------- Server management
 
-        public void AddLocalPlayer() {
+        /*public void AddLocalPlayer() {
 
             TryToAddPlayer();
 
-        }
+        }*/
 
         public void RemovePlayer(LobbyPlayer player) {
 
@@ -297,10 +299,7 @@ namespace Prototype.NetworkLobby {
 
         public override bool OnLobbyServerSceneLoadedForPlayer(GameObject lobbyPlayer, GameObject gamePlayer) {
 
-            //This hook allows you to apply state data from the lobby-player to the game-player
-            //just subclass "LobbyHook" and add it to the lobby object.
-
-            _lobbyHooks?.OnLobbyServerSceneLoadedForPlayer(this, lobbyPlayer, gamePlayer);
+            gamePlayer.GetComponent<SC_Player>().Qin = lobbyPlayer.GetComponent<LobbyPlayer>().playerSide;
 
             return true;
         }

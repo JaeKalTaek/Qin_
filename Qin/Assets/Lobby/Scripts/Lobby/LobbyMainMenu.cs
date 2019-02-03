@@ -15,15 +15,16 @@ namespace Prototype.NetworkLobby
         public InputField ipInput;
         public InputField matchNameInput;
 
-        public void OnEnable()
-        {
-            lobbyManager.topPanel.ToggleVisibility(true);
+        public void OnEnable() {
+
+            lobbyManager.topPanel.gameObject.SetActive(true);
 
             ipInput.onEndEdit.RemoveAllListeners();
             ipInput.onEndEdit.AddListener(onEndEditIP);
 
             matchNameInput.onEndEdit.RemoveAllListeners();
             matchNameInput.onEndEdit.AddListener(onEndEditGameName);
+
         }
 
         public void OnClickHost()

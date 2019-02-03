@@ -49,8 +49,7 @@ public class SC_Game_Manager : NetworkBehaviour {
         uiManager = FindObjectOfType<SC_UI_Manager>();
         uiManager.connectingPanel.SetActive(true);
 
-        if (!Instance)
-            Instance = this;
+        Instance = this;
 
         SC_Village.number = 0;
 
@@ -74,15 +73,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         Turn = 1;
 
-		if(GameObject.FindGameObjectWithTag ("Player")) {
-			
-			Player = GameObject.FindGameObjectWithTag ("Player").GetComponent<SC_Player> ();
-
-            Player.SetSide();
-
-			Player.SetGameManager (this);
-
-		}
+        while (!Player)
+            DoNothing();
 
 		if (isServer) {
 
@@ -91,7 +83,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 		}		
         
-		uiManager.SetupUI (FindObjectOfType<SC_Network_Manager>().IsQinHost() == isServer);
+		uiManager.SetupUI (Player.Qin);
 
     }
 

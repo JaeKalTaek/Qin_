@@ -6,13 +6,13 @@ public class SC_Player : NetworkBehaviour {
 	[SyncVar]
 	public bool Qin;
 
-    public bool Turn { get { return Qin == localPlayer.gameManager.Qin; } }
+    public bool Turn { get { return Qin == GameManager.Qin; } }
 
-	SC_Game_Manager gameManager;
+	SC_Game_Manager GameManager { get { return SC_Game_Manager.Instance; } }
 
-	SC_Tile_Manager tileManager;
+	SC_Tile_Manager TileManager { get { return SC_Tile_Manager.Instance; } }
 
-    SC_UI_Manager uiManager;
+    SC_UI_Manager UIManager { get { return SC_UI_Manager.Instance; } }
 
     SC_Fight_Manager FightManager { get { return SC_Fight_Manager.Instance; } }
 
@@ -24,23 +24,11 @@ public class SC_Player : NetworkBehaviour {
 
 	public override void OnStartLocalPlayer () {
 
-        SetSide();
-
-        tag = "Player";
-
-		gameManager = FindObjectOfType<SC_Game_Manager> ();
-
-		if(gameManager)
-			gameManager.Player = this;
-
-		if(FindObjectOfType<SC_Tile_Manager> ())
-			tileManager = FindObjectOfType<SC_Tile_Manager> ();
-
-        uiManager = SC_UI_Manager.Instance;
-
         localPlayer = this;
-		
-	}
+
+        GameManager.Player = this;
+
+    }
 
     #region Commands
 
@@ -55,11 +43,9 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcFinishConnecting() {
 
-        //Instantiate(Resources.Load<GameObject>("Prefabs/P_Cursor"));
-
         SC_Cursor.SetLock(false);
 
-        localPlayer.uiManager.connectingPanel.SetActive(false);
+        UIManager.connectingPanel.SetActive(false);
 
     }
     #endregion
@@ -77,7 +63,7 @@ public class SC_Player : NetworkBehaviour {
 
         if (localPlayer.Qin != qin) {
 
-            localPlayer.uiManager.SetReady(localPlayer.uiManager.otherPlayerReady, ready);
+            UIManager.SetReady(UIManager.otherPlayerReady, ready);
 
             if (ready && localPlayer.Ready)
                 localPlayer.CmdBothPlayersReady();
@@ -96,9 +82,9 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcBothPlayersReady () {
 
-        localPlayer.uiManager.Load();
+        UIManager.Load();
 
-        localPlayer.gameManager.Load();        
+        localPlayer.GameManager.Load();        
 
     }
     #endregion
@@ -130,7 +116,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcCheckMovements(int x, int y) {
 
-        localPlayer.tileManager.CheckMovements(localPlayer.tileManager.GetTileAt(x, y).Character);
+        TileManager.CheckMovements(TileManager.GetTileAt(x, y).Character);
 
     }
 
@@ -144,7 +130,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcMoveCharacterTo(int x, int y) {
 
-        SC_Character.characterToMove.MoveTo(localPlayer.tileManager.GetTileAt(x, y));
+        SC_Character.characterToMove.MoveTo(TileManager.GetTileAt(x, y));
 
     }
 
@@ -251,7 +237,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
 	void RpcNextTurn() {  
 
-		localPlayer.gameManager.NextTurnFunction ();
+		localPlayer.GameManager.NextTurnFunction ();
 
 	}
     #endregion
@@ -267,7 +253,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     public void RpcSetConstru (string c) {
 
-        localPlayer.gameManager.CurrentConstru = c;
+        localPlayer.GameManager.CurrentConstru = c;
 
     }
 
@@ -281,7 +267,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     public void RpcConstructAt(int x, int y) {
 
-        localPlayer.gameManager.ConstructAt(x, y);
+        localPlayer.GameManager.ConstructAt(x, y);
 
     }
 
@@ -296,7 +282,7 @@ public class SC_Player : NetworkBehaviour {
     public void RpcFinishConstruction (bool qinConstru) {
 
         if(localPlayer.Qin)
-            localPlayer.gameManager.FinishConstruction(qinConstru);
+            localPlayer.GameManager.FinishConstruction(qinConstru);
 
     }
 
@@ -387,7 +373,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcDestroyProductionBuilding () {
 
-        localPlayer.gameManager.FinishAction();
+        localPlayer.GameManager.FinishAction();
 
         SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction();
 
@@ -414,7 +400,7 @@ public class SC_Player : NetworkBehaviour {
     [Command]
     public void CmdCreateSoldier(Vector3 pos, string soldierName) {
 
-        localPlayer.gameManager.CreateSoldier(pos, soldierName);
+        localPlayer.GameManager.CreateSoldier(pos, soldierName);
 
     }
 
@@ -437,9 +423,9 @@ public class SC_Player : NetworkBehaviour {
     [Command]
     public void CmdCreateDemon(GameObject castle) {
 
-        localPlayer.gameManager.CurrentCastle = castle.GetComponent<SC_Castle>();
+        localPlayer.GameManager.CurrentCastle = castle.GetComponent<SC_Castle>();
 
-        localPlayer.gameManager.CreateDemonFunction();
+        localPlayer.GameManager.CreateDemonFunction();
 
     }
     #endregion
@@ -455,7 +441,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcSacrificeCastle (GameObject castle) {
 
-        localPlayer.gameManager.SacrificeCastle(castle.GetComponent<SC_Castle>());
+        localPlayer.GameManager.SacrificeCastle(castle.GetComponent<SC_Castle>());
 
     }
     #endregion
@@ -487,7 +473,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     public void RpcSetQinTurnStarting (bool b) {
 
-        localPlayer.gameManager.QinTurnStarting = b;
+        localPlayer.GameManager.QinTurnStarting = b;
 
     }
     #endregion
@@ -503,7 +489,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcShowVictory(bool qinWon) {
 
-        localPlayer.uiManager.ShowVictory(qinWon);
+        UIManager.ShowVictory(qinWon);
 
     }
     #endregion
@@ -522,22 +508,22 @@ public class SC_Player : NetworkBehaviour {
 	}
 	#endregion
 
-	public void SetGameManager(SC_Game_Manager gm) {
+	/*public void SetGameManager(SC_Game_Manager gm) {
 
 		gameManager = gm; 
 
+	}*/
+
+	/*public void SetTileManager(SC_Tile_Manager tm) {
+
+		TileManager = tm;
+
 	}
 
-	public void SetTileManager(SC_Tile_Manager tm) {
-
-		tileManager = tm;
-
-	}
-
-	public void SetSide() {
+	/*public void SetSide() {
 
         Qin = FindObjectOfType<SC_Network_Manager>().IsQinHost() == isServer;
-
-    }
+        
+    }*/
 
 }

@@ -43,13 +43,15 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public static float TileSize;
 
+    public bool ServerStarted { get; set; }
+
     #region Setup
     private void Awake () {
 
-        uiManager = FindObjectOfType<SC_UI_Manager>();
-        uiManager.connectingPanel.SetActive(true);
-
         Instance = this;
+
+        uiManager = FindObjectOfType<SC_UI_Manager>();
+        uiManager.connectingPanel.SetActive(true);        
 
         SC_Village.number = 0;
 
@@ -73,17 +75,32 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         Turn = 1;
 
+        StartCoroutine("WaitForPlayer");
+
+        StartCoroutine("WaitForServer");		
+
+    }
+
+    IEnumerator WaitForPlayer() {
+
         while (!Player)
-            DoNothing();
+            yield return new WaitForEndOfFrame();
 
-		if (isServer) {
+        uiManager.SetupUI(Player.Qin);
 
-			GenerateMap ();
-			SetupTileManager ();
+    }
 
-		}		
-        
-		uiManager.SetupUI (Player.Qin);
+    IEnumerator WaitForServer() {
+
+        while (!ServerStarted)
+            yield return new WaitForEndOfFrame();
+
+        if (isServer) {
+
+            GenerateMap();
+            SetupTileManager();
+
+        }
 
     }
 

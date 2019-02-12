@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.Networking;
 
 public class SC_Player : NetworkBehaviour {
@@ -22,11 +24,53 @@ public class SC_Player : NetworkBehaviour {
 
     public bool Ready { get; set; }
 
-	public override void OnStartLocalPlayer () {
+    public override void OnStartServer () {
+
+        base.OnStartServer();
+
+        StartCoroutine("WaitForLocalPlayer");
+
+    }
+
+    IEnumerator WaitForLocalPlayer() {
+
+        while (!localPlayer)
+            yield return new WaitForEndOfFrame();
+
+        localPlayer.CmdServerStart();
+
+    }
+
+    [Command]
+    void CmdServerStart() {
+
+        RpcServerStarted();
+
+    }
+
+    [ClientRpc]
+    void RpcServerStarted() {
+
+        StartCoroutine(WaitForGameManager(() => { GameManager.ServerStarted = true; }));
+
+    }
+
+    public override void OnStartLocalPlayer () {
+
+        base.OnStartLocalPlayer();
 
         localPlayer = this;
 
-        GameManager.Player = this;
+        StartCoroutine(WaitForGameManager(() => { GameManager.Player = this; }));
+
+    }
+
+    IEnumerator WaitForGameManager(Action action) {
+
+        while (!GameManager)
+            yield return new WaitForEndOfFrame();
+
+        action();
 
     }
 

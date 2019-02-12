@@ -904,7 +904,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         menu.SetActive(true);
 
-        ForceSelect(menu.transform.Find((playerMenu ? "EndTurn" : "Cancel") + "Button").gameObject);
+        ForceSelect(menu.transform.GetChild(0).Find((playerMenu ? "EndTurn" : "Cancel") + "Button").gameObject);
 
     }
 

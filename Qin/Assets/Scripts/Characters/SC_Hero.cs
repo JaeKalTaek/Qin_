@@ -41,7 +41,7 @@ public class SC_Hero : SC_Character {
 
         // berserkColor = loadedCharacter.Hero.berserkColor;
 
-        if (heroes == null)
+        if (heroes == null || (heroes.Count >= 6))
             heroes = new List<SC_Hero>();
 
         heroes.Add(this);

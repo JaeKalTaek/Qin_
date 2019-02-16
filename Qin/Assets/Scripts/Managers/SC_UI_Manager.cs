@@ -533,7 +533,7 @@ public class SC_UI_Manager : MonoBehaviour {
           
         }
 
-        attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(fightManager.AttackRange) || attacker.Tile.Construction ? 0 : attacked.Technique), cT), cT);
+        attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(fightManager.AttackRange) ? 0 : attacked.Technique), cT), cT);
 
         attackedPF.crit.gameObject.SetActive(true);
 
@@ -904,7 +904,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         menu.SetActive(true);
 
-        ForceSelect(menu.transform.GetChild(0).Find((playerMenu ? "EndTurn" : "Cancel") + "Button").gameObject);
+        ForceSelect(menu.transform.Find((playerMenu ? "EndTurn" : "Cancel") + "Button").gameObject);
 
     }
 

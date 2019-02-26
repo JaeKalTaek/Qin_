@@ -19,11 +19,33 @@ public class SC_EditorTileEditor : Editor {
 
                 string s = (tile.IsChanging ? "Changing" : (tile.IsRiver ? "River/" + tile.riverSprite : tile.tileType + "/0"));
 
-                Debug.Log("Sprites/Tiles/" + s);
+                // Debug.Log("Sprites/Tiles/" + s);
 
                 tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Tiles/" + s);
 
-                tile.SetSprite(0, tile.construction == ConstructionType.None ? "" : (tile.construction == ConstructionType.Castle ? ("Sprites/Constructions/Castles/" + tile.castleType) : ("Sprites/Constructions/" + tile.construction)));
+                tile.SetSprite(0, tile.construction == ConstructionType.None ? "" : "Sprites/Constructions/" + tile.construction);
+
+                if (tile.construction == ConstructionType.Castle) {
+
+                    if (tile.transform.GetChild(0).childCount == 0) {
+
+                        SpriteRenderer sr = new GameObject("Roof").AddComponent<SpriteRenderer>();
+
+                        sr.transform.parent = tile.transform.GetChild(0);
+
+                        sr.sortingLayerName = "Constructions";
+
+                        sr.sortingOrder = 1;
+
+                        sr.sprite = Resources.Load<Sprite>("Sprites/Constructions/Castle/Roofs/" + tile.castleType);
+
+                    }
+
+                } else if (tile.transform.GetChild(0).childCount == 1) {
+
+                    DestroyImmediate(tile.transform.GetChild(0).GetChild(0).gameObject);
+
+                }
 
                 /*if (tile.PrevRegion != tile.region)
                     ChangeTileRegion(tile);*/

@@ -27,7 +27,7 @@ public class SC_Construction : NetworkBehaviour {
 
     public SC_Lifebar Lifebar { get; set; }
 
-    public bool GreatWall { get { return (this as SC_Castle) || (this as SC_Bastion) || (this as SC_Wall); } }
+    public bool GreatWall { get { return this as SC_Bastion; } }
 
     public SC_Pump Pump { get { return this as SC_Pump; } }
 

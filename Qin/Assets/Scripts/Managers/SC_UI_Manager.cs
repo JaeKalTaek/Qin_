@@ -171,7 +171,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         GameObject go = Resources.Load<GameObject>("Prefabs/UI/P_Drag&DropCastle");
 
-        go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/Castles/" + castleType);
+        go.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/Castle/Roofs/" + castleType);
 
         draggedCastle = Instantiate(go, new Vector3(WorldMousePos.x, WorldMousePos.y, -.54f) , Quaternion.identity);
 

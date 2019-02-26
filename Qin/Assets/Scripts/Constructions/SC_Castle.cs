@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-public class SC_Castle : SC_Construction {
+public class SC_Castle : SC_Bastion {
 
     [Header("Castles variables")]
     [Tooltip("Energy gained by Qin when he sacrifices this castle")]
@@ -14,6 +14,8 @@ public class SC_Castle : SC_Construction {
     public static bool[] castles;
 
     public int DemonCost { get { return Resources.Load<SC_Demon>("Prefabs/Characters/Demons/P_" + CastleType + "Demon").cost; } }
+
+    public SpriteRenderer Roof { get { return transform.GetChild(0).GetComponent<SpriteRenderer>(); } }
 
     protected override void Start () {
 
@@ -59,7 +61,7 @@ public class SC_Castle : SC_Construction {
 
         Name = CastleType + " Castle";
 
-        GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/Castles/" + CastleType);
+        Roof.sprite = Resources.Load<Sprite>("Sprites/Constructions/Castle/Roofs/" + CastleType);
 
     }
 

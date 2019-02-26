@@ -472,8 +472,8 @@ public class SC_Tile_Manager : NetworkBehaviour {
     public void UpdateNeighborWallGraph (SC_Tile center) {
 
         foreach (SC_Tile tile in GetTilesAtDistance(tiles, center, 1))
-            if (tile.Bastion)
-                UpdateWallGraph(tile.Bastion.gameObject);
+            if (tile.GreatWall)
+                UpdateWallGraph(tile.Construction.gameObject);
 
     }
 
@@ -517,7 +517,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
         if (!rotation.Equals(""))
             rotation = "_" + rotation;
 
-        construction.GetComponentInChildren<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/" + (construction.GetType().Equals(typeof(SC_Bastion)) ? "Bastion/" : "Wall/") + count.ToString() + rotation);
+        construction.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/" + (construction as SC_Castle ? "Castle" : (construction as SC_Wall ? "Wall" : "Bastion")) + "/" + count.ToString() + rotation);
 
     }
     #endregion

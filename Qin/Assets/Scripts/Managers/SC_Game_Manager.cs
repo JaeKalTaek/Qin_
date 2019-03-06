@@ -318,7 +318,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void CancelLastConstruction () {
 
-        uiManager.cancelAction = DoNothing;
+        uiManager.backAction = DoNothing;
+
+        // uiManager.cancelAction = DoNothing;
 
         Player.CmdCancelLastConstru();
 
@@ -349,9 +351,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Character.characterToMove = null;
 
-        t.OnCursorEnter();
+        tileManager.GetTileAt(SC_Cursor.Instance.gameObject).OnCursorEnter();
 
-        uiManager.cancelAction = DoNothing;
+        uiManager.backAction = DoNothing;
+
+        // uiManager.cancelAction = DoNothing;
 
     }
 
@@ -375,7 +379,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         uiManager.constructPanel.SetActive(false);
 
-        uiManager.cancelAction = DoNothing;
+        uiManager.backAction = DoNothing;
+
+        // uiManager.cancelAction = DoNothing;
 
         tileManager.RemoveAllFilters();
 
@@ -478,7 +484,8 @@ public class SC_Game_Manager : NetworkBehaviour {
         }
 
         if (qinConstru)
-            uiManager.cancelAction = CancelLastConstruction;
+            uiManager.backAction = CancelLastConstruction;
+        //uiManager.cancelAction = CancelLastConstruction;
 
     }
     #endregion
@@ -599,7 +606,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         uiManager.characterActionsPanel.SetActive(false);
 
-        uiManager.cancelAction = DoNothing;
+        uiManager.backAction = DoNothing;
+
+        // uiManager.cancelAction = DoNothing;
 
         Player.Busy = false;
 

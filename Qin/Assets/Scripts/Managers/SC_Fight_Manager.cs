@@ -43,7 +43,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         uiManager.HideWeapons();
 
-        uiManager.cancelAction = DoNothing;
+        uiManager.backAction = DoNothing;
+
+        // uiManager.cancelAction = DoNothing;
 
         #region Setup Fight Panel
         #region Setup Values

@@ -75,11 +75,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public static Vector2 Size { get { return Instance.GetComponent<RectTransform>().sizeDelta; } }
 
-    public static bool CanInteract { get {
-
-            return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !gameManager.prep;
-
-    } }
+    public static bool CanInteract { get { return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !gameManager.prep; } }
 
     public float clickSecurityDuration;
 
@@ -87,7 +83,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     GameObject grid;
 
-    public Action returnAction, cancelAction;    
+    public Action backAction;
 
     public bool LifeBarsOn { get { return toggleHealthBarsButton.name == "On"; } }
 
@@ -99,9 +95,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         Instance = this;
 
-        returnAction = DoNothing;
-
-        cancelAction = DoNothing;
+        backAction = DoNothing;
 
     }
 
@@ -205,7 +199,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);
 
-        cancelAction = DoNothing;
+        backAction = DoNothing;
 
         turnIndicator.text = gameManager.Qin ? "Qin's Turn" : (gameManager.Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
 
@@ -331,7 +325,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         SC_Cursor.Instance.Locked = b;
 
-        returnAction = b ? (Action)(() => DisplayCharacterDetails(false)) : DoNothing;
+        backAction = b ? (Action)(() => DisplayCharacterDetails(false)) : DoNothing;
 
         characterDetails.panel.SetActive(b);
 
@@ -580,7 +574,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         ForceSelect(weaponChoicePanel.GetComponentInChildren<Button>().gameObject);
 
-        cancelAction = ResetAttackChoice;
+        backAction = ResetAttackChoice;
 
     }
 
@@ -612,7 +606,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         playerActionsPanel.SetActive(false);
 
-        cancelAction = DoNothing;
+        backAction = DoNothing;
 
     }
 
@@ -622,9 +616,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
 
-        returnAction = DoNothing;
-
-        cancelAction = DoNothing;
+        backAction = DoNothing;
 
         constructPanel.SetActive(false);
 
@@ -649,7 +641,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         TileManager.DisplaySacrifices();
 
-        returnAction = EndQinAction;
+        backAction = EndQinAction;
 
         StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
 
@@ -678,7 +670,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         StartQinAction();
 
-        returnAction = EndQinAction;
+        backAction = EndQinAction;
 
     }
 
@@ -700,7 +692,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    public void SacrificeCastle (SC_Castle castle) {
+    public void DisplaySacrificeCastlePanel (SC_Castle castle) {
 
         gameManager.CurrentCastle = castle;
 
@@ -716,9 +708,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             sacrificeCastlePanel.buff.text = (value == 0) ? "None" : "+" + value + "% stats";
 
-            returnAction = DoNothing;
-
-            cancelAction = EndQinAction;
+            backAction = EndQinAction;
 
         }       
 
@@ -777,7 +767,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         DisplayConstructPanel(false);
 
-        cancelAction = CancelAction;
+        backAction = CancelAction;
 
     }
 
@@ -803,7 +793,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         previouslySelected?.Select();
 
-        returnAction = DoNothing;
+        backAction = DoNothing;
 
     }    
 
@@ -812,7 +802,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         previouslySelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
 
-        returnAction = SelectConstruct;
+        backAction = SelectConstruct;
 
         EventSystem.current.sendNavigationEvents = false;
 
@@ -859,9 +849,7 @@ public class SC_UI_Manager : MonoBehaviour {
         if (Input.GetButtonDown("ToggleGrid"))
             grid.SetActive(!grid.activeSelf);
         else if (Input.GetButtonDown("Cancel"))
-            cancelAction();
-        else if (Input.GetButtonDown("Return"))
-            returnAction();
+            backAction();
         else if (Input.GetButtonDown("DisplayDetails") && CurrentChara?.GetComponent<SC_Character>())
             DisplayCharacterDetails(CurrentChara.GetComponent<SC_Character>());
 
@@ -888,14 +876,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
             endTurnButton.SetActive(localPlayer.Turn);
 
-            cancelAction = DoNothing;
-
-            returnAction = () => {
+            backAction = () => {
 
                 SC_Cursor.SetLock(false);
 
                 playerActionsPanel.SetActive(false);
-                
+
             };
 
         }
@@ -904,7 +890,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         menu.SetActive(true);
 
-        ForceSelect(menu.transform.Find((playerMenu ? "EndTurn" : "Cancel") + "Button").gameObject);
+        ForceSelect(menu.transform.GetChild(menu.transform.childCount - 1).gameObject);
+
+        // ForceSelect(menu.transform.Find((playerMenu ? "EndTurn" : "Cancel") + "Button").gameObject);
 
     }
 
@@ -932,15 +920,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterActionsPanel.SetActive(false);
 
-        cancelAction = CancelAction;
+        backAction = CancelAction;
 
         TileManager.CheckAttack();
 
     }
 
-    public void Cancel () {
+    public void Back () {
 
-        cancelAction();
+        backAction();
 
     }
 
@@ -952,19 +940,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
         ActivateMenu(false);
 
-        cancelAction = gameManager.ResetMovement;
+        backAction = gameManager.ResetMovement;
 
         TileManager.PreviewAttack();
 
         previewFightPanel.SetActive(false);
 
     }    
-
-    public void Return() {
-
-        returnAction();
-
-    }
     #endregion
 
     #region Utility

@@ -106,9 +106,9 @@ public class SC_Cursor : NetworkBehaviour {
         Instance.gameObject.SetActive(!b);
 
         if(b)
-            SC_Tile_Manager.Instance?.GetTileAt(Instance.transform.position)?.OnCursorExit();
+            SC_Tile_Manager.Instance?.GetTileAt(Instance.gameObject)?.OnCursorExit();
         else
-            SC_Tile_Manager.Instance?.GetTileAt(Instance.transform.position)?.OnCursorEnter();
+            SC_Tile_Manager.Instance?.GetTileAt(Instance.gameObject)?.OnCursorEnter();
 
     }
 

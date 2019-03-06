@@ -170,7 +170,9 @@ public class SC_Tile : NetworkBehaviour {
 
             } else if (CurrentDisplay == TDisplay.Movement) {
 
-                uiManager.cancelAction = DoNothing;             
+                uiManager.backAction = DoNothing;
+
+                // uiManager.cancelAction = DoNothing;             
 
                 SC_Player.localPlayer.Busy = true;
 
@@ -214,12 +216,12 @@ public class SC_Tile : NetworkBehaviour {
                 if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
                     Character.TryCheckMovements();
                 else if (Workshop && SC_Player.localPlayer.Qin)
-                        Workshop.SelectWorkshop();
+                    Workshop.SelectWorkshop();
                 else if (Castle && !Character && SC_Player.localPlayer.Qin) {
                     if (!SC_Demon.demons[Region])                        
                         uiManager.CreateDemon(Castle);
                     else if (SC_Demon.demons[Region].Alive == -1)
-                        uiManager.SacrificeCastle(Castle);
+                        uiManager.DisplaySacrificeCastlePanel(Castle);
                 } else
                     uiManager.ActivateMenu(true);
 

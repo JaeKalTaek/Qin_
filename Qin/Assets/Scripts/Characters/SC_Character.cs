@@ -157,7 +157,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
         SC_Player.localPlayer.CmdCheckMovements(transform.position.x.I(), transform.position.y.I());
 
-        uiManager.cancelAction = gameManager.UnselectCharacter;
+        uiManager.backAction = gameManager.UnselectCharacter;
+
+        // uiManager.cancelAction = gameManager.UnselectCharacter;
 
     }
 
@@ -291,7 +293,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
             uiManager.ActivateMenu(false);
 
-            uiManager.cancelAction = gameManager.ResetMovement;
+            uiManager.backAction = gameManager.ResetMovement;
+
+            // uiManager.cancelAction = gameManager.ResetMovement;
 
         }        
 
@@ -322,7 +326,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
             SC_Cursor.SetLock(false);
 
-            uiManager.cancelAction = gameManager.UnselectCharacter;
+            uiManager.backAction = gameManager.UnselectCharacter;
+
+            // uiManager.cancelAction = gameManager.UnselectCharacter;
 
         }
 

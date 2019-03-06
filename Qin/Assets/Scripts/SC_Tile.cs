@@ -218,20 +218,17 @@ public class SC_Tile : NetworkBehaviour {
                 else if (Workshop && SC_Player.localPlayer.Qin)
                     Workshop.SelectWorkshop();
                 else if (Castle && !Character && SC_Player.localPlayer.Qin) {
-                    if (!SC_Demon.demons[Region])                        
+                    if (!SC_Demon.demons[Region])
                         uiManager.CreateDemon(Castle);
                     else if (SC_Demon.demons[Region].Alive == -1)
                         uiManager.DisplaySacrificeCastlePanel(Castle);
                 } else
-                    uiManager.ActivateMenu(true);
+                    uiManager.ActivateMenu(uiManager.playerActionsPanel);
 
             }
 
-        } else if (SC_UI_Manager.CanInteract && CurrentDisplay == TDisplay.None) {
-
-            uiManager.ActivateMenu(true);
-
-        }
+        } else if (SC_UI_Manager.CanInteract && CurrentDisplay == TDisplay.None)
+            uiManager.ActivateMenu(uiManager.playerActionsPanel);
 
     }
 

@@ -291,7 +291,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
             tileManager.PreviewAttack();
 
-            uiManager.ActivateMenu(false);
+            uiManager.ActivateMenu(uiManager.characterActionsPanel);
 
             uiManager.backAction = gameManager.ResetMovement;
 

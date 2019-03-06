@@ -20,7 +20,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject gamePanel;
     public GameObject loadingPanel, victoryPanel;
     public Text turnIndicator;    
-    public GameObject playerActionsPanel;
+    public GameObject playerActionsPanel, optionsPanel, concedePanel;
     public GameObject toggleHealthBarsButton, endTurnButton;
     public TileTooltip tileTooltip;
 
@@ -858,41 +858,71 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    public void ActivateMenu (bool playerMenu) {
+    void ActivatePlayerMenu() {
 
-        SC_Cursor.SetLock(true);
+        if (localPlayer.Qin) {
 
-        if (playerMenu) {
+            construct.SetActive(localPlayer.Turn);
+            sacrifice.SetActive(localPlayer.Turn);
 
-            if (localPlayer.Qin) {
-
-                construct.SetActive(localPlayer.Turn);
-                sacrifice.SetActive(localPlayer.Turn);                
-
-                if (gameManager.QinTurnStarting)
-                    localPlayer.CmdSetQinTurnStarting(false);
-
-            }
-
-            endTurnButton.SetActive(localPlayer.Turn);
-
-            backAction = () => {
-
-                SC_Cursor.SetLock(false);
-
-                playerActionsPanel.SetActive(false);
-
-            };
+            if (gameManager.QinTurnStarting)
+                localPlayer.CmdSetQinTurnStarting(false);
 
         }
 
-        GameObject menu = playerMenu ? playerActionsPanel : characterActionsPanel;
+        endTurnButton.SetActive(localPlayer.Turn);
+
+        backAction = () => {
+
+            SC_Cursor.SetLock(false);
+
+            playerActionsPanel.SetActive(false);
+
+        };
+
+    }
+
+    public void ActivateMenu (GameObject menu) {
+
+        SC_Cursor.SetLock(true);
+
+        if (menu == playerActionsPanel)
+            ActivatePlayerMenu();
 
         menu.SetActive(true);
 
         ForceSelect(menu.transform.GetChild(menu.transform.childCount - 1).gameObject);
 
-        // ForceSelect(menu.transform.Find((playerMenu ? "EndTurn" : "Cancel") + "Button").gameObject);
+    }
+
+    //Caled by UI
+    public void DisplaySubMenu (GameObject parentPanel, GameObject subPanel, Action addToBack) {
+
+        parentPanel.SetActive(false);
+
+        ActivateMenu(subPanel);
+
+        backAction = () => {
+
+            subPanel.SetActive(false);
+
+            addToBack();
+
+        };
+
+    }
+
+    // Called by UI
+    public void ActivateOptionsMenu () {
+
+        DisplaySubMenu(playerActionsPanel, optionsPanel, () => { ActivateMenu(playerActionsPanel); });
+
+    }
+
+    // Called by UI
+    public void DisplayConcedePanel () {
+
+        DisplaySubMenu(optionsPanel, concedePanel, () => { ActivateOptionsMenu(); });
 
     }
 
@@ -938,7 +968,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         TileManager.RemoveAllFilters();
 
-        ActivateMenu(false);
+        ActivateMenu(playerActionsPanel);
 
         backAction = gameManager.ResetMovement;
 

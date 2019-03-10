@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="AudioFile" id="{d1b4b36a-4da9-4a48-bcf0-75d604e66518}">
+        <property name="assetPath">
+            <value>MUSIC/COMBAT_MUSIC/QIN_SIDE/Partie_B/Partie_B_75BPM.wav</value>
+        </property>
+        <property name="isStreaming">
+            <value>true</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>102.40000000000001</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{705975ef-c81e-47ec-8af2-4d55f1a2610f}</destination>
+        </relationship>
+    </object>
+</objects>

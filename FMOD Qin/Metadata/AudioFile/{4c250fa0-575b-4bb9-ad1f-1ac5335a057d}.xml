@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="AudioFile" id="{4c250fa0-575b-4bb9-ad1f-1ac5335a057d}">
+        <property name="assetPath">
+            <value>ARG_HIT/ARG_HITbyMAN_QUICK/ARG_HITbyMAN_QUICK2.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>48</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>0.29466666666666669</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{705975ef-c81e-47ec-8af2-4d55f1a2610f}</destination>
+        </relationship>
+    </object>
+</objects>

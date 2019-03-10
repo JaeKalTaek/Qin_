@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="AudioFile" id="{818e74a2-c4be-48e6-baf4-ae42594b16ec}">
+        <property name="assetPath">
+            <value>BUILDINGS/ATT_MAN/SLOW/CRIT/BUILDINGS_MAN_SLOW1_CRIT.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>48</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>1.2986666666666666</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{705975ef-c81e-47ec-8af2-4d55f1a2610f}</destination>
+        </relationship>
+    </object>
+</objects>

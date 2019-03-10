@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="EncodableAsset" id="{6e0179ed-70c2-4daa-bca4-e4b652afa561}">
+        <property name="assetPath">
+            <value>BUILDINGS/ATT_MAN/QUICK/CRIT/</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{705975ef-c81e-47ec-8af2-4d55f1a2610f}</destination>
+        </relationship>
+    </object>
+</objects>

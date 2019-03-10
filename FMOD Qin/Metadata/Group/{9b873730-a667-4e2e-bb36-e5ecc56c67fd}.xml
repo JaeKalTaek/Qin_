@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="MixerGroup" id="{9b873730-a667-4e2e-bb36-e5ecc56c67fd}">
+        <property name="volume">
+            <value>-12.8000002</value>
+        </property>
+        <property name="name">
+            <value>MUSIC</value>
+        </property>
+        <relationship name="effectChain">
+            <destination>{09bb7dd6-e07f-4884-8adb-dcacd74f1335}</destination>
+        </relationship>
+        <relationship name="panner">
+            <destination>{f387b91f-a3ae-47d1-aea1-de231267ab97}</destination>
+        </relationship>
+        <relationship name="output">
+            <destination>{66786a45-667f-45dd-8e0e-6099cca82e21}</destination>
+        </relationship>
+    </object>
+    <object class="MixerBusEffectChain" id="{09bb7dd6-e07f-4884-8adb-dcacd74f1335}">
+        <relationship name="effects">
+            <destination>{dc939d14-d2db-4bba-8f9b-c5027524fcb0}</destination>
+            <destination>{60793aab-94a2-4a2f-9066-f8320bb454e2}</destination>
+            <destination>{a673dc37-88f5-48ab-adb1-eac52bcfece9}</destination>
+        </relationship>
+    </object>
+    <object class="MixerBusPanner" id="{f387b91f-a3ae-47d1-aea1-de231267ab97}"/>
+    <object class="MixerBusFader" id="{dc939d14-d2db-4bba-8f9b-c5027524fcb0}"/>
+    <object class="CompressorEffect" id="{60793aab-94a2-4a2f-9066-f8320bb454e2}">
+        <property name="threshold">
+            <value>-29.5</value>
+        </property>
+        <property name="ratio">
+            <value>3.0999999</value>
+        </property>
+        <property name="attackTime">
+            <value>1.39999998</value>
+        </property>
+        <property name="releaseTime">
+            <value>160</value>
+        </property>
+        <property name="sidechainEnabled">
+            <value>true</value>
+        </property>
+    </object>
+    <object class="CompressorEffect" id="{a673dc37-88f5-48ab-adb1-eac52bcfece9}">
+        <property name="threshold">
+            <value>-26.5</value>
+        </property>
+        <property name="ratio">
+            <value>1.74999988</value>
+        </property>
+        <property name="attackTime">
+            <value>0.49999997</value>
+        </property>
+        <property name="releaseTime">
+            <value>46</value>
+        </property>
+        <property name="sidechainEnabled">
+            <value>true</value>
+        </property>
+    </object>
+</objects>

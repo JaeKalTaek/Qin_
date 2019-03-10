@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="EncodableAsset" id="{c4262320-8bd2-4ed6-a9d5-218b87d2c3bf}">
+        <property name="assetPath">
+            <value>MUSIC/COMBAT_MUSIC/QIN_SIDE/Partie_C/</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{705975ef-c81e-47ec-8af2-4d55f1a2610f}</destination>
+        </relationship>
+    </object>
+</objects>

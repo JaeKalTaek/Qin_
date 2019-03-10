@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="EncodableAsset" id="{fe6e19fb-ca2c-484d-8542-cd2d653b1d81}">
+        <property name="assetPath">
+            <value>FEMALE_HIT/FEMALE_HIT_SLOW/</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{705975ef-c81e-47ec-8af2-4d55f1a2610f}</destination>
+        </relationship>
+    </object>
+</objects>

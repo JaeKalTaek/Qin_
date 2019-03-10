@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="EncodableAsset" id="{a98fa37b-041a-44b2-9d56-979c5bd0a7cb}">
+        <property name="assetPath">
+            <value>ARG_HIT/ARG_HITbyFEMALE_QUICK/</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{705975ef-c81e-47ec-8af2-4d55f1a2610f}</destination>
+        </relationship>
+    </object>
+</objects>

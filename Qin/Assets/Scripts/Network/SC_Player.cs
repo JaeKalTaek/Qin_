@@ -16,6 +16,8 @@ public class SC_Player : NetworkBehaviour {
 
     SC_UI_Manager UIManager { get { return SC_UI_Manager.Instance; } }
 
+    SC_Sound_Manager SoundManager { get { return SC_Sound_Manager.Instance; } }
+
     SC_Fight_Manager FightManager { get { return SC_Fight_Manager.Instance; } }
 
 	public static SC_Player localPlayer;
@@ -90,6 +92,8 @@ public class SC_Player : NetworkBehaviour {
         SC_Cursor.SetLock(false);
 
         UIManager.connectingPanel.SetActive(false);
+
+        SoundManager.StartCombatMusic();
 
     }
     #endregion

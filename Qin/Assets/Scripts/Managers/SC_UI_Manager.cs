@@ -20,7 +20,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject gamePanel;
     public GameObject loadingPanel, victoryPanel;
     public Text turnIndicator;    
-    public GameObject playerActionsPanel, optionsPanel, concedePanel;
+    public GameObject playerActionsPanel, optionsPanel, soundPanel, concedePanel;
     public GameObject toggleHealthBarsButton, endTurnButton;
     public TileTooltip tileTooltip;
 
@@ -916,6 +916,13 @@ public class SC_UI_Manager : MonoBehaviour {
     public void ActivateOptionsMenu () {
 
         DisplaySubMenu(playerActionsPanel, optionsPanel, () => { ActivateMenu(playerActionsPanel); });
+
+    }
+
+    // Called by UI
+    public void ActivateSoundMenu () {
+
+        DisplaySubMenu(optionsPanel, soundPanel, () => { ActivateOptionsMenu(); });
 
     }
 

@@ -307,6 +307,10 @@ public abstract class SC_Character : NetworkBehaviour {
 
         tileManager.RemoveAllFilters();
 
+        /*print("Hello");
+
+        Hero?.IncreaseRelationships(-gameManager.CommonCharactersVariables.relationGains.action);*/
+
         Tile.Character = null;
 
         transform.SetPos(LastPos.transform);
@@ -317,7 +321,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         UnTired();
 
-        if(Hero)
+        if (Hero)
             SC_Pump.UpdateHeroSlow(Hero);
 
         tileManager.CheckMovements(this);
@@ -343,8 +347,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (!characterToMove)
             print("ERROR CHARACTERTOMOVE IS NULL");
-        else
-            characterToMove.Hero?.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
+        else if (characterToMove.Hero) {
+
+            characterToMove.Hero.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
+
+            SC_Sound_Manager.Instance.SetTempo();
+
+        }
 
         characterToMove = null;
 

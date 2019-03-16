@@ -608,8 +608,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         uiManager.backAction = DoNothing;
 
-        // uiManager.cancelAction = DoNothing;
-
         Player.Busy = false;
 
     }

@@ -205,9 +205,11 @@ public class SC_Hero : SC_Character {
 
 		SC_Qin.ChangeEnergy (SC_Qin.Qin.energyWhenHeroDies);
 
-		gameManager.LastHeroDead = this;        
+        SC_Sound_Manager.Instance.AugmentPart();
 
-		/*foreach (SC_Hero hero in heroes) {
+        // gameManager.LastHeroDead = this;        
+
+        /*foreach (SC_Hero hero in heroes) {
 
 			int value = 0;
 			Relationships.TryGetValue (hero.characterName, out value);
@@ -224,7 +226,7 @@ public class SC_Hero : SC_Character {
 
 		}*/
 
-		gameObject.SetActive (false);
+        gameObject.SetActive (false);
 
         heroes.Remove(this);
 
@@ -253,8 +255,7 @@ public class SC_Hero : SC_Character {
 
     public override Vector2 GetRange (SC_Tile t = null) {
 
-        if (!t)
-            t = Tile;
+        t = t ? t : Tile;
 
         return new Vector2(Mathf.Min(weapon1.minRange, weapon2.minRange), Mathf.Max(weapon1.MaxRange(this, t), weapon2.MaxRange(this, t)));
 

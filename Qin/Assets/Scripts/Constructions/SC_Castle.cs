@@ -77,6 +77,8 @@ public class SC_Castle : SC_Bastion {
 
         base.DestroyConstruction();
 
+        SC_Sound_Manager.Instance.AugmentPart();
+
         tileManager.UpdateNeighborWallGraph(Tile);
 
         foreach (SC_Tile t in tileManager.regions[Tile.Region])
@@ -85,7 +87,7 @@ public class SC_Castle : SC_Bastion {
         castles[Tile.Region] = false;
 
         if (Health <= 0)
-            SC_Demon.demons[Tile.Region].DestroyCharacter();
+            SC_Demon.demons[Tile.Region]?.DestroyCharacter();
 
         bool victory = true;
 

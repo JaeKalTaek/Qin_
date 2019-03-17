@@ -12,9 +12,9 @@
 
 	}
 
-	public override void DestroyConstruction() {
+	public override void DestroyConstruction(bool playSound) {
 
-		base.DestroyConstruction ();
+		base.DestroyConstruction (playSound);
 
 		number--;
 

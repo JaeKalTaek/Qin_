@@ -38,17 +38,57 @@ public class SC_Sound_Manager : MonoBehaviour {
     #endregion
     #endregion
 
+    #region Combat sounds
+    EventDescription[] hitEvents;
+    #endregion
+
+    #region Characters
+    [Header("Characters")]
+    [EventRef]
+    public string footstepsRef;
+
+    EventInstance footsteps;
+    #endregion
+
+    #region Constructions
+    [Header("Constructions")]
+    [EventRef]
+    public string constructRef;
+
+    EventInstance construct;
+
+    [EventRef]
+    public string constructionDestroyedRef;
+    #endregion
+
     #region UI
     [Header("UI")]
     [EventRef]
     public string onButtonClickRef;
+    #endregion
 
-    EventInstance onButtonClickSound;
+    #region Cursor
+    [Header("Cursor")]
+    [EventRef]
+    public string cursorMovedRef;
     #endregion
 
     void Awake () {
 
         Instance = this;
+
+        #region Setup events
+        Bank b;
+
+        RuntimeManager.StudioSystem.getBank("HIT", out b);
+
+        b.getEventList(out hitEvents);
+
+        footsteps = RuntimeManager.CreateInstance(footstepsRef);
+
+        construct = RuntimeManager.CreateInstance(constructRef);
+
+        #endregion
 
         DontDestroyOnLoad(this);
 
@@ -151,18 +191,79 @@ public class SC_Sound_Manager : MonoBehaviour {
     private void Update () {
 
         if (EventSystem.current.currentSelectedGameObject?.GetComponent<Button>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
-            OnButtonClickSound();
+            OnButtonClick();
 
     }
 
-    public void OnButtonClickSound () {
+    #region Fight
+    public void Hit (SC_Character attacker, SC_Character attacked, SC_Construction constru) {
 
-        EventInstance sound = RuntimeManager.CreateInstance(onButtonClickRef);
-        sound.start();
-        sound.release();
+        string a = attacker.Hero ? (attacker.Hero.male ? "" : "FE") + "MALE" : "SOLDIER";
 
+        string b = constru ? "BUILDING" : ((attacked.Soldier || !attacked) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
+
+        bool c = attacker.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger;
+
+        foreach (EventDescription e in hitEvents) {
+
+            string p;
+
+            e.getPath(out p);
+
+            if (p.Contains("/" + a + "_HIT_" + b + "_SLOW") && (p.Contains("CRIT") == c))
+                RuntimeManager.PlayOneShot(p);
+
+        }
 
     }
+    #endregion
+
+    #region Characters
+    public void SetFootsteps (bool on) {
+
+        if (on)
+            footsteps.start();
+        else
+            footsteps.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
+    }
+    #endregion
+
+    #region Constructions
+    public void OnConstruct () {
+
+        construct.start();
+
+    }
+
+    public void OnCancelConstruct () {
+
+        construct.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+
+    }
+
+    public void OnConstructionDestroyed () {
+
+        RuntimeManager.PlayOneShot(constructionDestroyedRef);
+
+    }
+    #endregion
+
+    #region UI
+    public void OnButtonClick () {
+
+        RuntimeManager.PlayOneShot(onButtonClickRef);
+
+    }
+    #endregion
+
+    #region Cursor
+    public void OnCursorMoved () {
+
+        RuntimeManager.PlayOneShot(cursorMovedRef);        
+
+    }
+    #endregion
 
     void OnDestroy () {
 
@@ -171,6 +272,8 @@ public class SC_Sound_Manager : MonoBehaviour {
         combatMusic.release();
         if(combatMusicTimelineHandle.IsAllocated)
             combatMusicTimelineHandle.Free();
+
+        construct.release();
 
     }
 

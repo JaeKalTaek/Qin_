@@ -82,6 +82,8 @@ public class SC_Cursor : NetworkBehaviour {
 
             if (oldPos != transform.position) {
 
+                SC_Sound_Manager.Instance.OnCursorMoved();
+
                 SC_Tile_Manager.Instance?.GetTileAt(oldPos)?.OnCursorExit();
 
                 SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.OnCursorEnter();

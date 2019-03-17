@@ -78,7 +78,10 @@ public class SC_Construction : NetworkBehaviour {
 
     }
 
-	public virtual void DestroyConstruction() {
+	public virtual void DestroyConstruction(bool playSound) {
+
+        if (playSound)
+            SC_Sound_Manager.Instance.OnConstructionDestroyed();
 
         if (GreatWall)
             Tile.Soldier?.DestroyCharacter();
@@ -100,11 +103,13 @@ public class SC_Construction : NetworkBehaviour {
 
     public static void CancelLastConstruction () {
 
+        SC_Sound_Manager.Instance.OnCancelConstruct();
+
         tileManager.RemoveAllFilters();
 
         lastConstru.gameObject.SetActive(false);
 
-        lastConstru.DestroyConstruction();
+        lastConstru.DestroyConstruction(false);
 
         if (lastConstruSoldier) {
 

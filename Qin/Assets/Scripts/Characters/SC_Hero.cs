@@ -18,6 +18,9 @@ public class SC_Hero : SC_Character {
     [Tooltip("Weapons of this hero")]
 	public SC_Weapon weapon1, weapon2;
 
+    [Tooltip("Characteristics")]
+    public bool male;
+
 	//power	
 	/*public bool PowerUsed { get; set; }
 	public int PowerBacklash { get; set; }
@@ -38,6 +41,8 @@ public class SC_Hero : SC_Character {
         weapon1 = loadedCharacter.Hero.weapon1;
 
         weapon2 = loadedCharacter.Hero.weapon2;
+
+        male = loadedCharacter.Hero.male;
 
         // berserkColor = loadedCharacter.Hero.berserkColor;
 

@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.01.10.00">
     <object class="Event" id="{40242386-392c-4f91-ab62-bd4cbf9791f9}">
         <property name="name">
-            <value>BUILDING_HITbyFEMALE_QUICK_CRIT</value>
+            <value>FEMALE_HIT_BUILDING_QUICK_CRIT</value>
         </property>
         <property name="outputFormat">
             <value>1</value>
@@ -33,6 +33,7 @@
         </relationship>
         <relationship name="banks">
             <destination>{57d3970e-1d78-48b3-aba8-f11d04a3fc49}</destination>
+            <destination>{730a9760-831e-4a52-957e-7fc5a8c35b70}</destination>
         </relationship>
     </object>
     <object class="EventMixer" id="{0ebfa4a8-859c-491d-b62f-f8dc4fe48f47}">

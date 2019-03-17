@@ -12,11 +12,11 @@
 
     }
 
-    public override void DestroyConstruction () {
+    public override void DestroyConstruction (bool playSound) {
 
 		gameObject.SetActive (false);
 
-		base.DestroyConstruction ();
+		base.DestroyConstruction (playSound);
 
         tileManager.UpdateNeighborWallGraph (Tile);
 

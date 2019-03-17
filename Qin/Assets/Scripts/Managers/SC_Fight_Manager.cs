@@ -140,11 +140,13 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             }
 
+            SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
+
             StartCoroutine(FightAnim(c, -travel, false, endValue <= 0));
             #endregion
 
         #region Else, the current character has finished his return
-        } else {
+        } else {            
 
             #region Applying damage
             if (attacked)
@@ -217,7 +219,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         if (construction.Health <= 0) {
 
-            construction.DestroyConstruction();
+            construction.DestroyConstruction(true);
             return true;
 
         } else

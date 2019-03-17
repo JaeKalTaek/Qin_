@@ -73,16 +73,16 @@ public class SC_Castle : SC_Bastion {
 
     }*/
 
-    public override void DestroyConstruction () {
+    public override void DestroyConstruction (bool playSound) {
 
-        base.DestroyConstruction();
+        base.DestroyConstruction(playSound);
 
         SC_Sound_Manager.Instance.AugmentPart();
 
         tileManager.UpdateNeighborWallGraph(Tile);
 
         foreach (SC_Tile t in tileManager.regions[Tile.Region])
-            t.Ruin?.DestroyConstruction();
+            t.Ruin?.DestroyConstruction(false);
 
         castles[Tile.Region] = false;
 

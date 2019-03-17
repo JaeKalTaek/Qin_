@@ -162,6 +162,8 @@ public class SC_Tile : NetworkBehaviour {
 
     public void CursorClick() {
 
+        SC_Sound_Manager.Instance.OnButtonClick();
+
         if (SC_UI_Manager.CanInteract && SC_Player.localPlayer.Turn) {
 
             if (CurrentDisplay == TDisplay.Construct) {
@@ -170,9 +172,7 @@ public class SC_Tile : NetworkBehaviour {
 
             } else if (CurrentDisplay == TDisplay.Movement) {
 
-                uiManager.backAction = DoNothing;
-
-                // uiManager.cancelAction = DoNothing;             
+                uiManager.backAction = DoNothing;       
 
                 SC_Player.localPlayer.Busy = true;
 
@@ -211,7 +211,7 @@ public class SC_Tile : NetworkBehaviour {
 
             }*/
 
-            else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy && !SC_Character.characterToMove) {
+            else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy && !characterToMove) {
 
                 if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
                     Character.TryCheckMovements();

@@ -180,6 +180,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	IEnumerator Move() {
 
+        SC_Sound_Manager.Instance.SetFootsteps(true);
+
         int pathIndex = 1;
 
         float movementTimer = 0;
@@ -213,6 +215,8 @@ public abstract class SC_Character : NetworkBehaviour {
 			yield return new WaitForEndOfFrame();
 
 		}
+
+        SC_Sound_Manager.Instance.SetFootsteps(false);
 
         FinishMovement(true);
 
@@ -295,8 +299,6 @@ public abstract class SC_Character : NetworkBehaviour {
 
             uiManager.backAction = gameManager.ResetMovement;
 
-            // uiManager.cancelAction = gameManager.ResetMovement;
-
         }        
 
     }
@@ -306,10 +308,6 @@ public abstract class SC_Character : NetworkBehaviour {
         uiManager.characterActionsPanel.SetActive(false);
 
         tileManager.RemoveAllFilters();
-
-        /*print("Hello");
-
-        Hero?.IncreaseRelationships(-gameManager.CommonCharactersVariables.relationGains.action);*/
 
         Tile.Character = null;
 
@@ -331,8 +329,6 @@ public abstract class SC_Character : NetworkBehaviour {
             SC_Cursor.SetLock(false);
 
             uiManager.backAction = gameManager.UnselectCharacter;
-
-            // uiManager.cancelAction = gameManager.UnselectCharacter;
 
         }
 

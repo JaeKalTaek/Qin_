@@ -423,12 +423,12 @@ public class SC_Player : NetworkBehaviour {
 
         localPlayer.GameManager.FinishAction();
 
-        SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction();
+        SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction(true);
 
     }
     #endregion
 
-    #region Destroy Construction
+    /*#region Destroy Construction
     [Command]
     public void CmdDestroyConstruction (GameObject c) {
 
@@ -442,7 +442,7 @@ public class SC_Player : NetworkBehaviour {
         c.GetComponent<SC_Construction>().DestroyConstruction();
 
     }
-    #endregion
+    #endregion*/
 
     #region Create Soldier
     [Command]
@@ -505,7 +505,9 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcFinishCharacterAction() {
 
-        SC_Character.FinishCharacterAction();
+        GameManager.FinishAction();
+
+        // SC_Character.FinishCharacterAction();
 
     }
     #endregion

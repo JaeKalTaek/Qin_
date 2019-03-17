@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.01.10.00">
     <object class="Event" id="{6b7f729f-c9f4-49de-9167-2aa310490786}">
         <property name="name">
-            <value>MAN_HIT_SLOW_CRIT</value>
+            <value>MALE_HIT_SOLDIER_SLOW_CRIT</value>
         </property>
         <property name="outputFormat">
             <value>1</value>
@@ -33,6 +33,7 @@
         </relationship>
         <relationship name="banks">
             <destination>{57d3970e-1d78-48b3-aba8-f11d04a3fc49}</destination>
+            <destination>{730a9760-831e-4a52-957e-7fc5a8c35b70}</destination>
         </relationship>
     </object>
     <object class="EventMixer" id="{fe5cf9fb-8f69-4019-bec3-d0022d4dd27f}">

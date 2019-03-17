@@ -355,8 +355,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         uiManager.backAction = DoNothing;
 
-        // uiManager.cancelAction = DoNothing;
-
     }
 
     public void ResetMovement () {
@@ -380,8 +378,6 @@ public class SC_Game_Manager : NetworkBehaviour {
         uiManager.constructPanel.SetActive(false);
 
         uiManager.backAction = DoNothing;
-
-        // uiManager.cancelAction = DoNothing;
 
         tileManager.RemoveAllFilters();
 
@@ -427,13 +423,15 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             } else {
 
-                FinishAction(true);
+                FinishAction(/*true*/);
 
             }
 
         }
 
-        tile.Ruin?.DestroyConstruction();
+        tile.Ruin?.DestroyConstruction(false);
+
+        SC_Sound_Manager.Instance.OnConstruct();
 
         if (isServer) {
 
@@ -485,7 +483,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         if (qinConstru)
             uiManager.backAction = CancelLastConstruction;
-        //uiManager.cancelAction = CancelLastConstruction;
 
     }
     #endregion
@@ -581,27 +578,33 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         demon.Linked = false;
 
-        castle.DestroyConstruction();
+        castle.DestroyConstruction(true);
 
     }
     #endregion
 
-    public void FinishAction() {
+    public void Wait () {
+
+        Player.CmdFinishCharacterAction();
+
+    }
+
+    /*public void FinishAction() {
 
         if (SC_Cursor.Instance.Locked)
             FinishAction(false);
         else
             SC_Character.FinishCharacterAction();
 
-    }
+    }*/
 
-    public void FinishAction (bool sync) {
+    public void FinishAction (/*bool sync*/) {
 
         SC_Cursor.SetLock(false);
 
-        if (sync)
+        /*if (sync)
             Player.CmdFinishCharacterAction();
-        else
+        else*/
             SC_Character.FinishCharacterAction();
 
         uiManager.characterActionsPanel.SetActive(false);

@@ -57,7 +57,7 @@ public class SC_Pump : SC_Construction {
 
     }
 
-    public override void DestroyConstruction () {
+    public override void DestroyConstruction (bool playSound) {
 
         gameObject.SetActive(false);
 
@@ -77,7 +77,7 @@ public class SC_Pump : SC_Construction {
 
         pumps.Remove(this);
 
-        base.DestroyConstruction();
+        base.DestroyConstruction(playSound);
 
     }
 

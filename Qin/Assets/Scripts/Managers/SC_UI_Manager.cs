@@ -705,7 +705,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (can) {
 
-            sacrificeCastlePanel.type.text = castle.CastleType + "Demon buff : ";
+            sacrificeCastlePanel.type.text = castle.CastleType + " Demon buff : ";
 
             sacrificeCastlePanel.buff.text = (value == 0) ? "None" : "+" + value + "% stats";
 
@@ -723,7 +723,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    #region Building
+    #region Construction
     public void DisplayConstructPanel(bool qin) {
 
         constructPanel.SetActive(true);
@@ -976,7 +976,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         TileManager.RemoveAllFilters();
 
-        ActivateMenu(playerActionsPanel);
+        ActivateMenu(characterActionsPanel);
 
         backAction = gameManager.ResetMovement;
 

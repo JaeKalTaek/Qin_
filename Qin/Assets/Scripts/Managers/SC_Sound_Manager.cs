@@ -4,12 +4,14 @@ using FMODUnity;
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SC_Sound_Manager : MonoBehaviour {
 
     public static SC_Sound_Manager Instance;
 
+    #region Music
     [Header("Music")]
 
     #region Combat Music variables
@@ -34,17 +36,28 @@ public class SC_Sound_Manager : MonoBehaviour {
 
     EVENT_CALLBACK combatMusicCallback;
     #endregion
+    #endregion
 
-    [Tooltip("Slider to change music's volume")]
-    public Slider musicVolume;
+    #region UI
+    [Header("UI")]
+    [EventRef]
+    public string onButtonClickRef;
+
+    EventInstance onButtonClickSound;
+    #endregion
 
     void Awake () {
 
         Instance = this;
 
+        DontDestroyOnLoad(this);
+
     }
 
-    public void StartCombatMusic () {               
+    #region Combat Music
+    public void StartCombatMusic (Slider volume) {                       
+
+        volume.onValueChanged.AddListener((float f) => { combatMusic.setVolume(f / 100); });
 
         combatMusicTimelineInfo = new TimelineInfo();
 
@@ -59,12 +72,6 @@ public class SC_Sound_Manager : MonoBehaviour {
         combatMusic.setCallback(combatMusicCallback, EVENT_CALLBACK_TYPE.TIMELINE_MARKER);
 
         combatMusic.start();
-
-    }
-
-    public void SetMusicVolume () {
-
-        combatMusic.setParameterValue("", musicVolume.value / 100);
 
     }
 
@@ -92,13 +99,6 @@ public class SC_Sound_Manager : MonoBehaviour {
 
     }
 
-    private void Update () {
-
-        if (Input.GetKeyDown(KeyCode.G))
-            AugmentPart();
-
-    }
-
     public void SetValue (string id, float newValue) {
 
         float currentValue;
@@ -121,7 +121,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         }
 
-    }
+    }    
 
     [AOT.MonoPInvokeCallback(typeof(EVENT_CALLBACK))]
     static RESULT CombatMusicBeatEventCallback (EVENT_CALLBACK_TYPE type, EventInstance instance, IntPtr parameterPtr) {
@@ -136,8 +136,6 @@ public class SC_Sound_Manager : MonoBehaviour {
 
                 string markerName = ((TIMELINE_MARKER_PROPERTIES)Marshal.PtrToStructure(parameterPtr, typeof(TIMELINE_MARKER_PROPERTIES))).name;
 
-                // print(markerName);
-
                 if(markerName.Contains("TS"))
                     instance.setParameterValue("Transition", 0);
 
@@ -148,13 +146,31 @@ public class SC_Sound_Manager : MonoBehaviour {
         return RESULT.OK;
 
     }
+    #endregion
+
+    private void Update () {
+
+        if (EventSystem.current.currentSelectedGameObject?.GetComponent<Button>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
+            OnButtonClickSound();
+
+    }
+
+    public void OnButtonClickSound () {
+
+        EventInstance sound = RuntimeManager.CreateInstance(onButtonClickRef);
+        sound.start();
+        sound.release();
+
+
+    }
 
     void OnDestroy () {
 
         combatMusic.setUserData(IntPtr.Zero);
         combatMusic.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         combatMusic.release();
-        combatMusicTimelineHandle.Free();
+        if(combatMusicTimelineHandle.IsAllocated)
+            combatMusicTimelineHandle.Free();
 
     }
 

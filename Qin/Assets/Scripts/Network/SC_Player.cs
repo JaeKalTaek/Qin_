@@ -93,7 +93,7 @@ public class SC_Player : NetworkBehaviour {
 
         UIManager.connectingPanel.SetActive(false);
 
-        SoundManager.StartCombatMusic();
+        SoundManager.StartCombatMusic(UIManager.musicVolume);
 
     }
     #endregion

@@ -23,6 +23,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject playerActionsPanel, optionsPanel, soundPanel, concedePanel;
     public GameObject toggleHealthBarsButton, endTurnButton;
     public TileTooltip tileTooltip;
+    public Slider musicVolume;
 
     [Header("Fight UI")]
     public GameObject previewFightPanel;

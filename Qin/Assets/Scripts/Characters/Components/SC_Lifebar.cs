@@ -7,7 +7,7 @@ public class SC_Lifebar : MonoBehaviour {
 
     void Start() {
 
-        lifebar.SetActive(SC_UI_Manager.Instance.LifeBarsOn);
+        lifebar.SetActive(SC_UI_Manager.Instance.healthBarsToggle.isOn);
 
     }
 

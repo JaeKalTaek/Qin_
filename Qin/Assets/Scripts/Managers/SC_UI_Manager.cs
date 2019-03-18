@@ -21,7 +21,8 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject loadingPanel, victoryPanel;
     public Text turnIndicator;    
     public GameObject playerActionsPanel, optionsPanel, soundPanel, concedePanel;
-    public GameObject toggleHealthBarsButton, endTurnButton;
+    public GameObject endTurnButton;
+    public Toggle healthBarsToggle;
     public TileTooltip tileTooltip;
     public Slider musicVolume;
 
@@ -85,8 +86,6 @@ public class SC_UI_Manager : MonoBehaviour {
     GameObject grid;
 
     public Action backAction;
-
-    public bool LifeBarsOn { get { return toggleHealthBarsButton.name == "On"; } }
 
     Selectable previouslySelected;
     #endregion
@@ -847,15 +846,19 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Both Players  
     void Update () {
 
-        if (Input.GetButtonDown("ToggleGrid"))
-            grid.SetActive(!grid.activeSelf);
-        else if (Input.GetButtonDown("Cancel"))
+        if (Input.GetButtonDown("Cancel"))
             backAction();
         else if (Input.GetButtonDown("DisplayDetails") && CurrentChara?.GetComponent<SC_Character>())
             DisplayCharacterDetails(CurrentChara.GetComponent<SC_Character>());
 
         if (draggedCastle)
             draggedCastle.transform.SetPos(WorldMousePos);
+
+    }
+
+    public void SetGridVisiblity (bool on) {
+
+        grid.SetActive(on);
 
     }
 
@@ -936,8 +939,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
     // Called by UI
     public void ToggleHealth () {
-
-        toggleHealthBarsButton.name = toggleHealthBarsButton.name == "On" ? "Off" : "On";
 
         foreach (SC_Lifebar lifebar in FindObjectsOfType<SC_Lifebar>())
             lifebar.Toggle();

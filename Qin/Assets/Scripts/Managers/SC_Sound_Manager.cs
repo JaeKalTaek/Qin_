@@ -190,7 +190,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
     private void Update () {
 
-        if (EventSystem.current.currentSelectedGameObject?.GetComponent<Button>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
+        if (EventSystem.current.currentSelectedGameObject?.GetComponent<Selectable>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
             OnButtonClick();
 
     }

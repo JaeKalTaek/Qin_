@@ -196,6 +196,9 @@ public class SC_UI_Manager : MonoBehaviour {
     public void NextTurn() {
 
         playerActionsPanel.SetActive(false);
+        optionsPanel.SetActive(false);
+        soundPanel.SetActive(false);
+        concedePanel.SetActive(false);
 
         //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);
 

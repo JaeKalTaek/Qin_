@@ -14,6 +14,14 @@ public class SC_Sound_Manager : MonoBehaviour {
     #region Music
     [Header("Music")]
 
+    #region Main menu music
+    [Header("Main menu music")]
+    [EventRef]
+    public string mainMenuMusicRef;
+
+    EventInstance mainMenuMusic;
+    #endregion
+
     #region Combat Music variables
     [Header("Combat Music")]
     [EventRef]
@@ -78,6 +86,10 @@ public class SC_Sound_Manager : MonoBehaviour {
         Instance = this;
 
         #region Setup events
+        mainMenuMusic = RuntimeManager.CreateInstance(mainMenuMusicRef);
+
+        mainMenuMusic.start();
+
         Bank b;
 
         RuntimeManager.StudioSystem.getBank("HIT", out b);
@@ -87,7 +99,6 @@ public class SC_Sound_Manager : MonoBehaviour {
         footsteps = RuntimeManager.CreateInstance(footstepsRef);
 
         construct = RuntimeManager.CreateInstance(constructRef);
-
         #endregion
 
         DontDestroyOnLoad(this);
@@ -95,7 +106,10 @@ public class SC_Sound_Manager : MonoBehaviour {
     }
 
     #region Combat Music
-    public void StartCombatMusic (Slider volume) {                       
+    public void StartCombatMusic (Slider volume) {
+
+        mainMenuMusic.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        mainMenuMusic.release();
 
         volume.onValueChanged.AddListener((float f) => { combatMusic.setVolume(f / 100); });
 
@@ -190,6 +204,16 @@ public class SC_Sound_Manager : MonoBehaviour {
 
     private void Update () {
 
+        /*if(combatMusic.isValid()) {
+
+            float p;
+
+            combatMusic.getParameterValue("Transition", out p, out p);
+
+            print(p);
+
+        }*/
+
         if (EventSystem.current.currentSelectedGameObject?.GetComponent<Selectable>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
             OnButtonClick();
 
@@ -200,7 +224,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         string a = attacker.Hero ? (attacker.Hero.male ? "" : "FE") + "MALE" : "SOLDIER";
 
-        string b = constru ? "BUILDING" : ((attacked.Soldier || !attacked) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
+        string b = constru ? "BUILDING" : ((attacked.BaseQinChara || !attacked) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
 
         bool c = attacker.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger;
 
@@ -210,8 +234,15 @@ public class SC_Sound_Manager : MonoBehaviour {
 
             e.getPath(out p);
 
-            if (p.Contains("/" + a + "_HIT_" + b + "_SLOW") && (p.Contains("CRIT") == c))
-                RuntimeManager.PlayOneShot(p);
+            if (p.Contains("/" + a + "_HIT_" + b + "_SLOW") && (p.Contains("CRIT") == c)) {
+
+                EventInstance hitSound = RuntimeManager.CreateInstance(p);
+                hitSound.setVolume(.67f);
+                hitSound.start();
+                hitSound.release();
+                
+
+            }
 
         }
 
@@ -232,6 +263,7 @@ public class SC_Sound_Manager : MonoBehaviour {
     #region Constructions
     public void OnConstruct () {
 
+        construct.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         construct.start();
 
     }

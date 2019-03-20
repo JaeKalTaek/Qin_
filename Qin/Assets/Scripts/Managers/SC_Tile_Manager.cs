@@ -517,7 +517,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
         if (!rotation.Equals(""))
             rotation = "_" + rotation;
 
-        construction.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/" + (construction as SC_Castle ? "Castle" : (construction as SC_Wall ? "Wall" : "Bastion")) + "/" + count.ToString() + rotation);
+        construction.GetComponentInChildren<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/" + (construction as SC_Castle ? "Castle" : (construction as SC_Wall ? "Wall" : "Bastion")) + "/" + count.ToString() + rotation);
 
     }
     #endregion

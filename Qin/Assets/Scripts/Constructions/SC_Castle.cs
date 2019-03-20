@@ -15,7 +15,7 @@ public class SC_Castle : SC_Bastion {
 
     public int DemonCost { get { return Resources.Load<SC_Demon>("Prefabs/Characters/Demons/P_" + CastleType + "Demon").cost; } }
 
-    public SpriteRenderer Roof { get { return transform.GetChild(0).GetComponent<SpriteRenderer>(); } }
+    public SpriteRenderer Roof { get { return transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>(); } }
 
     protected override void Start () {
 

@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using static SC_Global;
 using static SC_Player;
 using static SC_Character;
+using TMPro;
 
 public class SC_UI_Manager : MonoBehaviour {
 
@@ -30,6 +31,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject previewFightPanel;
     public CharacterFightPreview attackerPreviewFight, attackedPreviewFight;
     public FightPanel fightPanel;
+    public GameObject noDamageFedbackText;
 
     [Header("Colors")]
     public Color maxHealthColor;
@@ -407,7 +409,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         CurrentChara = SC_Qin.Qin.gameObject;
 
-        characterTooltip.icon.sprite = SC_Qin.Qin.GetComponent<SpriteRenderer>().sprite;
+        characterTooltip.icon.sprite = SC_Qin.Qin.GetComponentInChildren<SpriteRenderer>().sprite;
 
         characterTooltip.name.text = "Qin";
 

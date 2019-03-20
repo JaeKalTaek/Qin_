@@ -224,7 +224,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         string a = attacker.Hero ? (attacker.Hero.male ? "" : "FE") + "MALE" : "SOLDIER";
 
-        string b = constru ? "BUILDING" : ((attacked.BaseQinChara || !attacked) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
+        string b = constru ? "BUILDING" : ((!attacked || attacked.BaseQinChara) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
 
         bool c = attacker.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger;
 

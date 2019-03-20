@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using static SC_Global;
 using static SC_Character;
 using System.Collections;
-using UnityEngine.UI;
 
 public class SC_Fight_Manager : MonoBehaviour {
 
@@ -44,8 +42,6 @@ public class SC_Fight_Manager : MonoBehaviour {
         uiManager.HideWeapons();
 
         uiManager.backAction = DoNothing;
-
-        // uiManager.cancelAction = DoNothing;
 
         #region Setup Fight Panel
         #region Setup Values
@@ -119,13 +115,15 @@ public class SC_Fight_Manager : MonoBehaviour {
         #endregion
 
         #region If the current character is attacking
-        if (attacking) {            
+        if (attacking) {
+
+            SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
 
             float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
             float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru?.Health ?? SC_Qin.Energy) - c.BaseDamage);
 
-            timer = 0;
+            timer = 0;           
 
             while (timer < healthBarAnimTime) {
 
@@ -138,9 +136,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 yield return new WaitForEndOfFrame();
 
-            }
-
-            SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
+            }            
 
             StartCoroutine(FightAnim(c, -travel, false, endValue <= 0));
             #endregion

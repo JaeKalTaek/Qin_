@@ -72,7 +72,7 @@ public class SC_Camera : MonoBehaviour {
 
     Vector3 CursorCornerCamPos (bool sign) {
 
-        float f = ((.5f + cursorMargins[zoomIndex]) * TileSize) * (sign ? 1 : -1);
+        float f = cursorMargins[zoomIndex] * (sign ? 1 : -1);
 
         Vector3 oldPos = transform.position;
 
@@ -87,12 +87,6 @@ public class SC_Camera : MonoBehaviour {
     }
 
     Vector3 ClampedPos(Vector3 p) {
-
-        /*float width = cam.orthographicSize * 2f * cam.aspect;
-
-        print(width + ", " + (width % TileSize));*/
-
-        // print(cam.orthographicSize * cam.aspect);
 
         float xMax = (SC_Tile_Manager.Instance.xSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize * cam.aspect;
         float xMin = (-boardMargins[zoomIndex] - .5f) * TileSize + cam.orthographicSize * cam.aspect;

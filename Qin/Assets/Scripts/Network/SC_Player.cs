@@ -26,53 +26,22 @@ public class SC_Player : NetworkBehaviour {
 
     public bool Ready { get; set; }
 
-    public override void OnStartServer () {
-
-        base.OnStartServer();
-
-        StartCoroutine("WaitForLocalPlayer");
-
-    }
-
-    IEnumerator WaitForLocalPlayer() {
-
-        while (!localPlayer)
-            yield return new WaitForEndOfFrame();
-
-        localPlayer.CmdServerStart();
-
-    }
-
-    [Command]
-    void CmdServerStart() {
-
-        RpcServerStarted();
-
-    }
-
-    [ClientRpc]
-    void RpcServerStarted() {
-
-        StartCoroutine(WaitForGameManager(() => { GameManager.ServerStarted = true; }));
-
-    }
-
     public override void OnStartLocalPlayer () {
 
         base.OnStartLocalPlayer();
 
         localPlayer = this;
 
-        StartCoroutine(WaitForGameManager(() => { GameManager.Player = this; }));
+        StartCoroutine(SetupGameManagerPlayer());
 
     }
 
-    IEnumerator WaitForGameManager(Action action) {
+    IEnumerator SetupGameManagerPlayer() {
 
         while (!GameManager)
             yield return new WaitForEndOfFrame();
 
-        action();
+        GameManager.Player = this;
 
     }
 
@@ -89,7 +58,16 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcFinishConnecting() {
 
-        SC_Cursor.SetLock(false);
+        UIManager.SetupUI(localPlayer.Qin);
+
+        SC_Cursor.Instance = Instantiate(Resources.Load<SC_Cursor>("Prefabs/P_Cursor"));
+
+        if (localPlayer.Qin)
+            SC_Cursor.Instance.transform.position = new Vector3(GameManager.CurrentMapPrefab.SizeMapX - 1, GameManager.CurrentMapPrefab.SizeMapY - 1, 0) * SC_Game_Manager.TileSize;
+        else
+            SC_Cursor.Instance.transform.position = Vector3.zero;
+
+        FindObjectOfType<SC_Camera>().Setup(GameManager.CurrentMapPrefab.SizeMapX, GameManager.CurrentMapPrefab.SizeMapY);
 
         UIManager.connectingPanel.SetActive(false);
 

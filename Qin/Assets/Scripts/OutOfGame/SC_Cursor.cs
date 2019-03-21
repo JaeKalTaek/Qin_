@@ -28,7 +28,7 @@ public class SC_Cursor : NetworkBehaviour {
 
     void Start() {
 
-        Locked = true;
+        // Locked = true;
 
         cam = FindObjectOfType<SC_Camera>();
 

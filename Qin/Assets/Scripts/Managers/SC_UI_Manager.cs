@@ -70,7 +70,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public GameObject CurrentTile { get; set; }
 
-    static SC_Game_Manager gameManager;
+    static SC_Game_Manager GameManager { get { return SC_Game_Manager.Instance; } }
 
     public SC_Tile_Manager TileManager { get; set; }
 
@@ -80,7 +80,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public static Vector2 Size { get { return Instance.GetComponent<RectTransform>().sizeDelta; } }
 
-    public static bool CanInteract { get { return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !gameManager.prep; } }
+    public static bool CanInteract { get { return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !GameManager.prep; } }
 
     public float clickSecurityDuration;
 
@@ -102,13 +102,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    public void SetupUI(bool qin) {       
-
-        gameManager = SC_Game_Manager.Instance;
+    public void SetupUI(bool qin) {
 
         fightManager = SC_Fight_Manager.Instance;
 
-        if (gameManager.prep) {
+        if (GameManager.prep) {
 
             qinPreparationPanel.SetActive(qin);
 
@@ -121,10 +119,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
         // Setup Grid
         SpriteRenderer gridRenderer = Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_Grid").GetComponent<SpriteRenderer>());
-        Vector3 size = new Vector3(gameManager.CurrentMapPrefab.SizeMapX, gameManager.CurrentMapPrefab.SizeMapY, 1) * gameManager.CurrentMapPrefab.TileSize;
+        Vector3 size = new Vector3(GameManager.CurrentMapPrefab.SizeMapX, GameManager.CurrentMapPrefab.SizeMapY, 1) * GameManager.CurrentMapPrefab.TileSize;
         gridRenderer.size = new Vector2(size.x, size.y);
         grid = gridRenderer.gameObject;
-        grid.transform.position = (size - Vector3.one * gameManager.CurrentMapPrefab.TileSize) / 2f;        
+        grid.transform.position = (size - Vector3.one * GameManager.CurrentMapPrefab.TileSize) / 2f;        
 
     }
     #endregion
@@ -207,7 +205,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         backAction = DoNothing;
 
-        turnIndicator.text = gameManager.Qin ? "Qin's Turn" : (gameManager.Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
+        turnIndicator.text = GameManager.Qin ? "Qin's Turn" : (GameManager.Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
 
 	}
     #endregion
@@ -267,13 +265,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.health.GetComponentInChildren<Text>().text = character.Health + " / " + character.MaxHealth;
 
-        characterTooltip.crit.Set(character.CriticalAmount, gameManager.CommonCharactersVariables.critTrigger, false);
+        characterTooltip.crit.Set(character.CriticalAmount, GameManager.CommonCharactersVariables.critTrigger, false);
 
-        characterTooltip.crit.GetComponentInChildren<Text>().text = character.CriticalAmount + " / " + gameManager.CommonCharactersVariables.critTrigger;
+        characterTooltip.crit.GetComponentInChildren<Text>().text = character.CriticalAmount + " / " + GameManager.CommonCharactersVariables.critTrigger;
 
-        characterTooltip.dodge.Set(character.DodgeAmount, gameManager.CommonCharactersVariables.dodgeTrigger, false);
+        characterTooltip.dodge.Set(character.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger, false);
 
-        characterTooltip.dodge.GetComponentInChildren<Text>().text = character.DodgeAmount + " / " + gameManager.CommonCharactersVariables.dodgeTrigger;
+        characterTooltip.dodge.GetComponentInChildren<Text>().text = character.DodgeAmount + " / " + GameManager.CommonCharactersVariables.dodgeTrigger;
 
         characterTooltip.critContainer.SetActive(true);
 
@@ -308,7 +306,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 relationshipsDetails[i].icon.sprite = Resources.Load<SC_Hero>("Prefabs/Characters/Heroes/P_" + c.Hero.RelationshipKeys[i].Replace(" ", "_")).GetComponentInChildren<SpriteRenderer>().sprite;
 
-                relationshipsDetails[i].boostValue.text = "+" + gameManager.CommonCharactersVariables.relationValues.GetValue("boost", v) + "% atk/def";
+                relationshipsDetails[i].boostValue.text = "+" + GameManager.CommonCharactersVariables.relationValues.GetValue("boost", v) + "% atk/def";
 
                 relationshipsDetails[i].boostValue.gameObject.SetActive(true);
 
@@ -316,7 +314,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 relationshipsDetails[i].relationValue.gameObject.SetActive(false);
 
-                relationshipsDetails[i].link.sizeDelta = new Vector2(gameManager.CommonCharactersVariables.relationValues.GetValue("link", v), relationshipsDetails[i].link.sizeDelta.y);
+                relationshipsDetails[i].link.sizeDelta = new Vector2(GameManager.CommonCharactersVariables.relationValues.GetValue("link", v), relationshipsDetails[i].link.sizeDelta.y);
 
             }
 
@@ -498,9 +496,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackedPreviewFight.dodge.gameObject.SetActive(false);
 
-        attackerPreviewFight.crit.Set(attackingCharacter.CriticalAmount, Mathf.Min(attackingCharacter.CriticalAmount + attackingCharacter.Technique, gameManager.CommonCharactersVariables.critTrigger), gameManager.CommonCharactersVariables.critTrigger);
+        attackerPreviewFight.crit.Set(attackingCharacter.CriticalAmount, Mathf.Min(attackingCharacter.CriticalAmount + attackingCharacter.Technique, GameManager.CommonCharactersVariables.critTrigger), GameManager.CommonCharactersVariables.critTrigger);
 
-        attackerPreviewFight.dodge.Set(attackingCharacter.DodgeAmount, attackingCharacter.DodgeAmount, gameManager.CommonCharactersVariables.dodgeTrigger);
+        attackerPreviewFight.dodge.Set(attackingCharacter.DodgeAmount, attackingCharacter.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger);
         
     }
 
@@ -514,8 +512,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         CharacterFightPreview attackedPF = attacker != attackingCharacter ? attackerPreviewFight : attackedPreviewFight;
 
-        int dT = gameManager.CommonCharactersVariables.dodgeTrigger;
-        int cT = gameManager.CommonCharactersVariables.critTrigger;
+        int dT = GameManager.CommonCharactersVariables.dodgeTrigger;
+        int cT = GameManager.CommonCharactersVariables.critTrigger;
 
         if (c && c.GreatWall) {
 
@@ -694,7 +692,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void CreateDemon(SC_Castle castle) {
 
-        gameManager.CurrentCastle = castle;
+        GameManager.CurrentCastle = castle;
 
         DisplayActionPanel();
 
@@ -712,7 +710,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void DisplaySacrificeCastlePanel (SC_Castle castle) {
 
-        gameManager.CurrentCastle = castle;
+        GameManager.CurrentCastle = castle;
 
         DisplayActionPanel();
 
@@ -850,7 +848,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (!clickSecurity) {            
 
-            localPlayer.CmdCreateSoldier(gameManager.CurrentWorkshopPos, s);
+            localPlayer.CmdCreateSoldier(GameManager.CurrentWorkshopPos, s);
 
             EndQinAction();
 
@@ -890,7 +888,7 @@ public class SC_UI_Manager : MonoBehaviour {
             construct.SetActive(localPlayer.Turn);
             sacrifice.SetActive(localPlayer.Turn);
 
-            if (gameManager.QinTurnStarting)
+            if (GameManager.QinTurnStarting)
                 localPlayer.CmdSetQinTurnStarting(false);
 
         }
@@ -1008,7 +1006,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         ActivateMenu(characterActionsPanel);
 
-        backAction = gameManager.ResetMovement;
+        backAction = GameManager.ResetMovement;
 
         TileManager.PreviewAttack();
 

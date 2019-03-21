@@ -50,8 +50,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         Instance = this;
 
-        uiManager = FindObjectOfType<SC_UI_Manager>();
-        uiManager.connectingPanel.SetActive(true);        
+        uiManager = FindObjectOfType<SC_UI_Manager>();    
 
         SC_Village.number = 0;
 
@@ -63,10 +62,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         CurrentMapPrefab = prep ? prepMapPrefab : playMapPrefab;
 
-    }
-
-    void Start() {
-
         TileSize = CurrentMapPrefab.TileSize;
 
         CommonCharactersVariables = Resources.Load<SC_Common_Characters_Variables>("Prefabs/Characters/P_Common_Characters_Variables");
@@ -75,23 +70,23 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         Turn = 1;
 
-        StartCoroutine("WaitForSetup");
+    }
+
+    public override void OnStartServer () {
+
+        ServerStarted = true;
+
+        StartCoroutine("WaitForPlayer");
 
     }
 
-    IEnumerator WaitForSetup () {
+    IEnumerator WaitForPlayer () {
 
-        while (!Player && !ServerStarted)
-            yield return new WaitForEndOfFrame();
+        while (!Player)
+            yield return null;
 
-        uiManager.SetupUI(Player.Qin);
-
-        if (isServer) {
-
-            GenerateMap();
-            SetupTileManager();
-
-        }
+        GenerateMap();
+        SetupTileManager();
 
     }
 

@@ -48,14 +48,14 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         SC_Fight_Manager.Instance.TileManager = this;
 
-        SC_Cursor.Instance = Instantiate(Resources.Load<SC_Cursor>("Prefabs/P_Cursor"));
+        /*SC_Cursor.Instance = Instantiate(Resources.Load<SC_Cursor>("Prefabs/P_Cursor"));
 
         if (gameManager.Player.Qin)
             SC_Cursor.Instance.transform.position = new Vector3(xSize - 1, ySize - 1, 0) * SC_Game_Manager.TileSize;
         else
-            SC_Cursor.Instance.transform.position = Vector3.zero;
+            SC_Cursor.Instance.transform.position = Vector3.zero;*/
 
-        FindObjectOfType<SC_Camera>().Setup(xSize, ySize);
+        // FindObjectOfType<SC_Camera>().Setup(xSize, ySize);
 
         tiles = new SC_Tile[xSize, ySize];
 

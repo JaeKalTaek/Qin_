@@ -123,6 +123,26 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru?.Health ?? SC_Qin.Energy) - c.BaseDamage);
 
+            #region Text Feedback
+            string feedbackText = "";
+
+            if (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger)
+                feedbackText += "Critical";
+
+            if (baseValue == endValue)
+                feedbackText += ((feedbackText != "" ? "/n" : "") + "No Damage");
+
+            if(feedbackText != "") {
+
+                uiManager.combatFeedbackText.text = feedbackText;
+
+                uiManager.combatFeedbackText.transform.position = c.transform.position + (travel.y > 0 ? Vector3.down : Vector3.up) + (Vector3.right * (travel.x / 2));
+
+                uiManager.combatFeedbackText.gameObject.SetActive(true);
+
+            }                
+            #endregion
+
             timer = 0;           
 
             while (timer < healthBarAnimTime) {
@@ -136,7 +156,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 yield return new WaitForEndOfFrame();
 
-            }            
+            }
+
+            uiManager.combatFeedbackText.gameObject.SetActive(false);
 
             StartCoroutine(FightAnim(c, -travel, false, endValue <= 0));
             #endregion

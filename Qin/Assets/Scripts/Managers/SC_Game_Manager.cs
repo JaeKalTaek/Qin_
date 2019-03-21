@@ -75,25 +75,16 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         Turn = 1;
 
-        StartCoroutine("WaitForPlayer");
-
-        StartCoroutine("WaitForServer");		
+        StartCoroutine("WaitForSetup");
 
     }
 
-    IEnumerator WaitForPlayer() {
+    IEnumerator WaitForSetup () {
 
-        while (!Player)
+        while (!Player && !ServerStarted)
             yield return new WaitForEndOfFrame();
 
         uiManager.SetupUI(Player.Qin);
-
-    }
-
-    IEnumerator WaitForServer() {
-
-        while (!ServerStarted)
-            yield return new WaitForEndOfFrame();
 
         if (isServer) {
 

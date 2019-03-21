@@ -113,6 +113,17 @@ public class SC_Global {
     }
 
     [Serializable]
+    public class RelationshipDetails {
+
+        public Image icon;
+
+        public Text boostValue, relationValue;
+
+        public RectTransform link;
+
+    }
+
+    [Serializable]
     public class CharacterFightPreview {
 
         public Text name, constructionName;

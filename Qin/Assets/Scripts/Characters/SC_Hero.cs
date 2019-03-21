@@ -266,11 +266,16 @@ public class SC_Hero : SC_Character {
 
     }
 
-    public void IncreaseRelationships (int amount) {
+    public void IncreaseRelationships (int amount) {        
 
         List<SC_Hero> heroesInRange = tileManager.HeroesInRange(this);
 
+        if(heroesInRange.Count > 0)
+            Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+
         foreach (SC_Hero hero in heroesInRange) {
+
+            Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
 
             Relationships[hero.characterName] += Mathf.CeilToInt(amount / heroesInRange.Count);
             hero.Relationships[characterName] += Mathf.CeilToInt(amount / heroesInRange.Count);

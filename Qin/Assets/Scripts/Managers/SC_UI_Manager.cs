@@ -7,6 +7,7 @@ using static SC_Global;
 using static SC_Player;
 using static SC_Character;
 using TMPro;
+using Prototype.NetworkLobby;
 
 public class SC_UI_Manager : MonoBehaviour {
 
@@ -31,7 +32,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject previewFightPanel;
     public CharacterFightPreview attackerPreviewFight, attackedPreviewFight;
     public FightPanel fightPanel;
-    public GameObject noDamageFedbackText;
+    public TextMeshProUGUI combatFeedbackText;
 
     [Header("Colors")]
     public Color maxHealthColor;
@@ -44,7 +45,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject attackButton, destroyConstruButton, buildConstruButton;    
 
     [Header("Heroes")]
-    public GameObject relationshipPanel;
+    public RelationshipDetails[] relationshipsDetails;
     public GameObject weaponChoicePanel, weaponChoice1, weaponChoice2;
     // public GameObject usePower;
 
@@ -305,13 +306,17 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 c.Hero.Relationships.TryGetValue(c.Hero.RelationshipKeys[i], out v);
 
-                Transform t = characterDetails.relationshipsPanel.GetChild(i);
+                relationshipsDetails[i].icon.sprite = Resources.Load<SC_Hero>("Prefabs/Characters/Heroes/P_" + c.Hero.RelationshipKeys[i].Replace(" ", "_")).GetComponentInChildren<SpriteRenderer>().sprite;
 
-                t.GetChild(0).GetComponent<Image>().sprite = Resources.Load<SC_Hero>("Prefabs/Characters/Heroes/P_" + c.Hero.RelationshipKeys[i].Replace(" ", "_")).GetComponentInChildren<SpriteRenderer>().sprite;
+                relationshipsDetails[i].boostValue.text = "+" + gameManager.CommonCharactersVariables.relationValues.GetValue("boost", v) + "% atk/def";
 
-                t.GetChild(1).GetComponent<Text>().text = v.ToString();                
+                relationshipsDetails[i].boostValue.gameObject.SetActive(true);
 
-                (t.GetChild(2) as RectTransform).sizeDelta = new Vector2(gameManager.CommonCharactersVariables.relationValues.GetValue("link", v), (t.GetChild(2) as RectTransform).sizeDelta.y);
+                relationshipsDetails[i].relationValue.text = v.ToString();
+
+                relationshipsDetails[i].relationValue.gameObject.SetActive(false);
+
+                relationshipsDetails[i].link.sizeDelta = new Vector2(gameManager.CommonCharactersVariables.relationValues.GetValue("link", v), relationshipsDetails[i].link.sizeDelta.y);
 
             }
 
@@ -323,6 +328,14 @@ public class SC_UI_Manager : MonoBehaviour {
         characterDetails.soldierPanel.SetActive(c.Soldier);
 
         DisplayCharacterDetails(true);
+
+    }
+
+    public void ToggleRelationshipValueType (int id) {
+
+        relationshipsDetails[id].boostValue.gameObject.SetActive(!relationshipsDetails[id].boostValue.gameObject.activeSelf);
+
+        relationshipsDetails[id].relationValue.gameObject.SetActive(!relationshipsDetails[id].relationValue.gameObject.activeSelf);
 
     }
 
@@ -859,6 +872,9 @@ public class SC_UI_Manager : MonoBehaviour {
         if (draggedCastle)
             draggedCastle.transform.SetPos(WorldMousePos);
 
+        if (victoryPanel.activeSelf && Input.anyKeyDown)
+            ForceMainMenuReturn();
+
     }
 
     public void SetGridVisiblity (bool on) {
@@ -955,6 +971,14 @@ public class SC_UI_Manager : MonoBehaviour {
         victoryPanel.GetComponentInChildren<Text>().text = (qinWon ? "Qin" : "The Heroes") + " won the war !";
 
         victoryPanel.SetActive(true);
+
+        Invoke("ForceMainMenuReturn", 5f);
+
+    }
+
+    void ForceMainMenuReturn () {
+
+        LobbyManager.s_Singleton.StopClientClbk();
 
     }
 

@@ -19,7 +19,7 @@ public class ReplaceFontEditor : Editor {
         foreach (Transform t in startT) {
 
             if (t.GetComponent<Text>())
-                t.GetComponent<Text>().font = Resources.Load<Font>("Fonts/shanghai");
+                t.GetComponent<Text>().font = Resources.Load<Font>("Fonts/Flailed");
 
             if (t.childCount > 0)
                 Recursive(t);

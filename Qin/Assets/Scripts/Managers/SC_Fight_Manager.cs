@@ -86,7 +86,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     IEnumerator FightAnim(SC_Character c, Vector3 travel, bool attacking, bool killed = false) {
         
-        #region Character who is currently attacking moves
+        #region Current character moves
         Vector3 basePos = c.transform.position;
 
         yield return new WaitForSeconds(fightDelay);
@@ -104,6 +104,8 @@ public class SC_Fight_Manager : MonoBehaviour {
         }
 
         yield return new WaitForSeconds(fightDelay);
+
+        uiManager.combatFeedbackText.gameObject.SetActive(false);
         #endregion
 
         #region Setting up variables
@@ -127,10 +129,10 @@ public class SC_Fight_Manager : MonoBehaviour {
             string feedbackText = "";
 
             if (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger)
-                feedbackText += "Critical";
+                feedbackText += "Crit!";
 
             if (baseValue == endValue)
-                feedbackText += ((feedbackText != "" ? "/n" : "") + "No Damage");
+                feedbackText += ((feedbackText != "" ? "/n" : "") + "No Damage!");
 
             if(feedbackText != "") {
 
@@ -156,9 +158,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 yield return new WaitForEndOfFrame();
 
-            }
-
-            uiManager.combatFeedbackText.gameObject.SetActive(false);
+            }            
 
             StartCoroutine(FightAnim(c, -travel, false, endValue <= 0));
             #endregion

@@ -258,7 +258,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             tile.ChangeDisplay(TDisplay.Attack);
 
             if (tile.CursorOn)
-                tile.Hero?.PreviewFight();
+                tile.Hero?.PreviewAttackOnHero();
 
         }
 

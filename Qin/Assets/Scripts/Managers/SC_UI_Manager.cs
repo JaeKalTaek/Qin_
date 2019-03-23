@@ -966,6 +966,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void ShowVictory (bool qinWon) {
 
+        SC_Sound_Manager.Instance.GameOver();
+
         victoryPanel.GetComponentInChildren<Text>().text = (qinWon ? "Qin" : "The Heroes") + " won the war !";
 
         victoryPanel.SetActive(true);

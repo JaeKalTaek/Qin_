@@ -93,7 +93,7 @@ public class SC_Hero : SC_Character {
 
 	}
 
-	public void PreviewFight() {
+	public void PreviewAttackOnHero() {
 
 		if (!attackingCharacter.Hero && SC_UI_Manager.CanInteract && SC_Player.localPlayer.Turn) {
 

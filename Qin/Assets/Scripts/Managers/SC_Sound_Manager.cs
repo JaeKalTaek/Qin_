@@ -109,9 +109,8 @@ public class SC_Sound_Manager : MonoBehaviour {
     public void StartCombatMusic (Slider volume) {
 
         mainMenuMusic.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        mainMenuMusic.release();
 
-        volume.onValueChanged.AddListener((float f) => { combatMusic.setVolume(f / 100); });
+        volume.onValueChanged.AddListener((float f) => { combatMusic.setVolume(f); });
 
         combatMusicTimelineInfo = new TimelineInfo();
 
@@ -296,6 +295,15 @@ public class SC_Sound_Manager : MonoBehaviour {
 
     }
     #endregion
+
+    public void GameOver() {
+
+        combatMusic.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        combatMusic.release();
+
+        mainMenuMusic.start();
+
+    }
 
     void OnDestroy () {
 

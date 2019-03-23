@@ -83,13 +83,13 @@ public class SC_Tile : NetworkBehaviour {
     // Used for PathFinder
     public SC_Tile Parent { get; set; }
 
-	static SC_Game_Manager gameManager;
+	static SC_Game_Manager GameManager { get { return SC_Game_Manager.Instance; } }
 
-	static SC_Tile_Manager tileManager;
+	static SC_Tile_Manager TileManager { get { return SC_Tile_Manager.Instance; } }
 
-    static SC_UI_Manager uiManager;
+    static SC_UI_Manager UIManager { get { return SC_UI_Manager.Instance; } }
 
-    static SC_Fight_Manager fightManager;
+    static SC_Fight_Manager FightManager { get { return SC_Fight_Manager.Instance; } }
 
     SpriteRenderer filter;
 
@@ -139,28 +139,21 @@ public class SC_Tile : NetworkBehaviour {
 
     void Start() {
 
-        if(!gameManager)
-            gameManager = SC_Game_Manager.Instance;
+        if (GameManager) {
 
-        if(!tileManager)
-            tileManager = SC_Tile_Manager.Instance;
+            if (transform.position.x.I() == (GameManager.CurrentMapPrefab.SizeMapX - 1) && transform.position.y.I() == (GameManager.CurrentMapPrefab.SizeMapY - 1)) {
 
-        if(!uiManager)
-            uiManager = SC_UI_Manager.Instance;
+                if (!isServer)
+                    GameManager.StartCoroutine("FinishConnecting");
 
-        if (!fightManager)
-            fightManager = SC_Fight_Manager.Instance;
-
-        if (transform.position.x.I() == (gameManager.CurrentMapPrefab.SizeMapX - 1) && transform.position.y.I() == (gameManager.CurrentMapPrefab.SizeMapY - 1)) {
-
-            if(!isServer)
-                gameManager.StartCoroutine("FinishConnecting");
+            }
 
         }
 
         filter = transform.GetChild(0).GetComponent<SpriteRenderer>();
 
-        transform.parent = uiManager.tilesT;        
+        if(UIManager)
+            transform.parent = UIManager.tilesT;        
 
     }
 
@@ -176,7 +169,7 @@ public class SC_Tile : NetworkBehaviour {
 
             } else if (CurrentDisplay == TDisplay.Movement) {
 
-                uiManager.backAction = DoNothing;       
+                UIManager.backAction = DoNothing;       
 
                 SC_Player.localPlayer.Busy = true;
 
@@ -186,14 +179,16 @@ public class SC_Tile : NetworkBehaviour {
 
                 SC_Cursor.SetLock(true);
 
-                tileManager.RemoveAllFilters();
+                TileManager.RemoveAllFilters();
 
-                fightManager.AttackRange = SC_Tile_Manager.TileDistance(attackingCharacter.transform.position, this);
+                FightManager.AttackRange = SC_Tile_Manager.TileDistance(attackingCharacter.transform.position, this);
 
-                SC_Player.localPlayer.CmdPrepareForAttack(fightManager.AttackRange, gameObject);
+                attackingCharacter.AttackTarget = this;
+
+                SC_Player.localPlayer.CmdPrepareForAttack(FightManager.AttackRange, gameObject);
 
                 if (attackingCharacter.Hero)
-                    uiManager.ChooseWeapon();
+                    UIManager.ChooseWeapon();
                 else
                     SC_Player.localPlayer.CmdAttack();
 
@@ -223,16 +218,16 @@ public class SC_Tile : NetworkBehaviour {
                     Workshop.SelectWorkshop();
                 else if (Castle && !Character && SC_Player.localPlayer.Qin) {
                     if (!SC_Demon.demons[Region])
-                        uiManager.CreateDemon(Castle);
+                        UIManager.CreateDemon(Castle);
                     else if (SC_Demon.demons[Region].Alive == -1)
-                        uiManager.DisplaySacrificeCastlePanel(Castle);
+                        UIManager.DisplaySacrificeCastlePanel(Castle);
                 } else
-                    uiManager.ActivateMenu(uiManager.playerActionsPanel);
+                    UIManager.ActivateMenu(UIManager.playerActionsPanel);
 
             }
 
         } else if (SC_UI_Manager.CanInteract && CurrentDisplay == TDisplay.None)
-            uiManager.ActivateMenu(uiManager.playerActionsPanel);
+            UIManager.ActivateMenu(UIManager.playerActionsPanel);
 
     }
 
@@ -241,7 +236,7 @@ public class SC_Tile : NetworkBehaviour {
         CursorOn = true;
 
         if (CurrentDisplay == TDisplay.Attack)
-            Hero?.PreviewFight();
+            Hero?.PreviewAttackOnHero();
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
         else {
@@ -251,7 +246,7 @@ public class SC_Tile : NetworkBehaviour {
 
         }
 
-        if(!uiManager.previewFightPanel.activeSelf)
+        if(!UIManager.previewFightPanel.activeSelf)
             this.ShowInfos();
 
     }
@@ -261,11 +256,11 @@ public class SC_Tile : NetworkBehaviour {
         CursorOn = false;
 
         if (CurrentDisplay == TDisplay.Attack && Hero)
-            uiManager.HidePreviewFight();
+            UIManager.HidePreviewFight();
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
 
-        uiManager.HideInfos(CanChangeFilters);
+        UIManager.HideInfos(CanChangeFilters);
 
     }
 

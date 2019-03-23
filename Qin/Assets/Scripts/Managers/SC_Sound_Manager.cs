@@ -217,7 +217,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         }*/
 
-        if (EventSystem.current.currentSelectedGameObject?.GetComponent<Selectable>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
+        if (EventSystem.current?.currentSelectedGameObject?.GetComponent<Selectable>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
             OnButtonClick();
 
     }

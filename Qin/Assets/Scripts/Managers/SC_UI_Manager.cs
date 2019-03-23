@@ -259,7 +259,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.name.text = character.characterName;
 
-        characterTooltip.healthLabel.text = "Health";
+        characterTooltip.healthLabel.text = "HP";
 
         characterTooltip.health.Set(character.Health, character.MaxHealth);
 

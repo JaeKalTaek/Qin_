@@ -85,7 +85,17 @@ public class SC_Fight_Manager : MonoBehaviour {
     }
 
     IEnumerator FightAnim(SC_Character c, Vector3 travel, bool attacking, bool killed = false) {
-        
+
+        #region Setting up variables
+        bool counter = attackingCharacter != c;
+
+        SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
+
+        SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
+        #endregion
+
+        SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
+
         #region Current character moves
         Vector3 basePos = c.transform.position;
 
@@ -106,20 +116,10 @@ public class SC_Fight_Manager : MonoBehaviour {
         yield return new WaitForSeconds(fightDelay);
 
         uiManager.combatFeedbackText.gameObject.SetActive(false);
-        #endregion
-
-        #region Setting up variables
-        bool counter = attackingCharacter != c;
-
-        SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
-
-        SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
-        #endregion
+        #endregion        
 
         #region If the current character is attacking
-        if (attacking) {
-
-            SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
+        if (attacking) {           
 
             float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 

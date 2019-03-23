@@ -97,8 +97,10 @@ public class SC_Sound_Manager : MonoBehaviour {
         b.getEventList(out hitEvents);
 
         footsteps = RuntimeManager.CreateInstance(footstepsRef);
+        footsteps.setVolume(.5f);
 
         construct = RuntimeManager.CreateInstance(constructRef);
+        construct.setVolume(.5f);
         #endregion
 
         DontDestroyOnLoad(this);
@@ -236,10 +238,9 @@ public class SC_Sound_Manager : MonoBehaviour {
             if (p.Contains("/" + a + "_HIT_" + b + "_SLOW") && (p.Contains("CRIT") == c)) {
 
                 EventInstance hitSound = RuntimeManager.CreateInstance(p);
-                hitSound.setVolume(.67f);
+                hitSound.setVolume(.5f);
                 hitSound.start();
-                hitSound.release();
-                
+                hitSound.release();                
 
             }
 
@@ -275,7 +276,10 @@ public class SC_Sound_Manager : MonoBehaviour {
 
     public void OnConstructionDestroyed () {
 
-        RuntimeManager.PlayOneShot(constructionDestroyedRef);
+        EventInstance sound = RuntimeManager.CreateInstance(constructionDestroyedRef);
+        sound.setVolume(.5f);
+        sound.start();
+        sound.release();
 
     }
     #endregion
@@ -283,7 +287,10 @@ public class SC_Sound_Manager : MonoBehaviour {
     #region UI
     public void OnButtonClick () {
 
-        RuntimeManager.PlayOneShot(onButtonClickRef);
+        EventInstance sound = RuntimeManager.CreateInstance(onButtonClickRef);
+        sound.setVolume(.5f);
+        sound.start();
+        sound.release();
 
     }
     #endregion
@@ -291,7 +298,10 @@ public class SC_Sound_Manager : MonoBehaviour {
     #region Cursor
     public void OnCursorMoved () {
 
-        RuntimeManager.PlayOneShot(cursorMovedRef);        
+        EventInstance sound = RuntimeManager.CreateInstance(cursorMovedRef);
+        sound.setVolume(.5f);
+        sound.start();
+        sound.release();
 
     }
     #endregion

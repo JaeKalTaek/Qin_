@@ -97,7 +97,7 @@ public class SC_EditorTile : MonoBehaviour {
 
     public enum HeroType {
 
-        None, Fei_Xue, Mulang_Ji, Sun_Shangxiang, Xing_Kong, Yu_Shu_Lien, Zhang_Fei
+        None, Lin, Lei, Jung, Feng, Yama, Tudi
 
     }
 

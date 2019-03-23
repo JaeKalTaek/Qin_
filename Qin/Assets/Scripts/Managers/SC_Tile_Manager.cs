@@ -31,7 +31,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
     List<SC_Tile> MovementRange { get; set; }
     Dictionary<SC_Tile, int> movementPoints = new Dictionary<SC_Tile, int>();
 
-    public SC_Pump DisplayedPump { get; set; }    
+    public SC_DrainingStele DisplayedDrainingStele { get; set; }    
 
     void Awake() {
 

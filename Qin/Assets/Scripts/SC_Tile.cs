@@ -32,7 +32,7 @@ public class SC_Tile : NetworkBehaviour {
         if (Character)
             return c.Qin != Character.Qin;
         else if (Construction)
-            return !c.Qin && (Construction.GreatWall || Pump);
+            return !c.Qin && (Construction.GreatWall || DrainingStele);
         else if (Qin)
             return !c.Qin;
         else
@@ -56,9 +56,9 @@ public class SC_Tile : NetworkBehaviour {
 
     public bool GreatWall { get { return Construction?.GreatWall ?? false; } }
 
-    public SC_Workshop Workshop { get { return Construction as SC_Workshop; } }
+    public SC_Pit Pit { get { return Construction as SC_Pit; } }
 
-    public SC_Pump Pump { get { return Construction?.Pump; } }
+    public SC_DrainingStele DrainingStele { get { return Construction?.DrainingStele; } }
 
     public bool ProductionBuilding { get { return Construction?.production ?? false; } }
 
@@ -214,8 +214,8 @@ public class SC_Tile : NetworkBehaviour {
 
                 if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
                     Character.TryCheckMovements();
-                else if (Workshop && SC_Player.localPlayer.Qin)
-                    Workshop.SelectWorkshop();
+                else if (Pit && SC_Player.localPlayer.Qin)
+                    Pit.SelectPit();
                 else if (Castle && !Character && SC_Player.localPlayer.Qin) {
                     if (!SC_Demon.demons[Region])
                         UIManager.CreateDemon(Castle);

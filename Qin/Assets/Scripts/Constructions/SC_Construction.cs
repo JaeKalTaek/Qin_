@@ -29,7 +29,7 @@ public class SC_Construction : NetworkBehaviour {
 
     public bool GreatWall { get { return this as SC_Bastion; } }
 
-    public SC_Pump Pump { get { return this as SC_Pump; } }
+    public SC_DrainingStele DrainingStele { get { return this as SC_DrainingStele; } }
 
     public SC_Ruin Ruin { get { return this as SC_Ruin; } }
 

@@ -30,7 +30,7 @@ public class SC_Hero : SC_Character {
 
     public bool ReadyToRegen { get; set; }
 
-    public int PumpSlow { get; set; }
+    public int DrainingSteleSlow { get; set; }
 
     public static List<SC_Hero> heroes;
 
@@ -117,11 +117,11 @@ public class SC_Hero : SC_Character {
 
 	public void Regen() {
 
-		if (Tile.Village) {
+		if (Tile.Village || Tile.Pit) {
 
             if (ReadyToRegen) {
 
-                Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.villageRegen, MaxHealth);
+                Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.prodConstructionRegen, MaxHealth);
                 UpdateHealth();
 
             } else {

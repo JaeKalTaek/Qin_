@@ -56,13 +56,13 @@ public class SC_UI_Manager : MonoBehaviour {
     public CreationTooltip construTooltip, soldierTooltip;
     public Transform qinPower;
     public GameObject sacrifice, endSacrifice;
-    public GameObject workshopPanel;
+    public GameObject pitPanel;
     public CreateDemonPanel createDemonPanel;
     public SacrificeCastlePanel sacrificeCastlePanel;
 
     [Header("Transforms")]
     public Transform tilesT;
-    public Transform bordersT, soldiersT, heroesT, demonsT, wallsT, bastionsT, castlesT, workshopsT, ruinsT, villagesT;
+    public Transform bordersT, soldiersT, heroesT, demonsT, wallsT, bastionsT, castlesT, pitsT, ruinsT, villagesT;
     #endregion
 
     #region Variables
@@ -289,12 +289,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
         ShowCharacterInfos(c);
 
-        foreach (Transform t in characterDetails.stats)
+        foreach (Transform t in characterDetails.stats.GetChild(0))
             if(t.gameObject.activeSelf)
                 t.GetChild(1).GetComponent<Text>().text = GetStat(c, t.name);
 
-        for (int i = 0; i < characterDetails.weapons.childCount; i++)
-            characterDetails.weapons.GetChild(i).GetComponent<Text>().text = (i == 0) ? c.GetActiveWeapon().weaponName : (i == 1) ? (c.Hero?.GetWeapon(false).weaponName) : "";
+        for (int i = 0; i < characterDetails.weapons.GetChild(0).childCount; i++)
+            characterDetails.weapons.GetChild(0).GetChild(i).GetComponent<Text>().text = (i == 0) ? c.GetActiveWeapon().weaponName : (i == 1) ? (c.Hero?.GetWeapon(false).weaponName) : "";
 
         if(c.Hero) {
 
@@ -318,12 +318,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
             }
 
-            characterDetails.relationshipsPanel.GetChild(5).GetComponent<Image>().sprite = c.Sprite.sprite;
+            characterDetails.relationshipsPanel.GetChild(6).GetComponent<Image>().sprite = c.Sprite.sprite;
 
         }
 
         characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);
-        characterDetails.soldierPanel.SetActive(c.Soldier);
+        // characterDetails.soldierPanel.SetActive(c.Soldier);
 
         DisplayCharacterDetails(true);
 
@@ -345,9 +345,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterDetails.panel.SetActive(b);
 
-        turnIndicator.gameObject.SetActive(!b);
-
-        qinEnergy.gameObject.SetActive(!b);
+        turnIndicator.transform.parent.gameObject.SetActive(!b);
 
         tileTooltip.panel.SetActive(!b);
 
@@ -405,11 +403,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         }
 
-        if (SC_Tile.CanChangeFilters && construction.Pump) {
+        if (SC_Tile.CanChangeFilters && construction.DrainingStele) {
 
-            TileManager.DisplayedPump = construction.Pump;
+            TileManager.DisplayedDrainingStele = construction.DrainingStele;
 
-            foreach (SC_Tile tile in TileManager.GetRange(construction.transform.position, construction.Pump.range))
+            foreach (SC_Tile tile in TileManager.GetRange(construction.transform.position, construction.DrainingStele.range))
                 tile.SetFilter(TDisplay.Attack);
 
         }
@@ -638,7 +636,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         endSacrifice.SetActive(false);
 
-        workshopPanel.SetActive(false);
+        pitPanel.SetActive(false);
 
         createDemonPanel.panel.SetActive(false);
 
@@ -833,22 +831,22 @@ public class SC_UI_Manager : MonoBehaviour {
     }
     #endregion
 
-    #region Workshop
-    public void DisplayWorkshopPanel() {
+    #region Pit
+    public void DisplayPitPanel() {
 
         DisplayActionPanel();
 
-        workshopPanel.SetActive(true);
+        pitPanel.SetActive(true);
 
-        UpdateCreationPanel(workshopPanel.transform.GetChild(1), true);
+        UpdateCreationPanel(pitPanel.transform.GetChild(1), true);
 
     }    
 
-    public void WorkshopCreateSoldier (string s) {
+    public void PitCreateSoldier (string s) {
 
         if (!clickSecurity) {            
 
-            localPlayer.CmdCreateSoldier(GameManager.CurrentWorkshopPos, s);
+            localPlayer.CmdCreateSoldier(GameManager.CurrentPitPos, s);
 
             EndQinAction();
 

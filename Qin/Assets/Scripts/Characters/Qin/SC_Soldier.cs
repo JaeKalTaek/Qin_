@@ -53,8 +53,7 @@ public class SC_Soldier : SC_BaseQinChara {
 
         base.DestroyCharacter();
 
-        if(isServer)
-		    SC_Player.localPlayer.CmdDestroyGameObject (gameObject);
+        Destroy(gameObject);
 
     }
 

@@ -286,7 +286,8 @@ public class SC_Tile : NetworkBehaviour {
 
         CurrentDisplay = TDisplay.None;
 
-        filter.enabled = false;
+        if(filter)
+            filter.enabled = false;
 
 	}
 

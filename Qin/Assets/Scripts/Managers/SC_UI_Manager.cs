@@ -203,8 +203,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
         //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);
 
-        backAction = DoNothing;
-
         turnIndicator.text = GameManager.Qin ? "Qin's Turn" : (GameManager.Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
 
 	}
@@ -339,7 +337,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     void DisplayCharacterDetails(bool b) {
 
-        SC_Cursor.Instance.Locked = b;
+        SC_Cursor.SetLock(b);
 
         backAction = b ? (Action)(() => DisplayCharacterDetails(false)) : DoNothing;
 
@@ -963,6 +961,8 @@ public class SC_UI_Manager : MonoBehaviour {
     }
 
     public void ShowVictory (bool qinWon) {
+
+        print("Hello");
 
         SC_Sound_Manager.Instance.GameOver();
 

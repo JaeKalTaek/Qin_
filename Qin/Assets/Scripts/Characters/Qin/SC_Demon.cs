@@ -157,8 +157,8 @@ public class SC_Demon : SC_BaseQinChara {
 
         Alive = SC_Castle.castles[Region] ? 0 : -1;
 
-        if (isServer && !SC_Castle.castles[Region])
-            SC_Player.localPlayer.CmdDestroyGameObject(gameObject);
+        if (!SC_Castle.castles[Region])
+            Destroy(gameObject);
         else
             gameObject.SetActive(false);
 

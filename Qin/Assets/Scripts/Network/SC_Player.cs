@@ -406,22 +406,6 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
-    /*#region Destroy Construction
-    [Command]
-    public void CmdDestroyConstruction (GameObject c) {
-
-        RpcDestroyConstruction(c);
-
-    }
-
-    [ClientRpc]
-    void RpcDestroyConstruction (GameObject c) {
-
-        c.GetComponent<SC_Construction>().DestroyConstruction();
-
-    }
-    #endregion*/
-
     #region Create Soldier
     [Command]
     public void CmdCreateSoldier(Vector3 pos, string soldierName) {
@@ -522,36 +506,6 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
-    [Command]
-	public void CmdDestroyGameObject(GameObject go) {
-
-		if(go && (go.name != "dead")) {
-
-			go.name = "dead";
-
-			NetworkServer.Destroy (go);
-
-		}
-
-	}
 	#endregion
-
-	/*public void SetGameManager(SC_Game_Manager gm) {
-
-		gameManager = gm; 
-
-	}*/
-
-	/*public void SetTileManager(SC_Tile_Manager tm) {
-
-		TileManager = tm;
-
-	}
-
-	/*public void SetSide() {
-
-        Qin = FindObjectOfType<SC_Network_Manager>().IsQinHost() == isServer;
-        
-    }*/
 
 }

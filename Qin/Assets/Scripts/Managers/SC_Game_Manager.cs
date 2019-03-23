@@ -223,7 +223,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 	    Turn++;
 
-        SC_Cursor.SetLock(false);
+        if(Player.Turn)
+            SC_Cursor.SetLock(false);
 
         // tileManager.RemoveAllFilters();        
 

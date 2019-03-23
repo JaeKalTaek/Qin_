@@ -200,6 +200,9 @@ public class SC_UI_Manager : MonoBehaviour {
         optionsPanel.SetActive(false);
         soundPanel.SetActive(false);
         concedePanel.SetActive(false);
+        characterDetails.panel.SetActive(false);
+
+        backAction = DoNothing;
 
         //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);
 

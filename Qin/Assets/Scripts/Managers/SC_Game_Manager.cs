@@ -586,18 +586,23 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void FinishAction (/*bool sync*/) {
 
-        SC_Cursor.SetLock(false);
+        SC_Character.FinishCharacterAction();
 
-        /*if (sync)
-            Player.CmdFinishCharacterAction();
-        else*/
-            SC_Character.FinishCharacterAction();
+        if (Player.Turn) {
 
-        uiManager.characterActionsPanel.SetActive(false);
+            SC_Cursor.SetLock(false);
 
-        uiManager.backAction = DoNothing;
+            /*if (sync)
+                Player.CmdFinishCharacterAction();
+            else*/
 
-        Player.Busy = false;
+            uiManager.characterActionsPanel.SetActive(false);
+
+            uiManager.backAction = DoNothing;
+
+            Player.Busy = false;
+
+        }
 
     }
 

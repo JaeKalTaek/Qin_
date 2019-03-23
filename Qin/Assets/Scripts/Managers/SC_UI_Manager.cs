@@ -860,6 +860,8 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Both Players  
     void Update () {
 
+        print(backAction.GetInvocationList().Length);
+
         if (Input.GetButtonDown("Cancel"))
             backAction();
         else if (Input.GetButtonDown("DisplayDetails") && CurrentChara?.GetComponent<SC_Character>())

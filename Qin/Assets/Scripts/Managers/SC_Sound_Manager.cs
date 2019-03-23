@@ -126,6 +126,8 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         combatMusic.setCallback(combatMusicCallback, EVENT_CALLBACK_TYPE.TIMELINE_MARKER);
 
+        combatMusic.setVolume(.5f);
+
         combatMusic.start();
 
     }

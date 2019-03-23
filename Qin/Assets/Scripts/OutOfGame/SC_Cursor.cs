@@ -88,7 +88,7 @@ public class SC_Cursor : NetworkBehaviour {
 
                 SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.OnCursorEnter();
 
-                SetTileTooltipPos();             
+                SetRightLeftPanels();             
 
             }            
 
@@ -114,7 +114,7 @@ public class SC_Cursor : NetworkBehaviour {
 
     }
 
-    void SetTileTooltipPos() {
+    void SetRightLeftPanels() {
 
         float x = Camera.main.WorldToViewportPoint(transform.position).x;
 
@@ -122,9 +122,8 @@ public class SC_Cursor : NetworkBehaviour {
 
             right ^= true;
 
-            RectTransform rectT = SC_UI_Manager.Instance.tileTooltip.panel.GetComponent<RectTransform>();
-
-            rectT.anchoredPosition = new Vector2(right ? 0 : SC_UI_Manager.Size.x  - rectT.sizeDelta.x, rectT.anchoredPosition.y);            
+            foreach (RectTransform rectT in new RectTransform[] { SC_UI_Manager.Instance.tileTooltip.panel.GetComponent<RectTransform>(), SC_UI_Manager.Instance.constructPanel.GetComponent<RectTransform>() })
+                rectT.anchoredPosition = new Vector2(right ? 0 : SC_UI_Manager.Size.x - rectT.sizeDelta.x, rectT.anchoredPosition.y);
 
         }
 

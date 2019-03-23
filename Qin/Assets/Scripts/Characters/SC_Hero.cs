@@ -109,7 +109,7 @@ public class SC_Hero : SC_Character {
 
     public static void Attack(bool usedActiveWeapon) {
 
-        ((SC_Hero)attackingCharacter).SetWeapon(usedActiveWeapon);
+        attackingCharacter.Hero.SetWeapon(usedActiveWeapon);
 
         fightManager.Attack();
 

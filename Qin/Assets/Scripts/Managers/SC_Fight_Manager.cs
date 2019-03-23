@@ -41,7 +41,8 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         uiManager.HideWeapons();
 
-        uiManager.backAction = DoNothing;
+        if(SC_Player.localPlayer.Turn)
+            uiManager.backAction = DoNothing;
 
         #region Setup Fight Panel
         #region Setup Values
@@ -58,7 +59,6 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         uiManager.fightPanel.attackerSlider.Set(attackingCharacter.Tile.Construction?.Health ?? attackingCharacter.Health, attackingCharacter.Tile.Construction?.maxHealth ?? attackingCharacter.MaxHealth);
         uiManager.fightPanel.attackedSlider.Set(currentAttackedHealth, targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
-
 
         float y = Mathf.Min(attackingCharacter.transform.position.y, attackingCharacter.AttackTarget.transform.position.y);
         float x = Mathf.Lerp(attackingCharacter.transform.position.x, attackingCharacter.AttackTarget.transform.position.x, .5f);
@@ -94,7 +94,8 @@ public class SC_Fight_Manager : MonoBehaviour {
         SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
         #endregion
 
-        SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
+        if(attacking)
+            SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
 
         #region Current character moves
         Vector3 basePos = c.transform.position;

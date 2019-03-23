@@ -159,8 +159,6 @@ public abstract class SC_Character : NetworkBehaviour {
 
         uiManager.backAction = gameManager.UnselectCharacter;
 
-        // uiManager.cancelAction = gameManager.UnselectCharacter;
-
     }
 
     public virtual void MoveTo(SC_Tile target) {

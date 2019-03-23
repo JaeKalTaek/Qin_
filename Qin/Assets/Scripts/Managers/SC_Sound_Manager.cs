@@ -110,7 +110,7 @@ public class SC_Sound_Manager : MonoBehaviour {
     #region Combat Music
     public void StartCombatMusic (Slider volume) {
 
-        mainMenuMusic.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        mainMenuMusic.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
 
         volume.onValueChanged.AddListener((float f) => { combatMusic.setVolume(f); });
 

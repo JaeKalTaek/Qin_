@@ -6,7 +6,6 @@ using static SC_Global;
 
 public abstract class SC_Character : NetworkBehaviour {
 
-    #region Stats
     [Header("Character variables")]
     [Tooltip("Name of this character")]
     public string characterName;
@@ -14,6 +13,7 @@ public abstract class SC_Character : NetworkBehaviour {
     [Tooltip("Offset of the sprite of this character")]
     public Vector2 spriteOffset;
 
+    #region Stats  
     public BaseCharacterStats baseStats;
 
     public int MaxHealth { get { return baseStats.maxHealth; } }
@@ -43,7 +43,7 @@ public abstract class SC_Character : NetworkBehaviour {
     [Tooltip("Time for a character to walk one tile of distance")]
     public float moveDuration;
     public int MovementModifiers { get; set; }
-    public int Movement { get { return Mathf.Max(0, baseStats.movement + MovementModifiers - (Hero?.PumpSlow ?? 0) + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }
+    public int Movement { get { return Mathf.Max(0, baseStats.movement + MovementModifiers - (Hero?.DrainingSteleSlow ?? 0) + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }
     public bool CanMove { get; set; }    
 
     public int RangeModifiers { get; set; }      
@@ -256,7 +256,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
             if (moved) {
 
-                SC_Pump.UpdateHeroSlow(Hero);
+                SC_DrainingStele.UpdateHeroSlow(Hero);
 
                 Hero.ReadyToRegen = false;
 
@@ -320,7 +320,7 @@ public abstract class SC_Character : NetworkBehaviour {
         UnTired();
 
         if (Hero)
-            SC_Pump.UpdateHeroSlow(Hero);
+            SC_DrainingStele.UpdateHeroSlow(Hero);
 
         tileManager.CheckMovements(this);
 
@@ -431,7 +431,7 @@ public abstract class SC_Character : NetworkBehaviour {
         if (t.Character)
             return Qin == t.Character.Qin;
         else if (t.Construction)
-            return (Qin || !t.Construction.GreatWall) && !t.Pump;
+            return (Qin || !t.Construction.GreatWall) && !t.DrainingStele;
         else if (t.Qin)
             return Qin;
         else
@@ -444,7 +444,7 @@ public abstract class SC_Character : NetworkBehaviour {
         if ((t.Character && (t.Character != this)) || t.Qin)
             return false;
         else if (t.Construction)
-            return (Qin || !t.Construction.GreatWall) && !t.Pump;
+            return (Qin || !t.Construction.GreatWall) && !t.DrainingStele;
         else
             return true;
 

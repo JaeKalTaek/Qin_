@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class SC_Pump : SC_Construction {
+public class SC_DrainingStele : SC_Construction {
 
-    [Header("Pump Variables")]
-    [Tooltip("Amount of Health drained to each hero in the range of that pump at the beginning of Qin's turn")]
+    [Header("Draining Stele Variables")]
+    [Tooltip("Amount of Health drained to each hero in the range of that draining stele at the beginning of Qin's turn")]
     public int drainAmount;
 
-    [Tooltip("Range in which the pump can drain energy")]
+    [Tooltip("Range in which the draining stele can drain energy")]
     public int range;
 
     [Tooltip("Heroes in range have their movement capability reduced by this amount")]
@@ -15,7 +15,7 @@ public class SC_Pump : SC_Construction {
 
     delegate void Action (SC_Hero parameter);
 
-    public static List<SC_Pump> pumps;
+    public static List<SC_DrainingStele> drainingSteles;
 
     void PerformAction(Action action) {
 
@@ -32,10 +32,10 @@ public class SC_Pump : SC_Construction {
 
         base.Start();
 
-        if (pumps == null)
-            pumps = new List<SC_Pump>();
+        if (drainingSteles == null)
+            drainingSteles = new List<SC_DrainingStele>();
 
-        pumps.Add(this);
+        drainingSteles.Add(this);
 
         PerformAction ((SC_Hero hero) => {
 
@@ -63,19 +63,19 @@ public class SC_Pump : SC_Construction {
 
         PerformAction((SC_Hero hero) => {
 
-            if (hero.PumpSlow == slowAmount) {
+            if (hero.DrainingSteleSlow == slowAmount) {
 
-                hero.PumpSlow = 0;
+                hero.DrainingSteleSlow = 0;
 
-                foreach (SC_Pump pump in pumps)
-                    if(pump != this)
+                foreach (SC_DrainingStele drainingStele in drainingSteles)
+                    if(drainingStele != this)
                         TrySlowHero(hero);
 
             }
 
         });
 
-        pumps.Remove(this);
+        drainingSteles.Remove(this);
 
         base.DestroyConstruction(playSound);
 
@@ -83,14 +83,14 @@ public class SC_Pump : SC_Construction {
 
     public static void UpdateHeroSlow(SC_Hero hero) {
 
-        hero.PumpSlow = 0;
+        hero.DrainingSteleSlow = 0;
 
-        if (pumps != null) {
+        if (drainingSteles != null) {
 
-            foreach (SC_Pump pump in pumps) {
+            foreach (SC_DrainingStele drainingStele in drainingSteles) {
 
-                if ((SC_Tile_Manager.TileDistance(hero.transform.position, pump.transform.position) <= pump.range) && (hero.PumpSlow < pump.slowAmount))
-                    hero.PumpSlow = pump.slowAmount;
+                if ((SC_Tile_Manager.TileDistance(hero.transform.position, drainingStele.transform.position) <= drainingStele.range) && (hero.DrainingSteleSlow < drainingStele.slowAmount))
+                    hero.DrainingSteleSlow = drainingStele.slowAmount;
 
             }    
 
@@ -100,8 +100,8 @@ public class SC_Pump : SC_Construction {
 
     void TrySlowHero(SC_Hero hero) {
 
-        if (hero.PumpSlow < slowAmount)
-           hero.PumpSlow = slowAmount;
+        if (hero.DrainingSteleSlow < slowAmount)
+           hero.DrainingSteleSlow = slowAmount;
 
     }
 

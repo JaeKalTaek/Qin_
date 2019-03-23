@@ -31,7 +31,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public string CurrentConstru { get; set; }
 
-	public Vector3 CurrentWorkshopPos { get; set; }
+	public Vector3 CurrentPitPos { get; set; }
 
     public SC_Castle CurrentCastle { get; set; }
 
@@ -236,8 +236,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         if (Qin) {
 
-            if(SC_Pump.pumps != null)
-                foreach (SC_Pump p in SC_Pump.pumps)
+            if(SC_DrainingStele.drainingSteles != null)
+                foreach (SC_DrainingStele p in SC_DrainingStele.drainingSteles)
                  p.Drain();
 
             foreach(SC_Demon d in SC_Demon.demons)

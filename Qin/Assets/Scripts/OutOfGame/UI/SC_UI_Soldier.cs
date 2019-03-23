@@ -11,7 +11,7 @@ public class SC_UI_Soldier : SC_UI_Creation {
 
     protected override void Listener () {
 
-        SC_UI_Manager.Instance.WorkshopCreateSoldier(name);
+        SC_UI_Manager.Instance.PitCreateSoldier(name);
 
     }
 

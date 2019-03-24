@@ -167,8 +167,6 @@ public class SC_Fight_Manager : MonoBehaviour {
         #region Else, the current character has finished his return
         } else {
 
-            print(attacked);
-
             #region Applying damage
             if (attacked)
                 CharacterAttack(c, attacked);

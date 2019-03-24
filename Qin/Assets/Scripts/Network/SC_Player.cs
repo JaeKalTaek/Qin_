@@ -190,6 +190,8 @@ public class SC_Player : NetworkBehaviour {
 
         SC_Character.attackingCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
 
+        print("Attack target : " + SC_Character.attackingCharacter.AttackTarget.transform.position);
+
 	}
 
     [Command]
@@ -217,6 +219,8 @@ public class SC_Player : NetworkBehaviour {
     void RpcHeroAttack(bool usedActiveWeapon) {
 
         SC_Hero.Attack(usedActiveWeapon);
+
+        print("Hero attack start");
 
     }
     #endregion

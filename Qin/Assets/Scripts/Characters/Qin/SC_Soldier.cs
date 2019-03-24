@@ -55,6 +55,8 @@ public class SC_Soldier : SC_BaseQinChara {
 
         Destroy(gameObject);
 
+        print("Destroyed");
+
     }
 
 }

@@ -397,11 +397,11 @@ public class SC_Player : NetworkBehaviour {
     }
 
     [ClientRpc]
-    void RpcDestroyProductionBuilding () {
-
-        localPlayer.GameManager.FinishAction();
+    void RpcDestroyProductionBuilding () {        
 
         SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction(true);
+
+        localPlayer.GameManager.FinishAction();
 
     }
     #endregion

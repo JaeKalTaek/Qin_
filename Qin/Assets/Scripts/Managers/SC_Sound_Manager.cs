@@ -83,27 +83,31 @@ public class SC_Sound_Manager : MonoBehaviour {
 
     void Awake () {
 
-        Instance = this;
+        if (!Instance) {
 
-        #region Setup events
-        mainMenuMusic = RuntimeManager.CreateInstance(mainMenuMusicRef);
+            Instance = this;
 
-        mainMenuMusic.start();
+            #region Setup events
+            mainMenuMusic = RuntimeManager.CreateInstance(mainMenuMusicRef);
+            mainMenuMusic.setVolume(.6f);
+            mainMenuMusic.start();
 
-        Bank b;
+            Bank b;
 
-        RuntimeManager.StudioSystem.getBank("HIT", out b);
+            RuntimeManager.StudioSystem.getBank("HIT", out b);
 
-        b.getEventList(out hitEvents);
+            b.getEventList(out hitEvents);
 
-        footsteps = RuntimeManager.CreateInstance(footstepsRef);
-        footsteps.setVolume(.5f);
+            footsteps = RuntimeManager.CreateInstance(footstepsRef);
+            footsteps.setVolume(.35f);
 
-        construct = RuntimeManager.CreateInstance(constructRef);
-        construct.setVolume(.5f);
-        #endregion
+            construct = RuntimeManager.CreateInstance(constructRef);
+            construct.setVolume(.35f);
+            #endregion
 
-        DontDestroyOnLoad(this);
+            DontDestroyOnLoad(this);
+
+        }
 
     }
 
@@ -240,7 +244,7 @@ public class SC_Sound_Manager : MonoBehaviour {
             if (p.Contains("/" + a + "_HIT_" + b + "_SLOW") && (p.Contains("CRIT") == c)) {
 
                 EventInstance hitSound = RuntimeManager.CreateInstance(p);
-                hitSound.setVolume(.5f);
+                hitSound.setVolume(.35f);
                 hitSound.start();
                 hitSound.release();                
 
@@ -279,7 +283,7 @@ public class SC_Sound_Manager : MonoBehaviour {
     public void OnConstructionDestroyed () {
 
         EventInstance sound = RuntimeManager.CreateInstance(constructionDestroyedRef);
-        sound.setVolume(.5f);
+        sound.setVolume(.35f);
         sound.start();
         sound.release();
 
@@ -290,7 +294,7 @@ public class SC_Sound_Manager : MonoBehaviour {
     public void OnButtonClick () {
 
         EventInstance sound = RuntimeManager.CreateInstance(onButtonClickRef);
-        sound.setVolume(.5f);
+        sound.setVolume(.35f);
         sound.start();
         sound.release();
 
@@ -301,7 +305,7 @@ public class SC_Sound_Manager : MonoBehaviour {
     public void OnCursorMoved () {
 
         EventInstance sound = RuntimeManager.CreateInstance(cursorMovedRef);
-        sound.setVolume(.5f);
+        sound.setVolume(.35f);
         sound.start();
         sound.release();
 

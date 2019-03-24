@@ -869,8 +869,13 @@ public class SC_UI_Manager : MonoBehaviour {
         if (draggedCastle)
             draggedCastle.transform.SetPos(WorldMousePos);
 
-        if (victoryPanel.activeSelf && Input.anyKeyDown)
-            ForceMainMenuReturn();
+        if (victoryPanel.activeSelf && Input.anyKeyDown) {
+
+            StopCoroutine(ForceMainMenuReturn());
+
+            LobbyManager.s_Singleton.StopClientClbk();
+
+        }
 
     }
 
@@ -965,19 +970,19 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void ShowVictory (bool qinWon) {
 
-        print("Hello");
-
         SC_Sound_Manager.Instance.GameOver();
 
         victoryPanel.GetComponentInChildren<Text>().text = (qinWon ? "Qin" : "The Heroes") + " won the war !";
 
         victoryPanel.SetActive(true);
 
-        Invoke("ForceMainMenuReturn", 5f);
+        StartCoroutine(ForceMainMenuReturn());
 
     }
 
-    void ForceMainMenuReturn () {
+    IEnumerator ForceMainMenuReturn () {
+
+        yield return new WaitForSeconds(5f);
 
         LobbyManager.s_Singleton.StopClientClbk();
 

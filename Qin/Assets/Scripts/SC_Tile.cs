@@ -169,7 +169,7 @@ public class SC_Tile : NetworkBehaviour {
 
             } else if (CurrentDisplay == TDisplay.Movement) {
 
-                UIManager.backAction = DoNothing;       
+                UIManager.backAction = DoNothing;
 
                 SC_Player.localPlayer.Busy = true;
 
@@ -224,10 +224,21 @@ public class SC_Tile : NetworkBehaviour {
                 } else
                     UIManager.ActivateMenu(UIManager.playerActionsPanel);
 
+            } else {
+
+                print("Can't do shit, Player is busy : " + SC_Player.localPlayer.Busy + ", character to move is : " + characterToMove);
+
             }
 
-        } else if (SC_UI_Manager.CanInteract && CurrentDisplay == TDisplay.None)
+        } else if (SC_UI_Manager.CanInteract && CurrentDisplay == TDisplay.None) {
+
             UIManager.ActivateMenu(UIManager.playerActionsPanel);
+
+        } else {
+
+            print("Can't do nothing at all");
+
+        }
 
     }
 

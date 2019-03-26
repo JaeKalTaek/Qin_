@@ -211,18 +211,9 @@ public class SC_Sound_Manager : MonoBehaviour {
 
     private void Update () {
 
-        /*if(combatMusic.isValid()) {
-
-            float p;
-
-            combatMusic.getParameterValue("Transition", out p, out p);
-
-            print(p);
-
-        }*/
-
-        if (EventSystem.current?.currentSelectedGameObject?.GetComponent<Selectable>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
-            OnButtonClick();
+        if (EventSystem.current.currentSelectedGameObject != null)
+            if (EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>() && (Input.GetButtonDown("Submit") || Input.GetMouseButtonDown(0)))
+                OnButtonClick();
 
     }
 

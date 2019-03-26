@@ -91,6 +91,8 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
 
+        print(attacked + " at : " + attackingCharacter.AttackTarget.transform.position);
+
         SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
         #endregion
 
@@ -166,6 +168,8 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         #region Else, the current character has finished his return
         } else {
+
+            print(attacked);
 
             #region Applying damage
             if (attacked)

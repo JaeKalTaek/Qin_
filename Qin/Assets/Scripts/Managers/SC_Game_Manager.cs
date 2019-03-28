@@ -23,7 +23,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public int Turn { get; set; }
 
-    public bool Qin { get { return Turn % 3 == 0; } }
+    public bool QinTurn { get { return Turn % 3 == 0; } }
 
     public bool QinTurnStarting { get; set; }
 
@@ -234,7 +234,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         CurrentConstru = "Bastion";
 
-        if (Qin) {
+        if (QinTurn) {
 
             if(SC_DrainingStele.drainingSteles != null)
                 foreach (SC_DrainingStele p in SC_DrainingStele.drainingSteles)
@@ -266,7 +266,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 character.Hero.Regen();
 
-                character.Hero.IncreaseRelationships(CommonCharactersVariables.relationGains.finishTurn);
+                if(!QinTurn)
+                    character.Hero.IncreaseRelationships(CommonCharactersVariables.relationGains.finishTurn);
 
                 /*if (Qin) {
 
@@ -286,7 +287,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             character.UnTired();
 
-            character.CanMove = character.Qin == Qin;
+            character.CanMove = character.Qin == QinTurn;
 
         }
 

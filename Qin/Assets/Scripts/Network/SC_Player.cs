@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
+using static SC_Character;
 
 public class SC_Player : NetworkBehaviour {
 
 	[SyncVar]
 	public bool Qin;
 
-    public bool Turn { get { return Qin == GameManager.Qin; } }
+    public bool Turn { get { return Qin == GameManager.QinTurn; } }
 
 	SC_Game_Manager GameManager { get { return SC_Game_Manager.Instance; } }
 
@@ -188,10 +188,7 @@ public class SC_Player : NetworkBehaviour {
 
         localPlayer.FightManager.AttackRange = attackRange;
 
-        SC_Character.attackingCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
-
-        print("Attack target : " + SC_Character.attackingCharacter.AttackTarget.transform.position);
-
+        attackingCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
 	}
 
     [Command]
@@ -220,13 +217,25 @@ public class SC_Player : NetworkBehaviour {
 
         SC_Hero.Attack(usedActiveWeapon);
 
-        print("Hero attack start");
+    }
+
+    [Command]
+    public void CmdApplyDamage(bool counter) {
+
+        RpcApplyDamage(counter);
+
+    }
+
+    [ClientRpc]
+    void RpcApplyDamage(bool counter) {
+
+        FightManager.ApplyDamage(counter);
 
     }
     #endregion
 
-    #region Remove filters
-    /*[Command]
+    /*#region Remove filters
+    [Command]
 	public void CmdRemoveAllFilters() {
 
 		RpcRemoveAllFilters ();
@@ -238,7 +247,7 @@ public class SC_Player : NetworkBehaviour {
 
         localPlayer.tileManager.RemoveAllFilters();
 
-    }*/
+    }
 
     /*[Command]
     public void CmdRemoveAllFiltersOnClient(bool qin) {
@@ -253,8 +262,8 @@ public class SC_Player : NetworkBehaviour {
         if(localPlayer.Qin == qin)
             localPlayer.tileManager.RemoveAllFilters();
 
-    }*/
-    #endregion
+    }
+    #endregion*/
 
     #region Next Turn
     [Command]
@@ -460,7 +469,7 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
-    #region Wait
+    #region Finish Character Action
     [Command]
     public void CmdFinishCharacterAction() {
 

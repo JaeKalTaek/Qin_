@@ -91,8 +91,6 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
 
-        print(attacked + " at : " + attackingCharacter.AttackTarget.transform.position);
-
         SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
         #endregion
 
@@ -169,15 +167,16 @@ public class SC_Fight_Manager : MonoBehaviour {
         #region Else, the current character has finished his return
         } else {
 
-            print(attacked);
-
             #region Applying damage
-            if (attacked)
+            if (SC_Player.localPlayer.isServer)
+                SC_Player.localPlayer.CmdApplyDamage(counter);
+
+            /*if (attacked)
                 CharacterAttack(c, attacked);
             else if (attackedConstru)
                 HitConstruction(c, attackedConstru);
             else
-                SC_Qin.ChangeEnergy(-c.BaseDamage);
+                SC_Qin.ChangeEnergy(-c.BaseDamage);*/
             #endregion
 
             // Augment attacker's crit amount
@@ -202,7 +201,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     }
 
-    bool CharacterAttack(SC_Character attacker, SC_Character attacked) {
+    public void CharacterAttack(SC_Character attacker, SC_Character attacked) {
 
         bool killed = false;
 
@@ -230,11 +229,9 @@ public class SC_Fight_Manager : MonoBehaviour {
         if(!killed)
             uiManager.TryRefreshInfos(attacked.gameObject, attacked.GetType());
 
-        return killed;
-
     }
 
-    bool HitConstruction(SC_Character attacker, SC_Construction construction) {
+    public bool HitConstruction(SC_Character attacker, SC_Construction construction) {
 
         construction.Health -= Mathf.CeilToInt(attacker.BaseDamage / (attacker != attackingCharacter ? CharactersVariables.counterFactor : 1));
 
@@ -363,5 +360,22 @@ public class SC_Fight_Manager : MonoBehaviour {
         return saver;
 
     }*/
+
+    public void ApplyDamage (bool counter) {
+
+        SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
+
+        SC_Character c = counter ? attackingCharacter.AttackTarget.Character : attackingCharacter;
+
+        SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
+
+        if (attacked)
+            CharacterAttack(c, attacked);
+        else if (attackedConstru)
+            HitConstruction(c, attackedConstru);
+        else
+            SC_Qin.ChangeEnergy(-c.BaseDamage);
+
+    }
 
 }

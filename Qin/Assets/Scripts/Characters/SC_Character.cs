@@ -109,7 +109,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         BaseColor = Sprite.color;
 
-        CanMove = Qin == gameManager.Qin;        
+        CanMove = Qin == gameManager.QinTurn;        
 
     }
 

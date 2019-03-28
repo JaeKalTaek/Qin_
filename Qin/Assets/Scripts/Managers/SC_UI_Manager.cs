@@ -206,7 +206,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);
 
-        turnIndicator.text = GameManager.Qin ? "Qin's Turn" : (GameManager.Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
+        turnIndicator.text = GameManager.QinTurn ? "Qin's Turn" : (GameManager.Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
 
 	}
     #endregion
@@ -288,6 +288,8 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Characters Details
     public void DisplayCharacterDetails(SC_Character c) {
 
+        DisplayCharacterDetails(true);
+
         ShowCharacterInfos(c);
 
         foreach (Transform t in characterDetails.stats.GetChild(0))
@@ -324,9 +326,7 @@ public class SC_UI_Manager : MonoBehaviour {
         }
 
         characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);
-        // characterDetails.soldierPanel.SetActive(c.Soldier);
-
-        DisplayCharacterDetails(true);
+        // characterDetails.soldierPanel.SetActive(c.Soldier);        
 
     }
 
@@ -348,7 +348,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         turnIndicator.transform.parent.gameObject.SetActive(!b);
 
-        tileTooltip.panel.SetActive(!b);
+        // tileTooltip.panel.SetActive(!b);
 
     }
 

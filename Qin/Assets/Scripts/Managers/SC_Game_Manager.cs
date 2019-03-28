@@ -219,9 +219,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
 
-    public void NextTurnFunction() {    
+    public void NextTurnFunction() {
 
-	    Turn++;
+        Turn++;
 
         SC_Cursor.SetLock(false);
 
@@ -264,9 +264,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             if (character.Hero) {
 
-                character.Hero.Regen();
+                if (!QinTurn)
+                    character.Hero.Regen();
 
-                if(!QinTurn)
+                if(Turn % 3 != 1)
                     character.Hero.IncreaseRelationships(CommonCharactersVariables.relationGains.finishTurn);
 
                 /*if (Qin) {
@@ -291,8 +292,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         }
 
-        uiManager.NextTurn ();
-        
+        if (!Player.Qin || (Turn % 3 != 2))
+            uiManager.NextTurn();
+
     }
     #endregion
 

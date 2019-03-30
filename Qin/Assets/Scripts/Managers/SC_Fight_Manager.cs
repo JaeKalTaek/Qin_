@@ -366,18 +366,20 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public void ApplyDamage (bool counter) {
 
-        SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
+        SC_Character attacker = counter ? attackingCharacter.AttackTarget.Character : attackingCharacter;
 
-        SC_Character c = counter ? attackingCharacter.AttackTarget.Character : attackingCharacter;
+        SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;        
 
         SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
 
+        print("Attacker : " + attacker?.characterName + "\nAttacked : " + (attacked?.characterName ?? attackedConstru?.name ?? "Qin"));
+
         if (attacked)
-            CharacterAttack(c, attacked);
+            CharacterAttack(attacker, attacked);
         else if (attackedConstru)
-            HitConstruction(c, attackedConstru);
+            HitConstruction(attacker, attackedConstru);
         else
-            SC_Qin.ChangeEnergy(-c.BaseDamage);
+            SC_Qin.ChangeEnergy(-attacker.BaseDamage);
 
     }
 

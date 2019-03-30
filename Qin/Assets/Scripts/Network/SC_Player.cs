@@ -186,7 +186,7 @@ public class SC_Player : NetworkBehaviour {
 	[ClientRpc]
 	void RpcPrepareForAttack(int attackRange, GameObject targetTileObject) {
 
-        localPlayer.FightManager.AttackRange = attackRange;
+        FightManager.AttackRange = attackRange;
 
         attackingCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
 	}
@@ -201,7 +201,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcAttack() {
 
-        localPlayer.FightManager.Attack();
+        FightManager.Attack();
 
     }
 
@@ -469,20 +469,18 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
-    #region Finish Character Action
+    #region Finish Actions
     [Command]
-    public void CmdFinishCharacterAction() {
+    public void CmdFinishAction() {
 
-        RpcFinishCharacterAction();
+        RpcFinishAction();
 
     }
 
     [ClientRpc]
-    void RpcFinishCharacterAction() {
+    void RpcFinishAction() {
 
         GameManager.FinishAction();
-
-        // SC_Character.FinishCharacterAction();
 
     }
     #endregion

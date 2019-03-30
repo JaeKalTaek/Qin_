@@ -574,7 +574,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void Wait () {
 
-        Player.CmdFinishCharacterAction();
+        Player.CmdFinishAction();
 
     }
 

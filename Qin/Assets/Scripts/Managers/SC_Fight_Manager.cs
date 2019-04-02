@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using static SC_Global;
 using static SC_Character;
 using System.Collections;
@@ -159,7 +159,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 yield return new WaitForEndOfFrame();
 
-            }            
+            }
+
+            // print("Killed : " + (endValue <= 0));
 
             StartCoroutine(FightAnim(c, -travel, false, endValue <= 0));
             #endregion
@@ -180,7 +182,7 @@ public class SC_Fight_Manager : MonoBehaviour {
             #endregion
 
             // Augment attacker's crit amount
-            c.CriticalAmount = (c.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((c.CriticalAmount + c.Technique), CharactersVariables.critTrigger);
+            // c.CriticalAmount = (c.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((c.CriticalAmount + c.Technique), CharactersVariables.critTrigger);
 
             #region Counter attack
             if (attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
@@ -270,7 +272,7 @@ public class SC_Fight_Manager : MonoBehaviour {
             damages = Mathf.CeilToInt(damages * CharactersVariables.berserkDamageMultiplier);*/
 
         if (attacked.DodgeAmount == CharactersVariables.dodgeTrigger)
-            damages = Mathf.FloorToInt(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100));
+            damages = Mathf.FloorToInt(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f));
 
         int armor = attacked.Armor;
         int resistance = attacked.Resistance;
@@ -372,7 +374,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         SC_Construction attackedConstru = counter ? attackingCharacter.Tile.Construction : attackingCharacter.AttackTarget.Construction;
 
-        print("Attacker : " + attacker?.characterName + "\nAttacked : " + (attacked?.characterName ?? attackedConstru?.name ?? "Qin"));
+        // print("Attacker : " + attacker?.characterName + "\nAttacked : " + (attacked?.characterName ?? attackedConstru?.name ?? "Qin"));
 
         if (attacked)
             CharacterAttack(attacker, attacked);
@@ -380,6 +382,8 @@ public class SC_Fight_Manager : MonoBehaviour {
             HitConstruction(attacker, attackedConstru);
         else
             SC_Qin.ChangeEnergy(-attacker.BaseDamage);
+
+        attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
 
     }
 

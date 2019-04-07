@@ -264,17 +264,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
             uiManager.buildConstruButton.SetActive(SC_Player.localPlayer.Qin && (target.Ruin || (Soldier.Builder && !target.Construction)));
 
-        } else if (Demon) {
+        } else if (Demon && moved) {
 
-            if (moved) {
+            uiManager.buildConstruButton.SetActive(false);
 
-                uiManager.buildConstruButton.SetActive(false);
+            Demon.RemoveAura(false, LastPos);
 
-                Demon.RemoveAura(false, LastPos);
-
-                Demon.AddAura(false);
-
-            }
+            Demon.AddAura(false);
 
         }
 
@@ -319,6 +315,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (Hero)
             SC_DrainingStele.UpdateHeroSlow(Hero);
+        else if (Demon) {
+
+            Demon.RemoveAura(true, LastPos);
+
+            Demon.AddAura(true);
+
+        }
 
         tileManager.CheckMovements(this);
 

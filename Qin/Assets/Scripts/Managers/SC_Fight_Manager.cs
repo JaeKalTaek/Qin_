@@ -133,7 +133,7 @@ public class SC_Fight_Manager : MonoBehaviour {
                 feedbackText += "Crit!";
 
             if (baseValue == endValue)
-                feedbackText += ((feedbackText != "" ? "/n" : "") + "No Damage!");
+                feedbackText += ((feedbackText != "" ? "\n" : "") + "No Damage!");
 
             if(feedbackText != "") {
 

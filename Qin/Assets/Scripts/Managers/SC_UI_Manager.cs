@@ -378,9 +378,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         }
 
-        bool movingDemon = characterToMove?.Demon;
+        bool movingDemon = characterToMove?.Demon && localPlayer.Qin;
 
-        bool q = t.Character?.Qin ?? localPlayer.Qin;
+        bool q = /*t.Character?.Qin ??*/ localPlayer.Qin;
 
         tileTooltip.power.text = t.CombatModifiers.strength + (movingDemon ? 0 : t.DemonsModifier("strength", q)) + "";
         tileTooltip.defense.text = t.CombatModifiers.armor + (movingDemon ? 0 : t.DemonsModifier("armor", q)) + "";

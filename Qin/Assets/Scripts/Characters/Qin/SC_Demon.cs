@@ -80,7 +80,7 @@ public class SC_Demon : SC_BaseQinChara {
 
     void PerformAction (Action action, SC_Tile center = null) {
 
-        foreach (SC_Tile tile in tileManager.GetRange(center ? center.transform.position : transform.position, auraRange))
+        foreach (SC_Tile tile in tileManager.GetRange(center?.transform.position ?? transform.position, auraRange))
             action(tile);
 
     }
@@ -91,7 +91,7 @@ public class SC_Demon : SC_BaseQinChara {
 
             tile.TryAddAura(characterName, auraModifiers);
 
-            if (refreshInfos && tile.Character)
+            if (/*refreshInfos &&*/ tile.Character)
                 uiManager.TryRefreshInfos(tile.Character.gameObject, tile.Character.GetType());
 
         });
@@ -102,9 +102,13 @@ public class SC_Demon : SC_BaseQinChara {
 
         PerformAction((SC_Tile tile) => {
 
+            //print("Before : " + tile.DemonAuras.Count);
+
             tile.DemonAuras.Remove(new DemonAura(characterName, auraModifiers));
 
-            if (refreshInfos && tile.Character)
+            //print("After : " + tile.DemonAuras.Count);
+
+            if (/*refreshInfos &&*/ tile.Character)
                 uiManager.TryRefreshInfos(tile.Character.gameObject, tile.Character.GetType());
 
         }, center);

@@ -155,15 +155,17 @@ public abstract class SC_Character : NetworkBehaviour {
     #region Movement
     public virtual void TryCheckMovements () {
 
-        SC_Player.localPlayer.CmdCheckMovements(transform.position.x.I(), transform.position.y.I());
+        characterToMove = this;
+
+        tileManager.CheckMovements(this);
 
         uiManager.backAction = gameManager.UnselectCharacter;
 
     }
 
-    public virtual void MoveTo(SC_Tile target) {
+    public void MoveTo(SC_Tile target) {
 
-        tileManager.RemoveAllFilters();
+        characterToMove = this;
 
         LastPos = Tile;
 

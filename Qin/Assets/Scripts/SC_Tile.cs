@@ -173,7 +173,9 @@ public class SC_Tile : NetworkBehaviour {
 
                 SC_Player.localPlayer.Busy = true;
 
-                SC_Player.localPlayer.CmdMoveCharacterTo(transform.position.x.I(), transform.position.y.I());
+                TileManager.RemoveAllFilters();
+
+                SC_Player.localPlayer.CmdMoveCharacterTo(characterToMove.gameObject, gameObject);
 
             } else if (CurrentDisplay == TDisplay.Attack && !Empty) {
 

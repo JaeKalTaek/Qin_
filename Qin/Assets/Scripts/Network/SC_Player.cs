@@ -133,30 +133,16 @@ public class SC_Player : NetworkBehaviour {
 
     #region Characters movements
     [Command]
-    public void CmdCheckMovements(int x, int y) {
+    public void CmdMoveCharacterTo(GameObject character, GameObject target) {
 
-        RpcCheckMovements(x, y);
-
-    }
-
-    [ClientRpc]
-    void RpcCheckMovements(int x, int y) {
-
-        TileManager.CheckMovements(TileManager.GetTileAt(x, y).Character);
-
-    }
-
-    [Command]
-    public void CmdMoveCharacterTo(int x, int y) {
-
-        RpcMoveCharacterTo(x, y);
+        RpcMoveCharacterTo(character, target);
 
     }
 
     [ClientRpc]
-    void RpcMoveCharacterTo(int x, int y) {
+    void RpcMoveCharacterTo(GameObject character, GameObject target) {
 
-        SC_Character.characterToMove.MoveTo(TileManager.GetTileAt(x, y));
+        character.GetComponent<SC_Character>().MoveTo(target.GetComponent<SC_Tile>());
 
     }
 
@@ -170,7 +156,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcResetMovement() {
 
-        SC_Character.characterToMove.ResetMovementFunction();
+        characterToMove.ResetMovementFunction();
 
     }
     #endregion

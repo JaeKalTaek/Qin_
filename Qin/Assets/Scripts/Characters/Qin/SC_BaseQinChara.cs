@@ -24,7 +24,8 @@ public class SC_BaseQinChara : SC_Character {
 
         if (CanMove) {
 
-            SC_Player.localPlayer.CmdSetQinTurnStarting(false);
+            if(gameManager.QinTurnStarting)
+                SC_Player.localPlayer.CmdSetQinTurnStarting(false);
 
             base.TryCheckMovements();
 

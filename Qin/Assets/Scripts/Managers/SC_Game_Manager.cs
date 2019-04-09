@@ -227,6 +227,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         // tileManager.RemoveAllFilters();        
 
+        SC_Character.characterToMove = null;
+
         SC_Character.attackingCharacter = null;
 
         /*foreach (SC_Convoy convoy in FindObjectsOfType<SC_Convoy>())

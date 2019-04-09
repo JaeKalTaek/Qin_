@@ -28,7 +28,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     //Variables used to determine the movements possible
     List<SC_Tile> OpenList { get; set; }
-    List<SC_Tile> MovementRange { get; set; }
+    // List<SC_Tile> MovementRange { get; set; }
     Dictionary<SC_Tile, int> movementPoints = new Dictionary<SC_Tile, int>();
 
     public SC_DrainingStele DisplayedDrainingStele { get; set; }    
@@ -118,7 +118,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 		gameManager.FinishSetup ();
 
         OpenList = new List<SC_Tile>();
-        MovementRange = new List<SC_Tile>();
+        // MovementRange = new List<SC_Tile>();
 
     }
 
@@ -298,15 +298,13 @@ public class SC_Tile_Manager : NetworkBehaviour {
     #region Display Movements
     public void CheckMovements (SC_Character target) {
 
-        SC_Character.characterToMove = target;
-
         RemoveAllFilters();
 
-        MovementRange = DisplayMovementAndAttack(target, false);
+        DisplayMovementAndAttack(target, false);
 
     }
 
-    public List<SC_Tile> DisplayMovementAndAttack (SC_Character target, bool preview) {        
+    public List<SC_Tile> GetMovementRange (SC_Character target) {
 
         OpenList.Clear();
         List<SC_Tile> movementRange = new List<SC_Tile>();
@@ -327,6 +325,14 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         }
 
+        return movementRange;
+
+    }
+
+    public void DisplayMovementAndAttack (SC_Character target, bool preview) {
+
+        List<SC_Tile> movementRange = GetMovementRange(target);
+
         if (SC_Player.localPlayer.Turn || preview) {
 
             foreach (SC_Tile tile in new List<SC_Tile>(movementRange) { target.Tile }) {
@@ -345,9 +351,8 @@ public class SC_Tile_Manager : NetworkBehaviour {
                 }
 
             }
-        }
 
-        return movementRange;
+        }
 
     }
 
@@ -378,6 +383,8 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     public List<SC_Tile> PathFinder (SC_Tile start, SC_Tile end) {
 
+        List<SC_Tile> movementRange = GetMovementRange(start.Character);
+
         List<SC_Tile> openList = new List<SC_Tile>();
         List<SC_Tile> tempList = new List<SC_Tile>();
         List<SC_Tile> closedList = new List<SC_Tile>();
@@ -391,7 +398,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
                 foreach (SC_Tile neighbor in GetTilesAtDistance(tiles, tile, 1)) {
 
-                    if (!closedList.Contains(neighbor) && MovementRange.Contains(neighbor) && !tempList.Contains(neighbor)) {
+                    if (!closedList.Contains(neighbor) && movementRange.Contains(neighbor) && !tempList.Contains(neighbor)) {
 
                         tempList.Add(neighbor);
                         neighbor.Parent = tile;

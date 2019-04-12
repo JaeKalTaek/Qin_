@@ -43,6 +43,8 @@ public class SC_DrainingStele : SC_Construction {
 
         });
 
+        transform.parent = uiManager.drainingStelesT;
+
     }
 
     public void Drain() {

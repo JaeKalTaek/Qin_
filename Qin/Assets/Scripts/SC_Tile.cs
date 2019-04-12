@@ -32,7 +32,7 @@ public class SC_Tile : NetworkBehaviour {
         if (Character)
             return c.Qin != Character.Qin;
         else if (Construction)
-            return !c.Qin && (Construction.GreatWall || DrainingStele);
+            return !c.Qin && AttackableContru;
         else if (Qin)
             return !c.Qin;
         else
@@ -49,6 +49,8 @@ public class SC_Tile : NetworkBehaviour {
     bool RegionValid { get { return (Region != -1) && SC_Castle.castles[Region]; } }
 
     public SC_Construction Construction { get; set; }
+
+    public SC_Construction AttackableContru { get { return (Construction?.maxHealth != 0) ? Construction : null; } }
 
     public SC_Village Village { get { return Construction as SC_Village; } }
 

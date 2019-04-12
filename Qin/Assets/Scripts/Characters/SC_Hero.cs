@@ -277,8 +277,8 @@ public class SC_Hero : SC_Character {
 
             Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
 
-            Relationships[hero.characterName] += Mathf.CeilToInt(amount / heroesInRange.Count);
-            hero.Relationships[characterName] += Mathf.CeilToInt(amount / heroesInRange.Count);
+            Relationships[hero.characterName] += Mathf.RoundToInt(amount / heroesInRange.Count);
+            hero.Relationships[characterName] += Mathf.RoundToInt(amount / heroesInRange.Count);
 
         }
 

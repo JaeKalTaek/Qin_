@@ -124,11 +124,11 @@ public class SC_Global {
     }
 
     [Serializable]
-    public class CharacterFightPreview {
+    public class PreviewFightValues {
 
-        public Text name, constructionName;
+        public Text name;
 
-        public SC_FightValue health, constructionHealth, crit, dodge;
+        public SC_FightValue health, crit, dodge;
 
     }
 

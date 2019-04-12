@@ -30,7 +30,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     [Header("Fight UI")]
     public GameObject previewFightPanel;
-    public CharacterFightPreview attackerPreviewFight, attackedPreviewFight;
+    public PreviewFightValues attackerPreviewFight, attackedPreviewFight;
     public FightPanel fightPanel;
     public TextMeshProUGUI combatFeedbackText;
 
@@ -62,7 +62,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     [Header("Transforms")]
     public Transform tilesT;
-    public Transform bordersT, soldiersT, heroesT, demonsT, wallsT, bastionsT, castlesT, pitsT, ruinsT, villagesT;
+    public Transform bordersT, soldiersT, heroesT, demonsT, wallsT, bastionsT, castlesT, pitsT, ruinsT, villagesT, drainingStelesT;
     #endregion
 
     #region Variables
@@ -204,9 +204,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         backAction = DoNothing;
 
-        //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);
-
-        turnIndicator.text = GameManager.QinTurn ? "Qin's Turn" : (GameManager.Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
+        //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);        
 
 	}
     #endregion
@@ -446,10 +444,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackerPreviewFight.name.text = attackingCharacter.characterName;
 
-        attackerPreviewFight.constructionHealth.gameObject.SetActive(false);
-        attackedPreviewFight.constructionHealth.gameObject.SetActive(false);
+        /*attackerPreviewFight.constructionHealth.gameObject.SetActive(false);
+        attackedPreviewFight.constructionHealth.gameObject.SetActive(false);*/
 
-        SC_Character attacked = attackingCharacter.AttackTarget.Character;        
+        SC_Character attacked = attackingCharacter.AttackTarget.Character;
+        SC_Construction attackedConstru = attackingCharacter.AttackTarget.AttackableContru;
+
+        attackedPreviewFight.crit.gameObject.SetActive(attacked);
+
+        attackedPreviewFight.dodge.gameObject.SetActive(attacked && !attackedConstru);
 
         if (attackingCharacter.AttackTarget.Qin) {
 
@@ -461,15 +464,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
         } else if (attacked) {
 
-            attackedPreviewFight.name.text = attacked.characterName;
+            attackedPreviewFight.name.text = attacked.characterName + (attackedConstru ? " on " + (attackedConstru as SC_Castle ? "Castle" : attackedConstru.Name) : "");
          
             PreviewCharacterAttack(attacked, attackingCharacter, PreviewCharacterAttack(attackingCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(fightManager.AttackRange));
 
-            attackedPreviewFight.crit.gameObject.SetActive(true);
-
         } else {
 
-            SC_Construction c = attackingCharacter.AttackTarget.Construction;
+            SC_Construction c = attackingCharacter.AttackTarget.AttackableContru;
 
             attackedPreviewFight.name.text = c.Name;
 
@@ -489,11 +490,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackerPreviewFight.health.Set(attackingCharacter.Health, attackingCharacter.Health, attackingCharacter.MaxHealth);
 
-        attackedPreviewFight.constructionHealth.gameObject.SetActive(false);
+        //attackedPreviewFight.constructionHealth.gameObject.SetActive(false);
 
-        attackedPreviewFight.crit.gameObject.SetActive(false);
+        // attackedPreviewFight.crit.gameObject.SetActive(false);
 
-        attackedPreviewFight.dodge.gameObject.SetActive(false);
+        // attackedPreviewFight.dodge.gameObject.SetActive(false);
 
         attackerPreviewFight.crit.Set(attackingCharacter.CriticalAmount, Mathf.Min(attackingCharacter.CriticalAmount + attackingCharacter.Technique, GameManager.CommonCharactersVariables.critTrigger), GameManager.CommonCharactersVariables.critTrigger);
 
@@ -505,28 +506,28 @@ public class SC_UI_Manager : MonoBehaviour {
 
         bool attackedKilled = false;
 
-        SC_Construction c = attacked.Tile.Construction;
+        SC_Construction c = attacked.Tile.AttackableContru;
 
         int bD = attacker.BaseDamage;
 
-        CharacterFightPreview attackedPF = attacker != attackingCharacter ? attackerPreviewFight : attackedPreviewFight;
+        PreviewFightValues attackedPF = attacker != attackingCharacter ? attackerPreviewFight : attackedPreviewFight;
 
         int dT = GameManager.CommonCharactersVariables.dodgeTrigger;
         int cT = GameManager.CommonCharactersVariables.critTrigger;
 
-        if (c && c.GreatWall) {
+        if (c) {
 
             int healthLeft = c.Health - (cantCounter ? 0 : bD);
 
             attackedKilled = healthLeft <= 0;
 
-            attackedPF.health.Set(attackedKilled ? 0 : attacked.Health, attacked.Health, attacked.MaxHealth);
+            attackedPF.health.Set(Mathf.Max(0, healthLeft), c.Health, c.maxHealth);
 
-            attackedPF.constructionName.text = c.Name;
+            /*attackedPF.constructionName.text = c.Name;
 
             attackedPF.constructionHealth.Set(Mathf.Max(0, healthLeft), c.Health, c.maxHealth);
 
-            attackedPF.constructionHealth.gameObject.SetActive(true);
+            attackedPF.constructionHealth.gameObject.SetActive(true);*/
 
             attackedPF.dodge.Set(attacked.DodgeAmount, attacked.DodgeAmount, dT);
 
@@ -543,10 +544,6 @@ public class SC_UI_Manager : MonoBehaviour {
         }
 
         attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(fightManager.AttackRange) ? 0 : attacked.Technique), cT), cT);
-
-        attackedPF.crit.gameObject.SetActive(true);
-
-        attackedPF.dodge.gameObject.SetActive(true);
 
         return attackedKilled;
 

@@ -297,6 +297,8 @@ public class SC_Game_Manager : NetworkBehaviour {
         if (!Player.Qin || (Turn % 3 != 2))
             uiManager.NextTurn();
 
+        uiManager.turnIndicator.text = QinTurn ? "Qin's Turn" : (Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
+
     }
     #endregion
 
@@ -555,13 +557,17 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Demon demon = SC_Demon.demons[CurrentCastle.Tile.Region];
 
-        foreach (FieldInfo fI in demon.baseStats.GetType().GetFields()) {
+        float percent = 1f + (GetCurrentCastleSacrificeValue() / 100);
 
-            float percent = 1f + (GetCurrentCastleSacrificeValue() / 100);
+        demon.baseStats.strength += Mathf.RoundToInt(demon.baseStats.strength * percent);
+
+        /*foreach (FieldInfo fI in demon.baseStats.GetType().GetFields()) {
+
+                        
 
             fI.SetValue(demon.baseStats, Mathf.CeilToInt(((int)fI.GetValue(demon.baseStats)) * percent));
 
-        }
+        }*/
 
         demon.Health = demon.MaxHealth;
 
@@ -613,7 +619,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public static float GetCurrentCastleSacrificeValue() {
 
-        return Instance.CommonQinVariables.castleSacrifice.GetValue(Mathf.CeilToInt(((float)Instance.CurrentCastle.Health / Instance.CurrentCastle.maxHealth) * 100));
+        return Instance.CommonQinVariables.castleSacrifice.GetValue(Mathf.RoundToInt(((float)Instance.CurrentCastle.Health / Instance.CurrentCastle.maxHealth) * 100));
 
     }
 

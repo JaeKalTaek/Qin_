@@ -207,6 +207,19 @@ public class SC_Global {
 
         public int maxHealth, strength, chi, armor, resistance, technique, reflexes, movement;
 
+        public BaseCharacterStats (BaseCharacterStats other) {
+
+            maxHealth = other.maxHealth;
+            strength = other.strength;
+            chi = other.chi;
+            armor = other.armor;
+            resistance = other.resistance;
+            technique = other.technique;
+            reflexes = other.reflexes;
+            movement = other.movement;
+
+        }
+
     }   
     
     [Serializable]

@@ -559,15 +559,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         float percent = 1f + (GetCurrentCastleSacrificeValue() / 100);
 
-        demon.baseStats.strength += Mathf.RoundToInt(demon.baseStats.strength * percent);
-
-        /*foreach (FieldInfo fI in demon.baseStats.GetType().GetFields()) {
-
-                        
-
+        foreach (FieldInfo fI in demon.baseStats.GetType().GetFields())                     
             fI.SetValue(demon.baseStats, Mathf.CeilToInt(((int)fI.GetValue(demon.baseStats)) * percent));
-
-        }*/
 
         demon.Health = demon.MaxHealth;
 

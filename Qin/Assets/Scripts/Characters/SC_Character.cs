@@ -119,7 +119,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         characterName = loadedCharacter.characterName;
 
-        baseStats = loadedCharacter.baseStats;
+        baseStats = new BaseCharacterStats(loadedCharacter.baseStats);
 
         moveDuration = loadedCharacter.moveDuration;
 

@@ -155,6 +155,9 @@ public class SC_Fight_Manager : MonoBehaviour {
                 float HealthValue = Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
 
                 (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(HealthValue, attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+
+                print(attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+
                 (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = Mathf.RoundToInt(HealthValue).ToString();               
 
                 yield return new WaitForEndOfFrame();

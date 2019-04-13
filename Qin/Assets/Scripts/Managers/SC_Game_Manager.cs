@@ -262,7 +262,13 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         foreach (SC_Character character in FindObjectsOfType<SC_Character>()) {
 
-            character.Tile.Character = character;
+            if (!character.Tile.Character) {
+
+                print("Tile at : " + character.transform.position + " had no character");
+
+                character.Tile.Character = character;
+
+            }
 
             if (character.Hero) {
 

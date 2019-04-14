@@ -119,10 +119,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
         // Setup Grid
         SpriteRenderer gridRenderer = Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_Grid").GetComponent<SpriteRenderer>());
-        Vector3 size = new Vector3(GameManager.CurrentMapPrefab.SizeMapX, GameManager.CurrentMapPrefab.SizeMapY, 1) * GameManager.CurrentMapPrefab.TileSize;
+        Vector3 size = new Vector3(XSize, YSize, 1) * GameManager.CurrentMapPrefab.TileSize;
         gridRenderer.size = new Vector2(size.x, size.y);
         grid = gridRenderer.gameObject;
-        grid.transform.position = (size - Vector3.one * GameManager.CurrentMapPrefab.TileSize) / 2f;        
+        grid.transform.position = Vector3.Scale((size - Vector3.one * GameManager.CurrentMapPrefab.TileSize) / 2f, new Vector3(1, 1, 0));        
 
     }
     #endregion
@@ -132,13 +132,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
         bool canSetReady = true;
 
-        if(localPlayer.Qin) {
-
+        if(localPlayer.Qin)
             foreach (SC_Castle castle in FindObjectsOfType<SC_Castle>())
                 if (castle.CastleType == null)             
                     canSetReady = false;
-
-        }
 
         if (canSetReady) {
 
@@ -863,8 +860,8 @@ public class SC_UI_Manager : MonoBehaviour {
         else if (Input.GetButtonDown("DisplayDetails") && CurrentChara?.GetComponent<SC_Character>())
             DisplayCharacterDetails(CurrentChara.GetComponent<SC_Character>());
 
-        if (draggedCastle)
-            draggedCastle.transform.SetPos(WorldMousePos);
+        if(draggedCastle)
+            draggedCastle.transform.position = WorldMousePos;
 
         if (victoryPanel.activeSelf && Input.anyKeyDown) {
 

@@ -28,6 +28,8 @@ public class SC_Castle : SC_Bastion {
 
         transform.parent = uiManager.castlesT;
 
+        Roof.sortingOrder = GetComponentInChildren<SpriteRenderer>().sortingOrder;
+
     }
 
     public void SetCastle (string type) {

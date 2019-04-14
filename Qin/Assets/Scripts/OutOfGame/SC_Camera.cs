@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using static SC_Game_Manager;
+using static SC_Global;
 
 public class SC_Camera : MonoBehaviour {
 		
@@ -46,7 +47,7 @@ public class SC_Camera : MonoBehaviour {
 
         cam.orthographicSize = zooms[zoomIndex] * TileSize;
 
-        transform.position = ClampedPos(CursorPos + Vector3.forward * -16);
+        transform.position = ClampedPos(CursorPos - Vector3.forward);
 
     }
 
@@ -88,15 +89,15 @@ public class SC_Camera : MonoBehaviour {
 
     Vector3 ClampedPos(Vector3 p) {
 
-        float xMax = (SC_Tile_Manager.Instance.xSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize * cam.aspect;
+        float xMax = (XSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize * cam.aspect;
         float xMin = (-boardMargins[zoomIndex] - .5f) * TileSize + cam.orthographicSize * cam.aspect;
 
-        float x = (CursorPos.x == 0) ? xMin : (CursorPos.x.I() == SC_Tile_Manager.Instance.xSize - 1) ? xMax : Mathf.Clamp(p.x, xMin, xMax);
+        float x = (CursorPos.x == 0) ? xMin : (CursorPos.x.I() == XSize - 1) ? xMax : Mathf.Clamp(p.x, xMin, xMax);
 
-        float yMax = (SC_Tile_Manager.Instance.ySize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize;
+        float yMax = (YSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize;
         float yMin = (-.5f - boardMargins[zoomIndex]) * TileSize + cam.orthographicSize;
 
-        float y = (CursorPos.y == 0) ? yMin : (CursorPos.y.I() == SC_Tile_Manager.Instance.ySize - 1) ? yMax : Mathf.Clamp(p.y, yMin, yMax);
+        float y = (CursorPos.y == 0) ? yMin : (CursorPos.y.I() == YSize - 1) ? yMax : Mathf.Clamp(p.y, yMin, yMax);
 
         return new Vector3(x, y, -16);
 

@@ -46,6 +46,8 @@ public class SC_Qin : NetworkBehaviour {
 
         tileManager.GetTileAt(transform.position + Vector3.up).Qin = this;
 
+        transform.SetPos(transform.position, 0);
+
     }
 
 	/*public static void UsePower(Vector3 pos) {

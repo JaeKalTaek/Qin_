@@ -76,6 +76,8 @@ public class SC_Construction : NetworkBehaviour {
 
         Tile.Cost = 1;
 
+        transform.SetPos(transform.position, 2);
+
     }
 
 	public virtual void DestroyConstruction(bool playSound) {

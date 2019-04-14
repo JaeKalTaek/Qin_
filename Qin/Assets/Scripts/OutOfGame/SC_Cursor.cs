@@ -36,6 +36,8 @@ public class SC_Cursor : NetworkBehaviour {
 
         newMousePos = oldMousePos;
 
+        transform.SetPos(transform.position, 1);
+
     }
 
     void Update () {    
@@ -78,7 +80,7 @@ public class SC_Cursor : NetworkBehaviour {
             int x = newPos.x.I();
             int y = newPos.y.I();
 
-            transform.SetPos(new Vector2(Mathf.Clamp(x, 0, SC_Tile_Manager.Instance.xSize - 1), Mathf.Clamp(y, 0, SC_Tile_Manager.Instance.ySize - 1)) * TileSize);
+            transform.SetPos(new Vector3(Mathf.Clamp(x, 0, XSize - 1), Mathf.Clamp(y, 0, YSize - 1), 0) * TileSize, null);
 
             if (oldPos != transform.position) {
 

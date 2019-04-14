@@ -150,6 +150,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
         LastPos.Character = this;
 
+        transform.SetPos(transform.position, 0);        
+
     }
 
     #region Movement
@@ -186,9 +188,11 @@ public abstract class SC_Character : NetworkBehaviour {
 
         float movementTimer = 0;
 
+        Sprite.sortingOrder = Size;
+
         Vector3 currentStart = transform.position;
 
-        Vector3 currentEnd = new Vector3(path[1].transform.position.x, path[1].transform.position.y, transform.position.z);
+        Vector3 currentEnd = new Vector3(path[1].transform.position.x, path[1].transform.position.y, 0);
 
         while (pathIndex < path.Count) {
 
@@ -206,7 +210,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
                     currentStart = transform.position;
 
-                    currentEnd = new Vector3(path[pathIndex].transform.position.x, path[pathIndex].transform.position.y, transform.position.z);
+                    currentEnd = new Vector3(path[pathIndex].transform.position.x, path[pathIndex].transform.position.y, 0);
 
                 }
 
@@ -228,7 +232,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if(moved) {
 
-            transform.SetPos(target.transform);
+            transform.SetPos(target.transform.position, null);
 
             LastPos.Character = null;
 
@@ -307,7 +311,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         Tile.Character = null;
 
-        transform.SetPos(LastPos.transform);
+        transform.SetPos(LastPos.transform.position, null);
 
         LastPos.Character = this;
 

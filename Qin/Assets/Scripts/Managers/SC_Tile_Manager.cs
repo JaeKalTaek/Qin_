@@ -10,9 +10,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
     [Tooltip("Number of border sprites around the board")]
     public int borderSize;
 
-    [HideInInspector]
+    /*[HideInInspector]
 	[SyncVar]
-	public int xSize, ySize;
+	public int xSize, ySize;*/
 
 	public SC_Tile[,] tiles;
 
@@ -26,9 +26,8 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     public static SC_Tile_Manager Instance { get; set; }
 
-    //Variables used to determine the movements possible
     List<SC_Tile> OpenList { get; set; }
-    // List<SC_Tile> MovementRange { get; set; }
+
     Dictionary<SC_Tile, int> movementPoints = new Dictionary<SC_Tile, int>();
 
     public SC_DrainingStele DisplayedDrainingStele { get; set; }    
@@ -48,16 +47,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         SC_Fight_Manager.Instance.TileManager = this;
 
-        /*SC_Cursor.Instance = Instantiate(Resources.Load<SC_Cursor>("Prefabs/P_Cursor"));
+        // tiles = new SC_Tile[xSize, ySize];
 
-        if (gameManager.Player.Qin)
-            SC_Cursor.Instance.transform.position = new Vector3(xSize - 1, ySize - 1, 0) * SC_Game_Manager.TileSize;
-        else
-            SC_Cursor.Instance.transform.position = Vector3.zero;*/
-
-        // FindObjectOfType<SC_Camera>().Setup(xSize, ySize);
-
-        tiles = new SC_Tile[xSize, ySize];
+        tiles = new SC_Tile[XSize, YSize];
 
         regions = new List<SC_Tile>[6];
 
@@ -78,9 +70,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         }
 
-        for (int i = -borderSize; i <= xSize + borderSize; i++) {
+        for (int i = -borderSize; i <= XSize + borderSize; i++) {
 
-            for (int j = -borderSize; j <= ySize + borderSize; j++) {
+            for (int j = -borderSize; j <= YSize + borderSize; j++) {
 
                 Vector3 pos = new Vector3(i - .5f, j - .5f, 0) * SC_Game_Manager.TileSize;
 
@@ -88,10 +80,10 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
                 bool l = i == 0;
                 bool b = j == 0;
-                bool r = i == xSize;
-                bool t = j == ySize;
+                bool r = i == XSize;
+                bool t = j == YSize;
 
-                if ((i < 0) || (j < 0) || (i > xSize) || (j > ySize)) {
+                if ((i < 0) || (j < 0) || (i > XSize) || (j > YSize)) {
 
                     path += "Full";
 
@@ -108,6 +100,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
                     GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Tiles/P_Border"), pos, Quaternion.identity, uiManager.bordersT);
                     go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Borders/" + path);
+                    go.GetComponent<SpriteRenderer>().sortingOrder -= i + j - (b ? 2 : (t ? -2 : 0));
 
                 }
 

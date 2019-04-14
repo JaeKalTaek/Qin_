@@ -156,7 +156,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         }
 
-        SetValue("Tempo", Mathf.Floor((furthest / (float)(SC_Tile_Manager.Instance.xSize + SC_Tile_Manager.Instance.ySize)) * 6));
+        SetValue("Tempo", Mathf.Floor((furthest / (float)SC_Global.Size) * 6));
 
     }
 

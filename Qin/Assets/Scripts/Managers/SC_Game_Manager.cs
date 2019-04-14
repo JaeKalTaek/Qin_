@@ -120,10 +120,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 	void SetupTileManager() {
 
 		GameObject tm = Instantiate (Resources.Load<GameObject>("Prefabs/P_Tile_Manager"));
-		SC_Tile_Manager stm = tm.GetComponent<SC_Tile_Manager> ();
+		/*SC_Tile_Manager stm = tm.GetComponent<SC_Tile_Manager> ();
 
         stm.xSize = CurrentMapPrefab.SizeMapX;
-        stm.ySize = CurrentMapPrefab.SizeMapY;	
+        stm.ySize = CurrentMapPrefab.SizeMapY;	*/
 
 		NetworkServer.Spawn (tm);
 
@@ -511,8 +511,6 @@ public class SC_Game_Manager : NetworkBehaviour {
         GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Soldiers/P_BaseSoldier"));
 
         go.GetComponent<SC_Soldier>().characterPath = "Prefabs/Characters/Soldiers/Basic/P_" + soldierName;
-
-        go.transform.SetPos(pos);
 
         NetworkServer.Spawn(go);
 

@@ -14,6 +14,12 @@ public class SC_Global {
 
     public static Vector3 WorldMousePos { get { return Camera.main.ScreenToWorldPoint(Input.mousePosition); } }
 
+    public static int XSize { get { return SC_Game_Manager.Instance.CurrentMapPrefab.SizeMapX; } }
+
+    public static int YSize { get { return SC_Game_Manager.Instance.CurrentMapPrefab.SizeMapY; } }
+
+    public static int Size { get { return XSize + YSize; } }
+
     [Serializable]
     public struct SC_CombatModifiers {
 

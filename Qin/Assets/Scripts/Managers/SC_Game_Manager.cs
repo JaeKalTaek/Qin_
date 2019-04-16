@@ -508,7 +508,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void CreateSoldier(Vector3 pos, string soldierName) {
 
-        GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Soldiers/P_BaseSoldier"));
+        GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Soldiers/P_BaseSoldier"), pos, Quaternion.identity);
 
         go.GetComponent<SC_Soldier>().characterPath = "Prefabs/Characters/Soldiers/Basic/P_" + soldierName;
 

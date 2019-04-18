@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.01.10.00">
     <object class="Event" id="{f6d82cb4-5634-478f-b2b8-dd3c4514bd15}">
         <property name="name">
-            <value>MALE_HIT_BUILDING_SLOW_CRIT</value>
+            <value>BUILDING_HIT_MALE_SLOW_CRIT</value>
         </property>
         <property name="outputFormat">
             <value>1</value>

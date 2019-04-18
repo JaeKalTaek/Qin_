@@ -232,7 +232,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
             e.getPath(out p);
 
-            if (p.Contains("/" + a + "_HIT_" + b + "_SLOW") && (p.Contains("CRIT") == c)) {
+            if (p.Contains("/" + b + "_HIT_" + a + "_SLOW") && (p.Contains("CRIT") == c)) {
 
                 EventInstance hitSound = RuntimeManager.CreateInstance(p);
                 hitSound.setVolume(.35f);

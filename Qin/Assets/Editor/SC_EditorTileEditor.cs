@@ -33,9 +33,9 @@ public class SC_EditorTileEditor : Editor {
 
                         sr.transform.parent = tile.transform.GetChild(0);
 
-                        sr.sortingLayerName = "Constructions";
+                        /*sr.sortingLayerName = "Constructions";
 
-                        sr.sortingOrder = 1;
+                        sr.sortingOrder = 1;*/
 
                         sr.sprite = Resources.Load<Sprite>("Sprites/Constructions/Castle/Roofs/" + tile.castleType);
 

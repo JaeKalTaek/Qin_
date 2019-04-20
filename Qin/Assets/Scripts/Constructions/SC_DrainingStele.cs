@@ -37,11 +37,7 @@ public class SC_DrainingStele : SC_Construction {
 
         drainingSteles.Add(this);
 
-        PerformAction ((SC_Hero hero) => {
-
-            TrySlowHero(hero);
-
-        });
+        SlowHeroesInRange();
 
         transform.parent = uiManager.drainingStelesT;
 
@@ -71,7 +67,7 @@ public class SC_DrainingStele : SC_Construction {
 
                 foreach (SC_DrainingStele drainingStele in drainingSteles)
                     if(drainingStele != this)
-                        TrySlowHero(hero);
+                        drainingStele.SlowHeroesInRange();
 
             }
 
@@ -97,6 +93,16 @@ public class SC_DrainingStele : SC_Construction {
             }    
 
         }
+
+    }
+
+    void SlowHeroesInRange() {
+
+        PerformAction((SC_Hero hero) => {
+
+            TrySlowHero(hero);
+
+        });
 
     }
 

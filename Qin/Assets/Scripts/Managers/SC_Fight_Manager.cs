@@ -49,12 +49,12 @@ public class SC_Fight_Manager : MonoBehaviour {
         SC_Character attacked = attackingCharacter.AttackTarget.Character;
         SC_Construction targetConstruction = attackingCharacter.AttackTarget.AttackableContru;
 
-        uiManager.fightPanel.attackerName.text = attackingCharacter.characterName;
+        uiManager.fightPanel.attackerName.text = attackingCharacter.Tile.AttackableContru?.Name ?? attackingCharacter.characterName;
         uiManager.fightPanel.attackedName.text = targetConstruction?.Name ?? attacked?.characterName ?? "Qin";
 
         int currentAttackedHealth = targetConstruction?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-        uiManager.fightPanel.attackerHealth.text = attackingCharacter.Health.ToString();
+        uiManager.fightPanel.attackerHealth.text = (attackingCharacter.Tile.AttackableContru?.Health ?? attackingCharacter.Health).ToString();
         uiManager.fightPanel.attackedHealth.text = currentAttackedHealth.ToString();
 
         uiManager.fightPanel.attackerSlider.Set(attackingCharacter.Tile.AttackableContru?.Health ?? attackingCharacter.Health, attackingCharacter.Tile.AttackableContru?.maxHealth ?? attackingCharacter.MaxHealth);

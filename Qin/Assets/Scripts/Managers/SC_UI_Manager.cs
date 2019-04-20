@@ -438,12 +438,11 @@ public class SC_UI_Manager : MonoBehaviour {
     // Also called by UI
     public void PreviewFight (bool activeWeapon) {
 
+        SC_Construction attackerConstru = attackingCharacter.Tile.AttackableContru;
+
         attackingCharacter.Hero?.SetWeapon(activeWeapon);        
 
-        attackerPreviewFight.name.text = attackingCharacter.characterName;
-
-        /*attackerPreviewFight.constructionHealth.gameObject.SetActive(false);
-        attackedPreviewFight.constructionHealth.gameObject.SetActive(false);*/
+        attackerPreviewFight.name.text = attackingCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
 
         SC_Character attacked = attackingCharacter.AttackTarget.Character;
         SC_Construction attackedConstru = attackingCharacter.AttackTarget.AttackableContru;
@@ -505,6 +504,8 @@ public class SC_UI_Manager : MonoBehaviour {
         bool attackedKilled = false;
 
         SC_Construction c = attacked.Tile.AttackableContru;
+
+        print(c);
 
         int bD = attacker.BaseDamage;
 

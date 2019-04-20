@@ -124,7 +124,7 @@ public class SC_Cursor : NetworkBehaviour {
 
             right ^= true;
 
-            foreach (RectTransform rectT in new RectTransform[] { SC_UI_Manager.Instance.tileTooltip.panel.GetComponent<RectTransform>()/*, SC_UI_Manager.Instance.constructPanel.GetComponent<RectTransform>() */})
+            foreach (RectTransform rectT in new RectTransform[] { SC_UI_Manager.Instance.tileTooltip.panel.GetComponent<RectTransform>(), SC_UI_Manager.Instance.constructPanel.GetComponent<RectTransform>() })
                 rectT.anchoredPosition = new Vector2(right ? 0 : SC_UI_Manager.Size.x - rectT.sizeDelta.x, rectT.anchoredPosition.y);
 
         }

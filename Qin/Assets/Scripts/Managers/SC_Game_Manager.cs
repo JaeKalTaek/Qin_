@@ -317,7 +317,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void CancelLastConstruction () {
 
-        uiManager.backAction = DoNothing;
+        if (QinTurnStarting)
+            uiManager.backAction = DoNothing;
+        else
+            uiManager.cancelQinConstru.SetCanClick(false);
 
         Player.CmdCancelLastConstru();
 
@@ -457,29 +460,28 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             Player.Busy = false;
 
+            uiManager.backAction = CancelLastConstruction;
+
+        } else if (qinConstru) {
+
+            SC_Qin.ChangeEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
+
+            Player.CmdChangeQinEnergyOnClient(-SC_Qin.GetConstruCost(CurrentConstru), false);
+
+            uiManager.UpdateCreationPanel(uiManager.qinConstrus);
+
+            if (CanCreateConstruct(CurrentConstru))
+                tileManager.DisplayConstructableTiles(CurrentConstru);
+
+            uiManager.backAction = uiManager.SelectConstruct;
+
+            uiManager.cancelQinConstru.SetCanClick(true);
+
         } else {
 
-            if (qinConstru) {
-
-                SC_Qin.ChangeEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
-
-                Player.CmdChangeQinEnergyOnClient(-SC_Qin.GetConstruCost(CurrentConstru), false);
-
-                uiManager.UpdateCreationPanel(uiManager.qinConstrus);
-
-                if (CanCreateConstruct(CurrentConstru))
-                    tileManager.DisplayConstructableTiles(CurrentConstru);
-
-            } else {
-
-                Player.CmdChangeQinEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
-
-            }
+            Player.CmdChangeQinEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
 
         }
-
-        if (qinConstru)
-            uiManager.backAction = CancelLastConstruction;
 
     }
     #endregion

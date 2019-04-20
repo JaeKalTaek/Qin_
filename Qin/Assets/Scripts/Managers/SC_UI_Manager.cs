@@ -52,6 +52,7 @@ public class SC_UI_Manager : MonoBehaviour {
     [Header("Qin")]
     public Text qinEnergy;
     public GameObject construct, constructPanel, endQinConstru, cancelSoldierConstru;
+    public SC_QinCancelConstruButton cancelQinConstru;
     public Transform qinConstrus, soldierConstrus;
     public CreationTooltip construTooltip, soldierTooltip;
     public Transform qinPower;
@@ -615,7 +616,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         playerActionsPanel.SetActive(false);
 
-        backAction = DoNothing;
+        backAction = EndQinAction;
 
     }
 
@@ -650,8 +651,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
         TileManager.DisplaySacrifices();
 
-        backAction = EndQinAction;
-
         StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
 
     }
@@ -678,8 +677,6 @@ public class SC_UI_Manager : MonoBehaviour {
         StartCoroutine(ClickSafety(() => { clickSecurity = false; }));
 
         StartQinAction();
-
-        backAction = EndQinAction;
 
     }
 
@@ -740,6 +737,11 @@ public class SC_UI_Manager : MonoBehaviour {
         soldierConstrus.gameObject.SetActive(!qin);
 
         endQinConstru.SetActive(qin);
+
+        cancelQinConstru.gameObject.SetActive(qin);
+        if(qin)
+            cancelQinConstru.SetCanClick(false);
+
         cancelSoldierConstru.SetActive(!qin);
 
         UpdateCreationPanel(qin ? qinConstrus : soldierConstrus, true);
@@ -802,7 +804,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         previouslySelected?.Select();
 
-        backAction = DoNothing;
+        backAction = EndQinAction;
 
     }    
 
@@ -811,7 +813,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         previouslySelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
 
-        backAction = SelectConstruct;
+        backAction = EndQinAction;
 
         EventSystem.current.sendNavigationEvents = false;
 

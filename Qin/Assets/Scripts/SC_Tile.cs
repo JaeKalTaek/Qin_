@@ -192,13 +192,13 @@ public class SC_Tile : NetworkBehaviour {
 
                 TileManager.RemoveAllFilters();
 
-                FightManager.AttackRange = SC_Tile_Manager.TileDistance(attackingCharacter.transform.position, this);
+                FightManager.AttackRange = SC_Tile_Manager.TileDistance(activeCharacter.transform.position, this);
 
-                attackingCharacter.AttackTarget = this;
+                activeCharacter.AttackTarget = this;
 
                 SC_Player.localPlayer.CmdPrepareForAttack(FightManager.AttackRange, gameObject);
 
-                if (attackingCharacter.Hero)
+                if (activeCharacter.Hero)
                     UIManager.ChooseWeapon();
                 else
                     SC_Player.localPlayer.CmdAttack();
@@ -221,7 +221,7 @@ public class SC_Tile : NetworkBehaviour {
 
             }*/
 
-            else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy && !characterToMove) {
+            else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy && !characterToMove && !activeCharacter) {
 
                 if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
                     Character.TryCheckMovements();
@@ -235,19 +235,11 @@ public class SC_Tile : NetworkBehaviour {
                 } else
                     UIManager.ActivateMenu(UIManager.playerActionsPanel);
 
-            } else {
-
-                print("Can't do shit, Player is busy : " + SC_Player.localPlayer.Busy + ", character to move is : " + characterToMove);
-
             }
 
         } else if (SC_UI_Manager.CanInteract && CurrentDisplay == TDisplay.None) {
 
             UIManager.ActivateMenu(UIManager.playerActionsPanel);
-
-        } else {
-
-            print("Can't do nothing at all");
 
         }
 
@@ -261,15 +253,11 @@ public class SC_Tile : NetworkBehaviour {
             Hero?.PreviewAttackOnHero();
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
-        else {
 
-            Character?.ShowInfos();
-            Qin?.ShowInfos();            
+        Character?.ShowInfos();
+        Qin?.ShowInfos();            
 
-        }
-
-        if(!UIManager.previewFightPanel.activeSelf)
-            this.ShowInfos();
+        this.ShowInfos();
 
     }
 

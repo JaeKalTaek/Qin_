@@ -46,22 +46,22 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         #region Setup Fight Panel
         #region Setup Values
-        SC_Character attacked = attackingCharacter.AttackTarget.Character;
-        SC_Construction targetConstruction = attackingCharacter.AttackTarget.AttackableContru;
+        SC_Character attacked = activeCharacter.AttackTarget.Character;
+        SC_Construction targetConstruction = activeCharacter.AttackTarget.AttackableContru;
 
-        uiManager.fightPanel.attackerName.text = attackingCharacter.Tile.AttackableContru?.Name ?? attackingCharacter.characterName;
+        uiManager.fightPanel.attackerName.text = activeCharacter.Tile.AttackableContru?.Name ?? activeCharacter.characterName;
         uiManager.fightPanel.attackedName.text = targetConstruction?.Name ?? attacked?.characterName ?? "Qin";
 
         int currentAttackedHealth = targetConstruction?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-        uiManager.fightPanel.attackerHealth.text = (attackingCharacter.Tile.AttackableContru?.Health ?? attackingCharacter.Health).ToString();
+        uiManager.fightPanel.attackerHealth.text = (activeCharacter.Tile.AttackableContru?.Health ?? activeCharacter.Health).ToString();
         uiManager.fightPanel.attackedHealth.text = currentAttackedHealth.ToString();
 
-        uiManager.fightPanel.attackerSlider.Set(attackingCharacter.Tile.AttackableContru?.Health ?? attackingCharacter.Health, attackingCharacter.Tile.AttackableContru?.maxHealth ?? attackingCharacter.MaxHealth);
+        uiManager.fightPanel.attackerSlider.Set(activeCharacter.Tile.AttackableContru?.Health ?? activeCharacter.Health, activeCharacter.Tile.AttackableContru?.maxHealth ?? activeCharacter.MaxHealth);
         uiManager.fightPanel.attackedSlider.Set(currentAttackedHealth, targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
-        float y = Mathf.Min(attackingCharacter.transform.position.y, attackingCharacter.AttackTarget.transform.position.y);
-        float x = Mathf.Lerp(attackingCharacter.transform.position.x, attackingCharacter.AttackTarget.transform.position.x, .5f);
+        float y = Mathf.Min(activeCharacter.transform.position.y, activeCharacter.AttackTarget.transform.position.y);
+        float x = Mathf.Lerp(activeCharacter.transform.position.x, activeCharacter.AttackTarget.transform.position.x, .5f);
         #endregion
 
         #region Setup pos
@@ -74,24 +74,24 @@ public class SC_Fight_Manager : MonoBehaviour {
         #endregion
 
         #region Setup attack direction
-        Vector3 distance = attackingCharacter.AttackTarget.transform.position - attackingCharacter.transform.position;
+        Vector3 distance = activeCharacter.AttackTarget.transform.position - activeCharacter.transform.position;
 
         Vector3 travel = (Mathf.Abs(distance.x) >= Mathf.Abs(distance.y) ? Vector3.right * Mathf.Sign(distance.x) : Vector3.up * Mathf.Sign(distance.y));
         #endregion
 
         // Attacking character attacks
-        StartCoroutine(FightAnim(attackingCharacter, travel * .5f * SC_Game_Manager.Instance.CurrentMapPrefab.TileSize, true));        
+        StartCoroutine(FightAnim(activeCharacter, travel * .5f * SC_Game_Manager.Instance.CurrentMapPrefab.TileSize, true));        
 
     }
 
     IEnumerator FightAnim(SC_Character c, Vector3 travel, bool attacking, bool killed = false) {
 
         #region Setting up variables
-        bool counter = attackingCharacter != c;
+        bool counter = activeCharacter != c;
 
-        SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;
+        SC_Character attacked = counter ? activeCharacter : activeCharacter.AttackTarget.Character;
 
-        SC_Construction attackedConstru = counter ? attackingCharacter.Tile.AttackableContru : attackingCharacter.AttackTarget.AttackableContru;
+        SC_Construction attackedConstru = counter ? activeCharacter.Tile.AttackableContru : activeCharacter.AttackTarget.AttackableContru;
         #endregion
 
         if(attacking)
@@ -227,7 +227,7 @@ public class SC_Fight_Manager : MonoBehaviour {
             if(killed)
                 attacker.Hero.IncreaseRelationships(CharactersVariables.relationGains.kill);
 
-            if (attacker != attackingCharacter)
+            if (attacker != activeCharacter)
                 attacker.Hero.IncreaseRelationships(CharactersVariables.relationGains.counterAttack);
 
         }
@@ -241,7 +241,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public bool HitConstruction(SC_Character attacker, SC_Construction construction) {
 
-        construction.Health -= Mathf.RoundToInt(attacker.BaseDamage / (attacker != attackingCharacter ? CharactersVariables.counterFactor : 1));
+        construction.Health -= Mathf.RoundToInt(attacker.BaseDamage / (attacker != activeCharacter ? CharactersVariables.counterFactor : 1));
 
         construction.Lifebar.UpdateGraph(construction.Health, construction.maxHealth);
 
@@ -290,7 +290,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         damages -= (attacker.GetActiveWeapon().physical) ? armor : resistance;
 
-        if (attacker != attackingCharacter)
+        if (attacker != activeCharacter)
             damages = Mathf.RoundToInt(damages / CharactersVariables.counterFactor);
 
         return Mathf.Max(0, damages);
@@ -371,11 +371,11 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public void ApplyDamage (bool counter) {
 
-        SC_Character attacker = counter ? attackingCharacter.AttackTarget.Character : attackingCharacter;
+        SC_Character attacker = counter ? activeCharacter.AttackTarget.Character : activeCharacter;
 
-        SC_Character attacked = counter ? attackingCharacter : attackingCharacter.AttackTarget.Character;        
+        SC_Character attacked = counter ? activeCharacter : activeCharacter.AttackTarget.Character;        
 
-        SC_Construction attackedConstru = counter ? attackingCharacter.Tile.AttackableContru : attackingCharacter.AttackTarget.AttackableContru;
+        SC_Construction attackedConstru = counter ? activeCharacter.Tile.AttackableContru : activeCharacter.AttackTarget.AttackableContru;
 
         // print("Attacker : " + attacker?.characterName + "\nAttacked : " + (attacked?.characterName ?? attackedConstru?.name ?? "Qin"));
 

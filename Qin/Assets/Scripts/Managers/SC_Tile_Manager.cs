@@ -228,7 +228,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
     #region Attack
     public List<SC_Tile> GetAttackTiles () {
 
-        return GetAttackTiles(SC_Character.attackingCharacter, SC_Character.attackingCharacter.Tile);
+        return GetAttackTiles(SC_Character.activeCharacter, SC_Character.activeCharacter.Tile);
 
     }
 

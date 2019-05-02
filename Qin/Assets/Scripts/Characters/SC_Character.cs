@@ -86,7 +86,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
     List<SC_Tile> path;
 
-    public static SC_Character attackingCharacter, characterToMove;
+    public static SC_Character activeCharacter, characterToMove;
 
     public SC_Tile Tile { get { return tileManager.GetTileAt(gameObject); } }
 
@@ -242,7 +242,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
         CanMove = false;
 
-        attackingCharacter = this;
+        characterToMove = null;
+
+        activeCharacter = this;
 
         bool canAttack = false;
 
@@ -315,9 +317,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
         LastPos.Character = this;
 
-        CanMove = true;        
+        CanMove = true;
 
-        UnTired();
+        activeCharacter = null;
 
         if (Hero)
             SC_DrainingStele.UpdateHeroSlow(Hero);
@@ -333,6 +335,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (SC_Player.localPlayer.Turn) {
 
+            characterToMove = this;
+
             SC_Cursor.SetLock(false);
 
             uiManager.backAction = gameManager.UnselectCharacter;
@@ -346,30 +350,21 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public static void FinishCharacterAction() {
 
-        tileManager.RemoveAllFilters();
+        // print("Finish character action");
 
-        if (!characterToMove)
-            print("ERROR CHARACTERTOMOVE IS NULL");
-        else if (characterToMove.Hero) {
+        if (activeCharacter.Hero) {
 
-            characterToMove.Hero.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
+            activeCharacter.Hero.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
 
             SC_Sound_Manager.Instance.SetTempo();
 
-        }
-
-        characterToMove = null;
-
-        if(attackingCharacter) {
-
-            attackingCharacter.Tire();
-
-            /*if(attackingCharacter.Hero)
-                attackingCharacter.Hero.BerserkTurn = attackingCharacter.Hero.Berserk;*/
-
-            attackingCharacter = null;
+            // activeCharacter.Hero.BerserkTurn = activeCharacter.Hero.Berserk;
 
         }
+
+        activeCharacter.Tire();
+
+        activeCharacter = null;
 
     }   
 

@@ -229,7 +229,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Character.characterToMove = null;
 
-        SC_Character.attackingCharacter = null;
+        SC_Character.activeCharacter = null;
 
         /*foreach (SC_Convoy convoy in FindObjectsOfType<SC_Convoy>())
 			convoy.MoveConvoy ();*/
@@ -347,11 +347,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         tileManager.RemoveAllFilters();
 
-        SC_Tile t = SC_Character.characterToMove.Tile;        
-
         SC_Character.characterToMove = null;
 
-        tileManager.GetTileAt(SC_Cursor.Instance.gameObject).OnCursorEnter();
+        SC_Cursor.Tile.OnCursorEnter();
 
         uiManager.backAction = DoNothing;
 
@@ -383,17 +381,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         Player.CmdSetConstru(c);
 
-        Player.CmdConstructAt(SC_Character.attackingCharacter.transform.position.x.I(), SC_Character.attackingCharacter.transform.position.y.I());
-
-        Player.Busy = false;
-
-        SC_Cursor.SetLock(false);
+        Player.CmdConstructAt(SC_Character.activeCharacter.transform.position.x.I(), SC_Character.activeCharacter.transform.position.y.I());
 
     }
 
     public void ConstructAt (int x, int y) {
-
-        //tileManager.RemoveAllFilters();
 
         SC_Tile tile = tileManager.GetTileAt(x, y);
 
@@ -423,7 +415,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             } else {
 
-                FinishAction(/*true*/);
+                SC_Character.FinishCharacterAction();
 
             }
 
@@ -454,34 +446,35 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void FinishConstruction (bool qinConstru) {
 
-        tileManager.RemoveAllFilters();
+        if (!QinTurnStarting) {
 
-        if (QinTurnStarting) {
+            if (qinConstru) {
 
-            Player.Busy = false;
+                SC_Qin.ChangeEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
 
-            uiManager.backAction = CancelLastConstruction;
+                Player.CmdChangeQinEnergyOnClient(-SC_Qin.GetConstruCost(CurrentConstru), false);
 
-        } else if (qinConstru) {
+                uiManager.UpdateCreationPanel(uiManager.qinConstrus);
 
-            SC_Qin.ChangeEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
+                if (CanCreateConstruct(CurrentConstru))
+                    tileManager.DisplayConstructableTiles(CurrentConstru);
 
-            Player.CmdChangeQinEnergyOnClient(-SC_Qin.GetConstruCost(CurrentConstru), false);
+                uiManager.backAction = uiManager.SelectConstruct;
 
-            uiManager.UpdateCreationPanel(uiManager.qinConstrus);
+                uiManager.cancelQinConstru.SetCanClick(true);
 
-            if (CanCreateConstruct(CurrentConstru))
-                tileManager.DisplayConstructableTiles(CurrentConstru);
+            } else if (SC_Cursor.Tile.Soldier) {
 
-            uiManager.backAction = uiManager.SelectConstruct;
+                Player.CmdChangeQinEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
 
-            uiManager.cancelQinConstru.SetCanClick(true);
-
-        } else {
-
-            Player.CmdChangeQinEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
+            }
 
         }
+
+        FinishAction();
+
+        if (QinTurnStarting)
+            uiManager.backAction = CancelLastConstruction;
 
     }
     #endregion
@@ -577,32 +570,23 @@ public class SC_Game_Manager : NetworkBehaviour {
     }
     #endregion
 
+    // Called by UI
     public void Wait () {
 
         Player.CmdFinishAction();
 
     }
 
-    /*public void FinishAction() {
+    public void FinishAction () {
 
-        if (SC_Cursor.Instance.Locked)
-            FinishAction(false);
-        else
+        tileManager.RemoveAllFilters();
+
+        if (SC_Character.activeCharacter)
             SC_Character.FinishCharacterAction();
-
-    }*/
-
-    public void FinishAction (/*bool sync*/) {
-
-        SC_Character.FinishCharacterAction();
 
         if (Player.Turn) {
 
             SC_Cursor.SetLock(false);
-
-            /*if (sync)
-                Player.CmdFinishCharacterAction();
-            else*/
 
             uiManager.characterActionsPanel.SetActive(false);
 

@@ -156,7 +156,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcResetMovement() {
 
-        characterToMove.ResetMovementFunction();
+        activeCharacter.ResetMovementFunction();
 
     }
     #endregion
@@ -174,7 +174,7 @@ public class SC_Player : NetworkBehaviour {
 
         FightManager.AttackRange = attackRange;
 
-        attackingCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
+        activeCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
 	}
 
     [Command]
@@ -398,7 +398,7 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcDestroyProductionBuilding () {        
 
-        SC_Character.attackingCharacter.Tile.Construction?.DestroyConstruction(true);
+        activeCharacter.Tile.Construction?.DestroyConstruction(true);
 
         localPlayer.GameManager.FinishAction();
 

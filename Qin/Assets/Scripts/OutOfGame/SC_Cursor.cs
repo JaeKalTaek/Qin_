@@ -26,6 +26,8 @@ public class SC_Cursor : NetworkBehaviour {
 
     public static SC_Cursor Instance { get; set; }    
 
+    public static SC_Tile Tile { get { return SC_Tile_Manager.Instance?.GetTileAt(Instance.gameObject); } }
+
     void Start() {
 
         // Locked = true;
@@ -88,7 +90,7 @@ public class SC_Cursor : NetworkBehaviour {
 
                 SC_Tile_Manager.Instance?.GetTileAt(oldPos)?.OnCursorExit();
 
-                SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.OnCursorEnter();
+                Tile?.OnCursorEnter();
 
                 SetRightLeftPanels();             
 
@@ -99,7 +101,7 @@ public class SC_Cursor : NetworkBehaviour {
 
         #region Cursor Inputs
         if (!Locked && (Input.GetButtonDown("Submit") || (Input.GetMouseButtonDown(0) && Cursor.visible)))
-            SC_Tile_Manager.Instance?.GetTileAt(transform.position)?.CursorClick();           
+            Tile?.CursorClick();           
         #endregion
     }
     
@@ -110,9 +112,9 @@ public class SC_Cursor : NetworkBehaviour {
         Instance.gameObject.SetActive(!b);
 
         if(b)
-            SC_Tile_Manager.Instance?.GetTileAt(Instance.gameObject)?.OnCursorExit();
+            Tile?.OnCursorExit();
         else
-            SC_Tile_Manager.Instance?.GetTileAt(Instance.gameObject)?.OnCursorEnter();
+            Tile?.OnCursorEnter();
 
     }
 

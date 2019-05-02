@@ -95,11 +95,11 @@ public class SC_Hero : SC_Character {
 
 	public void PreviewAttackOnHero() {
 
-		if (!attackingCharacter.Hero && SC_UI_Manager.CanInteract && SC_Player.localPlayer.Turn) {
+		if (!activeCharacter.Hero && SC_UI_Manager.CanInteract && SC_Player.localPlayer.Turn) {
 
-            attackingCharacter.AttackTarget = Tile;
+            activeCharacter.AttackTarget = Tile;
 
-            fightManager.AttackRange = SC_Tile_Manager.TileDistance(attackingCharacter.transform.position, Tile);
+            fightManager.AttackRange = SC_Tile_Manager.TileDistance(activeCharacter.transform.position, Tile);
 
             uiManager.PreviewFight(true);
 
@@ -109,7 +109,7 @@ public class SC_Hero : SC_Character {
 
     public static void Attack(bool usedActiveWeapon) {
 
-        attackingCharacter.Hero.SetWeapon(usedActiveWeapon);
+        activeCharacter.Hero.SetWeapon(usedActiveWeapon);
 
         fightManager.Attack();
 

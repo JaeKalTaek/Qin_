@@ -376,14 +376,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
         bool movingDemon = characterToMove?.Demon && localPlayer.Qin;
 
-        bool q = /*t.Character?.Qin ??*/ localPlayer.Qin;
-
-        tileTooltip.power.text = t.CombatModifiers.strength + (movingDemon ? 0 : t.DemonsModifier("strength", q)) + "";
-        tileTooltip.defense.text = t.CombatModifiers.armor + (movingDemon ? 0 : t.DemonsModifier("armor", q)) + "";
-        tileTooltip.technique.text = t.CombatModifiers.technique + (movingDemon ? 0 : t.DemonsModifier("technique", q)) + "";
-        tileTooltip.reflexes.text = t.CombatModifiers.reflexes + (movingDemon ? 0 : t.DemonsModifier("reflexes", q)) + "";
-        tileTooltip.range.text = t.CombatModifiers.range + (movingDemon ? 0 : t.DemonsModifier("range", q)) + "";
-        tileTooltip.movement.text = t.CombatModifiers.movement + (movingDemon ? 0 : t.DemonsModifier("movement", q)) + "";
+        tileTooltip.power.text = t.CombatModifiers.strength + (movingDemon ? 0 : t.DemonsModifier("strength", localPlayer.Qin)) + "";
+        tileTooltip.defense.text = t.CombatModifiers.armor + (movingDemon ? 0 : t.DemonsModifier("armor", localPlayer.Qin)) + "";
+        tileTooltip.technique.text = t.CombatModifiers.technique + (movingDemon ? 0 : t.DemonsModifier("technique", localPlayer.Qin)) + "";
+        tileTooltip.reflexes.text = t.CombatModifiers.reflexes + (movingDemon ? 0 : t.DemonsModifier("reflexes", localPlayer.Qin)) + "";
+        tileTooltip.range.text = t.CombatModifiers.range + (movingDemon ? 0 : t.DemonsModifier("range", localPlayer.Qin)) + "";
+        tileTooltip.movement.text = t.CombatModifiers.movement + (movingDemon ? 0 : t.DemonsModifier("movement", localPlayer.Qin)) + "";
 
         tileTooltip.panel.SetActive(true);
 
@@ -438,24 +436,24 @@ public class SC_UI_Manager : MonoBehaviour {
     // Also called by UI
     public void PreviewFight (bool activeWeapon) {
 
-        SC_Construction attackerConstru = attackingCharacter.Tile.AttackableContru;
+        SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
 
-        attackingCharacter.Hero?.SetWeapon(activeWeapon);        
+        activeCharacter.Hero?.SetWeapon(activeWeapon);        
 
-        attackerPreviewFight.name.text = attackingCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
+        attackerPreviewFight.name.text = activeCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
 
-        SC_Character attacked = attackingCharacter.AttackTarget.Character;
-        SC_Construction attackedConstru = attackingCharacter.AttackTarget.AttackableContru;
+        SC_Character attacked = activeCharacter.AttackTarget.Character;
+        SC_Construction attackedConstru = activeCharacter.AttackTarget.AttackableContru;
 
         attackedPreviewFight.crit.gameObject.SetActive(attacked);
 
         attackedPreviewFight.dodge.gameObject.SetActive(attacked && !attackedConstru);
 
-        if (attackingCharacter.AttackTarget.Qin) {
+        if (activeCharacter.AttackTarget.Qin) {
 
             attackedPreviewFight.name.text = "Qin";
 
-            attackedPreviewFight.health.Set(SC_Qin.Energy - attackingCharacter.BaseDamage, SC_Qin.Energy, SC_Qin.Energy);
+            attackedPreviewFight.health.Set(SC_Qin.Energy - activeCharacter.BaseDamage, SC_Qin.Energy, SC_Qin.Energy);
 
             NonCharacterAttackPreview();
 
@@ -463,21 +461,21 @@ public class SC_UI_Manager : MonoBehaviour {
 
             attackedPreviewFight.name.text = attacked.characterName + (attackedConstru ? " on " + (attackedConstru as SC_Castle ? "Castle" : attackedConstru.Name) : "");
          
-            PreviewCharacterAttack(attacked, attackingCharacter, PreviewCharacterAttack(attackingCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(fightManager.AttackRange));
+            PreviewCharacterAttack(attacked, activeCharacter, PreviewCharacterAttack(activeCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(fightManager.AttackRange));
 
         } else {
 
-            SC_Construction c = attackingCharacter.AttackTarget.AttackableContru;
+            SC_Construction c = activeCharacter.AttackTarget.AttackableContru;
 
             attackedPreviewFight.name.text = c.Name;
 
-            attackedPreviewFight.health.Set(Mathf.Max(0, c.Health - attackingCharacter.BaseDamage), c.Health, c.maxHealth);
+            attackedPreviewFight.health.Set(Mathf.Max(0, c.Health - activeCharacter.BaseDamage), c.Health, c.maxHealth);
 
             NonCharacterAttackPreview();
 
         }
 
-        attackingCharacter.Hero?.SetWeapon(activeWeapon);
+        activeCharacter.Hero?.SetWeapon(activeWeapon);
 
         previewFightPanel.SetActive(true);
 
@@ -485,7 +483,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     void NonCharacterAttackPreview() {
 
-        attackerPreviewFight.health.Set(attackingCharacter.Health, attackingCharacter.Health, attackingCharacter.MaxHealth);
+        attackerPreviewFight.health.Set(activeCharacter.Health, activeCharacter.Health, activeCharacter.MaxHealth);
 
         //attackedPreviewFight.constructionHealth.gameObject.SetActive(false);
 
@@ -493,9 +491,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         // attackedPreviewFight.dodge.gameObject.SetActive(false);
 
-        attackerPreviewFight.crit.Set(attackingCharacter.CriticalAmount, Mathf.Min(attackingCharacter.CriticalAmount + attackingCharacter.Technique, GameManager.CommonCharactersVariables.critTrigger), GameManager.CommonCharactersVariables.critTrigger);
+        attackerPreviewFight.crit.Set(activeCharacter.CriticalAmount, Mathf.Min(activeCharacter.CriticalAmount + activeCharacter.Technique, GameManager.CommonCharactersVariables.critTrigger), GameManager.CommonCharactersVariables.critTrigger);
 
-        attackerPreviewFight.dodge.Set(attackingCharacter.DodgeAmount, attackingCharacter.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger);
+        attackerPreviewFight.dodge.Set(activeCharacter.DodgeAmount, activeCharacter.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger);
         
     }
 
@@ -509,7 +507,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         int bD = attacker.BaseDamage;
 
-        PreviewFightValues attackedPF = attacker != attackingCharacter ? attackerPreviewFight : attackedPreviewFight;
+        PreviewFightValues attackedPF = attacker != activeCharacter ? attackerPreviewFight : attackedPreviewFight;
 
         int dT = GameManager.CommonCharactersVariables.dodgeTrigger;
         int cT = GameManager.CommonCharactersVariables.critTrigger;
@@ -571,15 +569,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
         (firstWeapon ? weaponChoice1 : weaponChoice2).SetActive(active);
 
-        (firstWeapon ? weaponChoice1 : weaponChoice2).GetComponentInChildren<Text>().text = attackingCharacter.Hero.GetWeapon(firstWeapon).weaponName;
+        (firstWeapon ? weaponChoice1 : weaponChoice2).GetComponentInChildren<Text>().text = activeCharacter.Hero.GetWeapon(firstWeapon).weaponName;
 
     }
 
     public void ChooseWeapon () {        
 
-        ShowHideWeapon(true, attackingCharacter.Hero.weapon1.Range(attackingCharacter.Hero).In(fightManager.AttackRange));
+        ShowHideWeapon(true, activeCharacter.Hero.weapon1.Range(activeCharacter.Hero).In(fightManager.AttackRange));
 
-        ShowHideWeapon(false, attackingCharacter.Hero.weapon2.Range(attackingCharacter.Hero).In(fightManager.AttackRange));
+        ShowHideWeapon(false, activeCharacter.Hero.weapon2.Range(activeCharacter.Hero).In(fightManager.AttackRange));
 
         weaponChoicePanel.SetActive(true);
 

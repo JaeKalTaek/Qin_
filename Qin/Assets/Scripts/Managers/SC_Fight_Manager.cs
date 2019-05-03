@@ -124,7 +124,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru?.Health ?? SC_Qin.Energy) - c.BaseDamage);
+            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru?.Health ?? SC_Qin.Energy) - CalcAttack(c));
 
             #region Text Feedback
             string feedbackText = "";
@@ -156,7 +156,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(HealthValue, attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
-                print(attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+                // print(attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
                 (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = Mathf.RoundToInt(HealthValue).ToString();               
 
@@ -241,7 +241,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public bool HitConstruction(SC_Character attacker, SC_Construction construction) {
 
-        construction.Health -= Mathf.RoundToInt(attacker.BaseDamage / (attacker != activeCharacter ? CharactersVariables.counterFactor : 1));
+        construction.Health -= Mathf.RoundToInt(CalcAttack(attacker));
 
         construction.Lifebar.UpdateGraph(construction.Health, construction.maxHealth);
 
@@ -256,9 +256,9 @@ public class SC_Fight_Manager : MonoBehaviour {
     
     }
 
-    public int CalcDamage (SC_Character attacker, SC_Character attacked) {
+    public int CalcAttack(SC_Character attacker) {
 
-        int damages = attacker.BaseDamage;
+        int damages = attacker.GetActiveWeapon().physical ? attacker.Strength : attacker.Chi;
 
         //damages = Mathf.CeilToInt(damages * attacker.GetActiveWeapon().ShiFuMiModifier(attacked.GetActiveWeapon()));
 
@@ -274,6 +274,17 @@ public class SC_Fight_Manager : MonoBehaviour {
         /*if (attacker.Hero?.Berserk ?? false)
             damages = Mathf.CeilToInt(damages * CharactersVariables.berserkDamageMultiplier);*/
 
+        if (attacker != activeCharacter)
+            damages = Mathf.RoundToInt(damages / CharactersVariables.counterFactor);
+
+        return Mathf.Max(0, damages);
+
+    }
+
+    public int CalcDamage (SC_Character attacker, SC_Character attacked) {
+
+        int damages = CalcAttack(attacker);
+
         if (attacked.DodgeAmount == CharactersVariables.dodgeTrigger)
             damages = Mathf.RoundToInt(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f));
 
@@ -288,10 +299,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         }
 
-        damages -= (attacker.GetActiveWeapon().physical) ? armor : resistance;
-
-        if (attacker != activeCharacter)
-            damages = Mathf.RoundToInt(damages / CharactersVariables.counterFactor);
+        damages -= (attacker.GetActiveWeapon().physical) ? armor : resistance;               
 
         return Mathf.Max(0, damages);
 
@@ -384,7 +392,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         else if (attackedConstru)
             HitConstruction(attacker, attackedConstru);
         else
-            SC_Qin.ChangeEnergy(-attacker.BaseDamage);
+            SC_Qin.ChangeEnergy(-CalcAttack(attacker));
 
         attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
 

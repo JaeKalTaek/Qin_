@@ -47,8 +47,6 @@ public abstract class SC_Character : NetworkBehaviour {
     public bool CanMove { get; set; }    
 
     public int RangeModifiers { get; set; }      
-
-    public int BaseDamage { get { return GetActiveWeapon().physical ? Strength : Chi; } }
     #endregion
 
     [Tooltip("Color applied when the character is tired")]

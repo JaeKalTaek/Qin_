@@ -321,8 +321,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         }
 
-        characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);
-        // characterDetails.soldierPanel.SetActive(c.Soldier);        
+        characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);    
 
     }
 
@@ -343,8 +342,6 @@ public class SC_UI_Manager : MonoBehaviour {
         characterDetails.panel.SetActive(b);
 
         turnIndicator.transform.parent.gameObject.SetActive(!b);
-
-        // tileTooltip.panel.SetActive(!b);
 
     }
 
@@ -453,7 +450,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             attackedPreviewFight.name.text = "Qin";
 
-            attackedPreviewFight.health.Set(SC_Qin.Energy - activeCharacter.BaseDamage, SC_Qin.Energy, SC_Qin.Energy);
+            attackedPreviewFight.health.Set(SC_Qin.Energy - fightManager.CalcAttack(activeCharacter), SC_Qin.Energy, SC_Qin.Energy);
 
             NonCharacterAttackPreview();
 
@@ -469,7 +466,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             attackedPreviewFight.name.text = c.Name;
 
-            attackedPreviewFight.health.Set(Mathf.Max(0, c.Health - activeCharacter.BaseDamage), c.Health, c.maxHealth);
+            attackedPreviewFight.health.Set(Mathf.Max(0, c.Health - fightManager.CalcAttack(activeCharacter)), c.Health, c.maxHealth);
 
             NonCharacterAttackPreview();
 
@@ -485,12 +482,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackerPreviewFight.health.Set(activeCharacter.Health, activeCharacter.Health, activeCharacter.MaxHealth);
 
-        //attackedPreviewFight.constructionHealth.gameObject.SetActive(false);
-
-        // attackedPreviewFight.crit.gameObject.SetActive(false);
-
-        // attackedPreviewFight.dodge.gameObject.SetActive(false);
-
         attackerPreviewFight.crit.Set(activeCharacter.CriticalAmount, Mathf.Min(activeCharacter.CriticalAmount + activeCharacter.Technique, GameManager.CommonCharactersVariables.critTrigger), GameManager.CommonCharactersVariables.critTrigger);
 
         attackerPreviewFight.dodge.Set(activeCharacter.DodgeAmount, activeCharacter.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger);
@@ -503,10 +494,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
         SC_Construction c = attacked.Tile.AttackableContru;
 
-        print(c);
-
-        int bD = attacker.BaseDamage;
-
         PreviewFightValues attackedPF = attacker != activeCharacter ? attackerPreviewFight : attackedPreviewFight;
 
         int dT = GameManager.CommonCharactersVariables.dodgeTrigger;
@@ -514,17 +501,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (c) {
 
-            int healthLeft = c.Health - (cantCounter ? 0 : bD);
+            int healthLeft = c.Health - (cantCounter ? 0 : fightManager.CalcAttack(attacker));
 
             attackedKilled = healthLeft <= 0;
 
             attackedPF.health.Set(Mathf.Max(0, healthLeft), c.Health, c.maxHealth);
-
-            /*attackedPF.constructionName.text = c.Name;
-
-            attackedPF.constructionHealth.Set(Mathf.Max(0, healthLeft), c.Health, c.maxHealth);
-
-            attackedPF.constructionHealth.gameObject.SetActive(true);*/
 
             attackedPF.dodge.Set(attacked.DodgeAmount, attacked.DodgeAmount, dT);
 

@@ -752,8 +752,14 @@ public class SC_UI_Manager : MonoBehaviour {
         foreach (SC_UI_Creation c in t.GetComponentsInChildren<SC_UI_Creation>())
             c.SetCanClick();
 
-        if (open)
+        if (open) {
+
+            foreach (SC_UI_Creation c in GetComponentsInChildren<SC_UI_Creation>())
+                c.OnDeselect(new BaseEventData(EventSystem.current));
+
             ForceSelect(t.GetComponentInChildren<Button>().gameObject);
+
+        }
 
     }
 
@@ -858,7 +864,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (Input.GetButtonDown("Cancel"))
             backAction();
-        else if (Input.GetButtonDown("DisplayDetails") && CurrentChara?.GetComponent<SC_Character>())
+        else if (Input.GetButtonDown("DisplayDetails") && CurrentChara?.GetComponent<SC_Character>() && !SC_Cursor.Instance.Locked)
             DisplayCharacterDetails(CurrentChara.GetComponent<SC_Character>());
 
         if(draggedCastle)

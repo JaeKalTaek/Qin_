@@ -252,6 +252,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             if (Player.Qin) {
 
+                tileManager.RemoveAllFilters();
+
                 Player.Busy = true;                
 
                 tileManager.DisplayConstructableTiles(CurrentConstru);

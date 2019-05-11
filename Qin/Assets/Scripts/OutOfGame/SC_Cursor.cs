@@ -82,8 +82,9 @@ public class SC_Cursor : NetworkBehaviour {
             int x = newPos.x.I();
             int y = newPos.y.I();
 
-            transform.SetPos(new Vector3(Mathf.Clamp(x, 0, XSize - 1), Mathf.Clamp(y, 0, YSize - 1), 0) * TileSize, null);
+            transform.SetPos(new Vector3(Mathf.Clamp(x, 0, XSize - 1), Mathf.Clamp(y, 0, YSize - 1), 0) * TileSize);
 
+            #region Cursor has moved
             if (oldPos != transform.position) {
 
                 SC_Sound_Manager.Instance.OnCursorMoved();
@@ -92,9 +93,12 @@ public class SC_Cursor : NetworkBehaviour {
 
                 Tile?.OnCursorEnter();
 
+                SC_Arrow.CursorMoved(Tile);
+
                 SetRightLeftPanels();             
 
-            }            
+            }
+            #endregion
 
         }
         #endregion       

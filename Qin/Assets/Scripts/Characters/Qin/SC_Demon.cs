@@ -137,7 +137,7 @@ public class SC_Demon : SC_BaseQinChara {
 
                 DodgeAmount = 0;
 
-                transform.SetPos(respawnTile.transform.position, null);
+                transform.SetPos(respawnTile.transform.position);
 
                 respawnTile.Character = this;
 

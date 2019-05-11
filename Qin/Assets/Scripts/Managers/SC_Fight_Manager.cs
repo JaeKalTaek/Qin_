@@ -5,7 +5,7 @@ using System.Collections;
 
 public class SC_Fight_Manager : MonoBehaviour {
 
-    public int AttackRange { get; set; }
+    public static int AttackRange { get { return SC_Tile_Manager.TileDistance(activeCharacter.Tile, activeCharacter.AttackTarget); } }
 
     SC_UI_Manager uiManager;
 
@@ -164,8 +164,6 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             }
 
-            // print("Killed : " + (endValue <= 0));
-
             StartCoroutine(FightAnim(c, -travel, false, endValue <= 0));
             #endregion
 
@@ -184,9 +182,6 @@ public class SC_Fight_Manager : MonoBehaviour {
                 SC_Qin.ChangeEnergy(-c.BaseDamage);*/
             #endregion
 
-            // Augment attacker's crit amount
-            // c.CriticalAmount = (c.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((c.CriticalAmount + c.Technique), CharactersVariables.critTrigger);
-
             #region Counter attack
             if (attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
 
@@ -198,8 +193,6 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 if (SC_Player.localPlayer.isServer)
                     SC_Player.localPlayer.CmdFinishAction();
-
-                //SC_Game_Manager.Instance.FinishAction();
 
             }
             #endregion

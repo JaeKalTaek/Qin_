@@ -18,8 +18,7 @@ public class SC_Weapon : MonoBehaviour {
 
     public Vector2 Range (SC_Character owner, SC_Tile t = null) {
 
-        if (!t)
-            t = owner.Tile;
+        t = t ?? owner.Tile;
 
         return new Vector2(minRange, MaxRange(owner, t));
 

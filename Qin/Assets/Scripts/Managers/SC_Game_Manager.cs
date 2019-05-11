@@ -227,7 +227,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         // tileManager.RemoveAllFilters();        
 
-        SC_Character.characterToMove = null;
+        if(SC_Character.activeCharacter) SC_Character.activeCharacter.Moving = false;
 
         SC_Character.activeCharacter = null;
 
@@ -345,11 +345,17 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
 
-    public void UnselectCharacter () {        
+    public void UnselectCharacter () {
+
+        uiManager.HidePreviewFight();
+
+        Destroy(SC_Arrow.arrow);
 
         tileManager.RemoveAllFilters();
 
-        SC_Character.characterToMove = null;
+        SC_Character.activeCharacter.Moving = false;
+
+        SC_Character.activeCharacter = null;
 
         SC_Cursor.Tile.OnCursorEnter();
 

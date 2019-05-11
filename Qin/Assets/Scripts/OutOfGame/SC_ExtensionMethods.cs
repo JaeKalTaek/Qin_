@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public static class SC_ExtensionMethods {
 
-   public static void SetPos(this Transform trans, Vector3 v3, float? f) {
+   public static void SetPos(this Transform trans, Vector3 v3, float? f = null) {
 
         trans.position = new Vector3(v3.x, v3.y, f ?? trans.position.z);
         trans.GetComponentInChildren<SpriteRenderer>().sortingOrder = -(v3.x.I() + v3.y.I());

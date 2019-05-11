@@ -371,7 +371,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         }
 
-        bool movingDemon = characterToMove?.Demon && localPlayer.Qin;
+        bool movingDemon = activeCharacter?.Demon && localPlayer.Qin;
 
         tileTooltip.power.text = t.CombatModifiers.strength + (movingDemon ? 0 : t.DemonsModifier("strength", localPlayer.Qin)) + "";
         tileTooltip.defense.text = t.CombatModifiers.armor + (movingDemon ? 0 : t.DemonsModifier("armor", localPlayer.Qin)) + "";
@@ -431,9 +431,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
     #region Fight related
     // Also called by UI
-    public void PreviewFight (bool activeWeapon) {
+    public void PreviewFight (SC_Tile attackingFrom = null) {
+
+        attackingFrom = attackingFrom ?? activeCharacter.Tile;
+
+        activeCharacter.AttackTarget = SC_Cursor.Tile;
 
         SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
+
+        bool activeWeapon = activeCharacter.Hero ? (activeCharacter.Hero.CanAttackWithWeapons(attackingFrom).Count > 1) || activeCharacter.Hero.CanAttackWithWeapons(attackingFrom)[0] : true;
 
         activeCharacter.Hero?.SetWeapon(activeWeapon);        
 
@@ -458,7 +464,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             attackedPreviewFight.name.text = attacked.characterName + (attackedConstru ? " on " + (attackedConstru as SC_Castle ? "Castle" : attackedConstru.Name) : "");
          
-            PreviewCharacterAttack(attacked, activeCharacter, PreviewCharacterAttack(activeCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(fightManager.AttackRange));
+            PreviewCharacterAttack(attacked, activeCharacter, PreviewCharacterAttack(activeCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange));
 
         } else {
 
@@ -521,7 +527,7 @@ public class SC_UI_Manager : MonoBehaviour {
           
         }
 
-        attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(fightManager.AttackRange) ? 0 : attacked.Technique), cT), cT);
+        attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : attacked.Technique), cT), cT);
 
         return attackedKilled;
 
@@ -556,9 +562,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void ChooseWeapon () {        
 
-        ShowHideWeapon(true, activeCharacter.Hero.weapon1.Range(activeCharacter.Hero).In(fightManager.AttackRange));
+        ShowHideWeapon(true, activeCharacter.Hero.weapon1.Range(activeCharacter.Hero).In(SC_Fight_Manager.AttackRange));
 
-        ShowHideWeapon(false, activeCharacter.Hero.weapon2.Range(activeCharacter.Hero).In(fightManager.AttackRange));
+        ShowHideWeapon(false, activeCharacter.Hero.weapon2.Range(activeCharacter.Hero).In(SC_Fight_Manager.AttackRange));
 
         weaponChoicePanel.SetActive(true);
 

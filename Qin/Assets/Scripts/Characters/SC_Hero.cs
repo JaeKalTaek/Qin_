@@ -18,6 +18,20 @@ public class SC_Hero : SC_Character {
     [Tooltip("Weapons of this hero")]
 	public SC_Weapon weapon1, weapon2;
 
+    public List<bool> CanAttackWithWeapons (SC_Tile from) {
+
+        List<bool> b = new List<bool>();
+
+        if (weapon1.Range(this, from).In(SC_Tile_Manager.TileDistance(from, AttackTarget)))
+            b.Add(true);
+
+        if (weapon2.Range(this, from).In(SC_Tile_Manager.TileDistance(from, AttackTarget)))
+            b.Add(false);
+
+        return b;
+
+    }
+
     [Tooltip("Characteristics")]
     public bool male;
 
@@ -90,20 +104,6 @@ public class SC_Hero : SC_Character {
 
 		if (CanMove /*|| (Berserk && !BerserkTurn)*/)
             base.TryCheckMovements();
-
-	}
-
-	public void PreviewAttackOnHero() {
-
-		if (!activeCharacter.Hero && SC_UI_Manager.CanInteract && SC_Player.localPlayer.Turn) {
-
-            activeCharacter.AttackTarget = Tile;
-
-            fightManager.AttackRange = SC_Tile_Manager.TileDistance(activeCharacter.transform.position, Tile);
-
-            uiManager.PreviewFight(true);
-
-		}
 
 	}
 

@@ -30,6 +30,8 @@ public class SC_Tile : NetworkBehaviour {
 
     public int Region { get { return infos.region; } }    
 
+    public bool CanAttack { get { return CurrentDisplay == TDisplay.Attack && !Empty; } }
+
 	public bool CanCharacterAttack(SC_Character c) {
 
         if (Character)
@@ -98,7 +100,7 @@ public class SC_Tile : NetworkBehaviour {
 
     SpriteRenderer filter;
 
-    public static bool CanChangeFilters { get { return (!characterToMove || (characterToMove.Qin != SC_Player.localPlayer.Qin)) && !SC_Player.localPlayer.Busy; } }
+    public static bool CanChangeFilters { get { return (!activeCharacter || (activeCharacter.Qin != SC_Player.localPlayer.Qin)) && !SC_Player.localPlayer.Busy; } }
 
     public List<DemonAura> DemonAuras { get; set; }
 
@@ -178,30 +180,28 @@ public class SC_Tile : NetworkBehaviour {
 
             } else if (CurrentDisplay == TDisplay.Movement) {
 
-                UIManager.backAction = DoNothing;
+                StartMovement(gameObject);
 
-                SC_Player.localPlayer.Busy = true;
-
-                TileManager.RemoveAllFilters();
-
-                SC_Player.localPlayer.CmdMoveCharacterTo(characterToMove.gameObject, gameObject);
-
-            } else if (CurrentDisplay == TDisplay.Attack && !Empty) {
-
-                SC_Cursor.SetLock(true);
-
-                TileManager.RemoveAllFilters();
-
-                FightManager.AttackRange = SC_Tile_Manager.TileDistance(activeCharacter.transform.position, this);
+            } else if (CanAttack) {
 
                 activeCharacter.AttackTarget = this;
 
-                SC_Player.localPlayer.CmdPrepareForAttack(FightManager.AttackRange, gameObject);
+                if (MovingCharacter) {
 
-                if (activeCharacter.Hero)
-                    UIManager.ChooseWeapon();
-                else
-                    SC_Player.localPlayer.CmdAttack();
+                    if (UIManager.previewFightPanel.activeSelf)
+                        SC_Player.localPlayer.CmdSetChainAttack();
+
+                    StartMovement(TileManager.GetTileAt(SC_Arrow.arrow.transform.GetChild(SC_Arrow.arrow.transform.childCount - 1).gameObject).gameObject);
+
+                } else {
+
+                    SC_Cursor.SetLock(true);
+
+                    TileManager.RemoveAllFilters();
+
+                    activeCharacter.StartAttack();
+
+                }                
 
             } else if (CurrentDisplay == TDisplay.Sacrifice) {
 
@@ -221,7 +221,7 @@ public class SC_Tile : NetworkBehaviour {
 
             }*/
 
-            else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy && !characterToMove && !activeCharacter) {
+            else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy && !activeCharacter) {
 
                 if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
                     Character.TryCheckMovements();
@@ -249,8 +249,8 @@ public class SC_Tile : NetworkBehaviour {
 
         CursorOn = true;
 
-        if (CurrentDisplay == TDisplay.Attack)
-            Hero?.PreviewAttackOnHero();
+        if ((CurrentDisplay == TDisplay.Attack) && !MovingCharacter)
+            UIManager.PreviewFight();
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
 
@@ -265,7 +265,7 @@ public class SC_Tile : NetworkBehaviour {
 
         CursorOn = false;
 
-        if (CurrentDisplay == TDisplay.Attack && Hero)
+        if (UIManager.previewFightPanel.activeSelf)
             UIManager.HidePreviewFight();
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
@@ -305,6 +305,15 @@ public class SC_Tile : NetworkBehaviour {
         CurrentDisplay = d;
 
         SetFilter(d);
+
+    }
+
+    public void ChangeDisplay(TDisplay d, bool p) {
+
+        if (p)
+            SetFilter(d, true);
+        else
+            ChangeDisplay(d);
 
     }
 

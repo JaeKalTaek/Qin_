@@ -178,6 +178,12 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     }
 
+    public static int TileDistance (SC_Tile a, SC_Tile b) {
+
+        return TileDistance(a.transform.position, b.transform.position);
+
+    }
+
     public SC_Tile GetUnoccupiedNeighbor (SC_Character target) {
 
         SC_Tile t = null;
@@ -223,6 +229,67 @@ public class SC_Tile_Manager : NetworkBehaviour {
                 tile.RemoveDisplay();
 
     }
+
+    public SC_Tile ClosestMovementTile (SC_Tile currentTile) {
+
+        List<SC_Tile> validTiles = new List<SC_Tile>();
+
+        List<SC_Tile> idealTiles = new List<SC_Tile>();
+
+        foreach (SC_Tile t in tiles) {
+
+            if ((t.CurrentDisplay == TDisplay.Movement) && (!currentTile.CanAttack || (SC_Character.activeCharacter.GetRange(t).In(TileDistance(t, SC_Cursor.Tile))))) {
+
+                validTiles.Add(t);
+
+                if(IsTileIdeal(t))
+                    idealTiles.Add(t);
+
+            }
+
+        }
+
+        SC_Tile validTile = null;
+
+        int minDistance = int.MaxValue;
+
+        foreach (SC_Tile t in ((idealTiles.Count > 0) ? idealTiles : validTiles)) {
+
+            int distance = TileDistance(currentTile, t);
+
+            if (distance < minDistance) {
+
+                validTile = t;
+
+                minDistance = distance;
+
+            }
+
+        }
+
+        return validTile;
+
+    }
+
+    public bool IsTileIdeal (SC_Tile tile) {
+
+        SC_Character attacked = SC_Cursor.Tile.Character;
+
+        if (attacked) {
+
+            SC_Construction attackedConstru = SC_Cursor.Tile.Construction;
+
+            bool killed = attackedConstru ? (attackedConstru.Health - SC_Fight_Manager.Instance.CalcAttack(SC_Character.activeCharacter)) <= 0 : (attacked.Health - SC_Fight_Manager.Instance.CalcDamage(SC_Character.activeCharacter, attacked)) <= 0;
+
+            return killed || !attacked.GetRange().In(TileDistance(SC_Cursor.Tile, tile));
+
+        } else {
+
+            return true;
+
+        }
+
+    }
     #endregion
 
     #region Attack
@@ -251,7 +318,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             tile.ChangeDisplay(TDisplay.Attack);
 
             if (tile.CursorOn)
-                tile.Hero?.PreviewAttackOnHero();
+                uiManager.PreviewFight();
 
         }
 
@@ -332,14 +399,11 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
                 if (target.CanCharacterSetOn(tile)) {
 
-                    if (preview)
-                        tile.SetFilter(TDisplay.Movement, true);
-                    else
-                        tile.ChangeDisplay(TDisplay.Movement);
+                    tile.ChangeDisplay(TDisplay.Movement, preview);
 
                     foreach (SC_Tile t in GetAttackTiles(target, tile))
                         if (t.CurrentDisplay == TDisplay.None && !movementRange.Contains(t))
-                            t.SetFilter(TDisplay.Attack, true);
+                            t.ChangeDisplay(TDisplay.Attack, preview);
 
                 }
 

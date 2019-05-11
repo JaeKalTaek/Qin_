@@ -66,6 +66,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public SC_Tile AttackTarget { get; set; }
 
+    public static bool ChainAttack { get; set; }
+
     public SC_Tile LastPos { get; set; }
 
     public List<Actions> possiblePlayerActions;
@@ -84,7 +86,11 @@ public abstract class SC_Character : NetworkBehaviour {
 
     List<SC_Tile> path;
 
-    public static SC_Character activeCharacter, characterToMove;
+    public bool Moving { get; set; }
+
+    public static SC_Character activeCharacter;
+
+    public static bool MovingCharacter { get { return activeCharacter?.Moving ?? false; } }
 
     public SC_Tile Tile { get { return tileManager.GetTileAt(gameObject); } }
 
@@ -155,7 +161,9 @@ public abstract class SC_Character : NetworkBehaviour {
     #region Movement
     public virtual void TryCheckMovements () {
 
-        characterToMove = this;
+        activeCharacter = this;
+
+        Moving = true;
 
         tileManager.CheckMovements(this);
 
@@ -163,9 +171,23 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }
 
+    public static void StartMovement (GameObject target) {
+
+        Destroy(SC_Arrow.arrow);
+
+        uiManager.backAction = DoNothing;
+
+        SC_Player.localPlayer.Busy = true;
+
+        tileManager.RemoveAllFilters();
+
+        SC_Player.localPlayer.CmdMoveCharacterTo(activeCharacter.gameObject, target);
+
+    }
+
     public void MoveTo(SC_Tile target) {
 
-        characterToMove = this;
+        activeCharacter = this;
 
         LastPos = Tile;
 
@@ -230,7 +252,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if(moved) {
 
-            transform.SetPos(target.transform.position, null);
+            transform.SetPos(target.transform.position);
 
             LastPos.Character = null;
 
@@ -240,9 +262,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         CanMove = false;
 
-        characterToMove = null;
-
-        activeCharacter = this;
+        Moving = false;
 
         bool canAttack = false;
 
@@ -311,13 +331,11 @@ public abstract class SC_Character : NetworkBehaviour {
 
         Tile.Character = null;
 
-        transform.SetPos(LastPos.transform.position, null);
+        transform.SetPos(LastPos.transform.position);
 
         LastPos.Character = this;
 
         CanMove = true;
-
-        activeCharacter = null;
 
         if (Hero)
             SC_DrainingStele.UpdateHeroSlow(Hero);
@@ -329,26 +347,45 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }
 
-        tileManager.CheckMovements(this);
+        if (ChainAttack) {
 
-        if (SC_Player.localPlayer.Turn) {
+            ChainAttack = false;
 
-            characterToMove = this;
+            if (SC_Player.localPlayer.Turn)
+                StartAttack();
+
+        } else if (SC_Player.localPlayer.Turn) {
 
             SC_Cursor.SetLock(false);
 
             uiManager.backAction = gameManager.UnselectCharacter;
 
-        }
+            tileManager.CheckMovements(this);
 
-        SC_Player.localPlayer.Busy = false;
+            SC_Player.localPlayer.Busy = false;
+
+        }                
 
     }
     #endregion
 
-    public static void FinishCharacterAction() {
+    public void StartAttack () {
 
-        // print("Finish character action");
+        SC_Player.localPlayer.CmdPrepareForAttack(AttackTarget.gameObject);
+
+        if (Hero) {
+
+            if (Hero.CanAttackWithWeapons(Tile).Count == 1)
+                SC_Player.localPlayer.CmdHeroAttack(Hero.CanAttackWithWeapons(Tile)[0]);
+            else
+                uiManager.ChooseWeapon();
+
+        } else
+            SC_Player.localPlayer.CmdAttack();
+
+    }
+
+    public static void FinishCharacterAction() {
 
         if (activeCharacter.Hero) {
 

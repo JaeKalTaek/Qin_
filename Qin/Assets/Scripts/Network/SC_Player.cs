@@ -163,16 +163,28 @@ public class SC_Player : NetworkBehaviour {
 
     #region Attack
     [Command]
-	public void CmdPrepareForAttack(int attackRange, GameObject targetTileObject) {
+    public void CmdSetChainAttack() {
 
-        RpcPrepareForAttack(attackRange, targetTileObject);
+        RpcSetChainAttack();
+
+    }
+
+    [ClientRpc]
+    void RpcSetChainAttack() {
+
+        ChainAttack = true;
+
+    }
+
+    [Command]
+	public void CmdPrepareForAttack(GameObject targetTileObject) {
+
+        RpcPrepareForAttack(targetTileObject);
 
     }
 
 	[ClientRpc]
-	void RpcPrepareForAttack(int attackRange, GameObject targetTileObject) {
-
-        FightManager.AttackRange = attackRange;
+	void RpcPrepareForAttack(GameObject targetTileObject) {
 
         activeCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
 	}

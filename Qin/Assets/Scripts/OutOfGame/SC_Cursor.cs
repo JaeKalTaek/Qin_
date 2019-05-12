@@ -93,8 +93,6 @@ public class SC_Cursor : NetworkBehaviour {
 
                 Tile?.OnCursorEnter();
 
-                SC_Arrow.CursorMoved(Tile);
-
                 SetRightLeftPanels();             
 
             }

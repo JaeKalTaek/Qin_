@@ -259,6 +259,8 @@ public class SC_Tile : NetworkBehaviour {
 
         this.ShowInfos();
 
+        SC_Arrow.CursorMoved(this);
+
     }
 
     public void OnCursorExit() {

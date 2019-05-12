@@ -433,54 +433,58 @@ public class SC_UI_Manager : MonoBehaviour {
     // Also called by UI
     public void PreviewFight (SC_Tile attackingFrom = null) {
 
-        attackingFrom = attackingFrom ?? activeCharacter.Tile;
-
         activeCharacter.AttackTarget = SC_Cursor.Tile;
 
-        SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
+        if (activeCharacter.AttackTarget.CanAttack) {
 
-        bool activeWeapon = activeCharacter.Hero ? (activeCharacter.Hero.CanAttackWithWeapons(attackingFrom).Count > 1) || activeCharacter.Hero.CanAttackWithWeapons(attackingFrom)[0] : true;
+            attackingFrom = attackingFrom ?? activeCharacter.Tile;
 
-        activeCharacter.Hero?.SetWeapon(activeWeapon);        
+            SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
 
-        attackerPreviewFight.name.text = activeCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
+            bool activeWeapon = activeCharacter.Hero ? (activeCharacter.Hero.CanAttackWithWeapons(attackingFrom).Count > 1) || activeCharacter.Hero.CanAttackWithWeapons(attackingFrom)[0] : true;
 
-        SC_Character attacked = activeCharacter.AttackTarget.Character;
-        SC_Construction attackedConstru = activeCharacter.AttackTarget.AttackableContru;
+            activeCharacter.Hero?.SetWeapon(activeWeapon);
 
-        attackedPreviewFight.crit.gameObject.SetActive(attacked);
+            attackerPreviewFight.name.text = activeCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
 
-        attackedPreviewFight.dodge.gameObject.SetActive(attacked && !attackedConstru);
+            SC_Character attacked = activeCharacter.AttackTarget.Character;
+            SC_Construction attackedConstru = activeCharacter.AttackTarget.AttackableContru;
 
-        if (activeCharacter.AttackTarget.Qin) {
+            attackedPreviewFight.crit.gameObject.SetActive(attacked);
 
-            attackedPreviewFight.name.text = "Qin";
+            attackedPreviewFight.dodge.gameObject.SetActive(attacked && !attackedConstru);
 
-            attackedPreviewFight.health.Set(SC_Qin.Energy - fightManager.CalcAttack(activeCharacter), SC_Qin.Energy, SC_Qin.Energy);
+            if (activeCharacter.AttackTarget.Qin) {
 
-            NonCharacterAttackPreview();
+                attackedPreviewFight.name.text = "Qin";
 
-        } else if (attacked) {
+                attackedPreviewFight.health.Set(SC_Qin.Energy - fightManager.CalcAttack(activeCharacter), SC_Qin.Energy, SC_Qin.Energy);
 
-            attackedPreviewFight.name.text = attacked.characterName + (attackedConstru ? " on " + (attackedConstru as SC_Castle ? "Castle" : attackedConstru.Name) : "");
-         
-            PreviewCharacterAttack(attacked, activeCharacter, PreviewCharacterAttack(activeCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange));
+                NonCharacterAttackPreview();
 
-        } else {
+            } else if (attacked) {
 
-            SC_Construction c = activeCharacter.AttackTarget.AttackableContru;
+                attackedPreviewFight.name.text = attacked.characterName + (attackedConstru ? " on " + (attackedConstru as SC_Castle ? "Castle" : attackedConstru.Name) : "");
 
-            attackedPreviewFight.name.text = c.Name;
+                PreviewCharacterAttack(attacked, activeCharacter, PreviewCharacterAttack(activeCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange));
 
-            attackedPreviewFight.health.Set(Mathf.Max(0, c.Health - fightManager.CalcAttack(activeCharacter)), c.Health, c.maxHealth);
+            } else {
 
-            NonCharacterAttackPreview();
+                SC_Construction c = activeCharacter.AttackTarget.AttackableContru;
+
+                attackedPreviewFight.name.text = c.Name;
+
+                attackedPreviewFight.health.Set(Mathf.Max(0, c.Health - fightManager.CalcAttack(activeCharacter)), c.Health, c.maxHealth);
+
+                NonCharacterAttackPreview();
+
+            }
+
+            activeCharacter.Hero?.SetWeapon(activeWeapon);
+
+            previewFightPanel.SetActive(true);
 
         }
-
-        activeCharacter.Hero?.SetWeapon(activeWeapon);
-
-        previewFightPanel.SetActive(true);
 
     }
 

@@ -169,21 +169,12 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         #region Else, the current character has finished his return
         } else {
-
-            #region Applying damage
+            
             if (SC_Player.localPlayer.isServer)
                 SC_Player.localPlayer.CmdApplyDamage(counter);
 
-            /*if (attacked)
-                CharacterAttack(c, attacked);
-            else if (attackedConstru)
-                HitConstruction(c, attackedConstru);
-            else
-                SC_Qin.ChangeEnergy(-c.BaseDamage);*/
-            #endregion
-
             #region Counter attack
-            if (attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
+            if (/*activeCharacter &&*/ attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
 
                 StartCoroutine(FightAnim(attacked, travel, true));
 
@@ -191,8 +182,10 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 uiManager.fightPanel.panel.SetActive(false);
 
-                if (SC_Player.localPlayer.isServer)
-                    SC_Player.localPlayer.CmdFinishAction();
+                SC_Game_Manager.Instance.FinishAction();
+
+                /*if (SC_Player.localPlayer.isServer)
+                    SC_Player.localPlayer.CmdFinishAction();*/
 
             }
             #endregion

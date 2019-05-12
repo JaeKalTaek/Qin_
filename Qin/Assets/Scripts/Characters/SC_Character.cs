@@ -173,6 +173,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public static void StartMovement (GameObject target) {
 
+        SC_Cursor.SetLock(true);
+
         Destroy(SC_Arrow.arrow);
 
         uiManager.backAction = DoNothing;
@@ -311,7 +313,14 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }
 
-        if (SC_Player.localPlayer.Turn) {            
+        if (ChainAttack) {
+
+            ChainAttack = false;
+
+            if (SC_Player.localPlayer.Turn)
+                StartAttack();
+
+        } else if(SC_Player.localPlayer.Turn) {
 
             tileManager.PreviewAttack();
 
@@ -335,7 +344,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         LastPos.Character = this;
 
-        CanMove = true;
+        CanMove = true;        
 
         if (Hero)
             SC_DrainingStele.UpdateHeroSlow(Hero);
@@ -347,22 +356,17 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }
 
-        if (ChainAttack) {
+        if (SC_Player.localPlayer.Turn) {            
 
-            ChainAttack = false;
-
-            if (SC_Player.localPlayer.Turn)
-                StartAttack();
-
-        } else if (SC_Player.localPlayer.Turn) {
-
-            SC_Cursor.SetLock(false);
+            Moving = true;         
 
             uiManager.backAction = gameManager.UnselectCharacter;
 
             tileManager.CheckMovements(this);
 
             SC_Player.localPlayer.Busy = false;
+
+            SC_Cursor.SetLock(false);
 
         }                
 

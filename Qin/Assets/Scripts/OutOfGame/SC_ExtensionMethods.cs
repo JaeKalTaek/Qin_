@@ -17,6 +17,12 @@ public static class SC_ExtensionMethods {
 
     }
 
+    public static Vector3 I (this Vector3 v) {
+
+        return new Vector3(v.x.I(), v.y.I(), v.z.I());
+
+    }
+
     public static int I (this float f) {
 
         return Mathf.RoundToInt(f / .96f);

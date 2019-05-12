@@ -10,7 +10,7 @@ public class SC_Arrow : MonoBehaviour {
 
 	public static void CursorMoved(SC_Tile newTile) {
 
-        if(MovingCharacter && localPlayer.Turn && !localPlayer.Busy) {
+        if (MovingCharacter && localPlayer.Turn && !localPlayer.Busy) {
 
             if (!arrow)
                 arrow = Instantiate(new GameObject("Arrow"));
@@ -20,8 +20,7 @@ public class SC_Arrow : MonoBehaviour {
 
             SC_Tile tile = (newTile.CurrentDisplay == TDisplay.Movement) ? newTile : SC_Tile_Manager.Instance.ClosestMovementTile(newTile);
 
-            if (newTile.CanAttack)
-                SC_UI_Manager.Instance.PreviewFight(tile);
+            SC_UI_Manager.Instance.PreviewFight(tile);
 
             #region Setup visual
             List<SC_Tile> path = SC_Tile_Manager.Instance.PathFinder(activeCharacter.Tile, tile);            

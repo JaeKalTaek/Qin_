@@ -249,15 +249,22 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         }
 
+        List<SC_Tile> range = (idealTiles.Count > 0) ? idealTiles : validTiles;
+
+        if (currentTile.CanAttack && range.Contains(SC_Character.activeCharacter.Tile))
+            return SC_Character.activeCharacter.Tile;
+        else if (range.Contains(SC_Character.activeCharacter.Tile) && (range.Count > 1))
+            range.Remove(SC_Character.activeCharacter.Tile);
+
         SC_Tile validTile = null;
 
         int minDistance = int.MaxValue;
 
-        foreach (SC_Tile t in ((idealTiles.Count > 0) ? idealTiles : validTiles)) {
+        foreach (SC_Tile t in range) {
 
             int distance = TileDistance(currentTile, t);
 
-            if (distance < minDistance) {
+            if (distance < minDistance) {                
 
                 validTile = t;
 
@@ -275,7 +282,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         SC_Character attacked = SC_Cursor.Tile.Character;
 
-        if (attacked) {
+        if (SC_Cursor.Tile.CanAttack && attacked) {
 
             SC_Construction attackedConstru = SC_Cursor.Tile.Construction;
 

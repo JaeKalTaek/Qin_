@@ -182,10 +182,10 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 uiManager.fightPanel.panel.SetActive(false);
 
-                SC_Game_Manager.Instance.FinishAction();
+                // SC_Game_Manager.Instance.FinishAction();
 
-                /*if (SC_Player.localPlayer.isServer)
-                    SC_Player.localPlayer.CmdFinishAction();*/
+                if (SC_Player.localPlayer.isServer)
+                    SC_Player.localPlayer.CmdFinishAction();
 
             }
             #endregion

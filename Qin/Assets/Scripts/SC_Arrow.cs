@@ -8,7 +8,9 @@ public class SC_Arrow : MonoBehaviour {
 
     public static GameObject arrow;
 
-	public static void CursorMoved(SC_Tile newTile) {
+    public static List<SC_Tile> path;
+
+    public static void CursorMoved(SC_Tile newTile) {
 
         if (MovingCharacter && localPlayer.Turn && !localPlayer.Busy) {
 
@@ -23,7 +25,7 @@ public class SC_Arrow : MonoBehaviour {
             SC_UI_Manager.Instance.PreviewFight(tile);
 
             #region Setup visual
-            List<SC_Tile> path = SC_Tile_Manager.Instance.PathFinder(activeCharacter.Tile, tile);            
+            path = SC_Tile_Manager.Instance.PathFinder(activeCharacter.Tile, tile);            
             
             if (path != null) {
 

@@ -191,7 +191,7 @@ public class SC_Tile : NetworkBehaviour {
                     if (UIManager.previewFightPanel.activeSelf)
                         SC_Player.localPlayer.CmdSetChainAttack();
 
-                    StartMovement(TileManager.GetTileAt(SC_Arrow.arrow.transform.GetChild(SC_Arrow.arrow.transform.childCount - 1).gameObject).gameObject);
+                    StartMovement((SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? activeCharacter.Tile).gameObject);
 
                 } else {
 

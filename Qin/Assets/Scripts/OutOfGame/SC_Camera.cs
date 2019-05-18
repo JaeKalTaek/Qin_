@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using static SC_Game_Manager;
 using static SC_Global;
 
@@ -33,6 +34,8 @@ public class SC_Camera : MonoBehaviour {
 
     Camera cam;
 
+    public static SC_Camera Instance;
+
     private void OnValidate () {
 
         defaultZoomIndex = Mathf.Clamp(defaultZoomIndex, 0, zooms.Length - 1);
@@ -40,6 +43,8 @@ public class SC_Camera : MonoBehaviour {
     }
 
     public void Setup(int sizeX, int sizeY) {
+
+        Instance = this;
 
         cam = GetComponent<Camera>();
 
@@ -103,4 +108,29 @@ public class SC_Camera : MonoBehaviour {
 
     }
 
+    [Header("Camera shake variables")]
+    [Tooltip("Duration of a camera shake")]
+    public float shakeDuration;
+
+    [Tooltip("Stragth of a camera shake")]
+    public float shakeMagnitude;
+
+    IEnumerator Screenshake () 
+    {
+        Vector3 initialPosition = transform.localPosition;
+
+        float shakeTimer = shakeDuration;
+
+        while (shakeTimer > 0) 
+        { 
+                transform.localPosition = initialPosition + Random.insideUnitSphere * shakeMagnitude;
+
+                shakeTimer -= Time.deltaTime;
+
+                yield return new WaitForEndOfFrame();
+        }
+
+        transform.localPosition = initialPosition;
+        
+    }
 }

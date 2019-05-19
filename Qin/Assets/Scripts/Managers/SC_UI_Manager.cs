@@ -857,8 +857,14 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (Input.GetButtonDown("Cancel"))
             backAction();
-        else if (Input.GetButtonDown("DisplayDetails") && CurrentChara?.GetComponent<SC_Character>() && !SC_Cursor.Instance.Locked)
-            DisplayCharacterDetails(CurrentChara.GetComponent<SC_Character>());
+        else if (Input.GetButtonDown("DisplayDetails")) {
+
+            if (CurrentChara?.GetComponent<SC_Character>() && !SC_Cursor.Instance.Locked)
+                DisplayCharacterDetails(CurrentChara.GetComponent<SC_Character>());
+            else if (characterDetails.panel.activeSelf)
+                backAction();
+
+        }
 
         if(draggedCastle)
             draggedCastle.transform.position = WorldMousePos;

@@ -23,7 +23,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public int Turn { get; set; }
 
-    public bool QinTurn { get { return Turn % 3 == 0; } }
+    public bool QinTurn { get { return Turn % 2 == 0; } }
 
     public bool QinTurnStarting { get; set; }
 
@@ -276,8 +276,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 if (!QinTurn)
                     character.Hero.Regen();
-
-                if(Turn % 3 != 1)
+                else
                     character.Hero.IncreaseRelationships(CommonCharactersVariables.relationGains.finishTurn);
 
                 /*if (Qin) {
@@ -302,10 +301,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         }
 
-        if (!Player.Qin || (Turn % 3 != 2))
+        // if (!Player.Qin || (Turn % 3 != 2))
             uiManager.NextTurn();
 
-        uiManager.turnIndicator.text = QinTurn ? "Qin's Turn" : (Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
+        // uiManager.turnIndicator.text = QinTurn ? "Qin's Turn" : (Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
 
     }
     #endregion

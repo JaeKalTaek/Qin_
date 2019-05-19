@@ -202,9 +202,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         backAction = DoNothing;
 
+        turnIndicator.text = (GameManager.QinTurn ? "Qin" : "Coalition") + "'s Turn";
+
         //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);        
 
-	}
+    }
     #endregion
 
     #region Infos

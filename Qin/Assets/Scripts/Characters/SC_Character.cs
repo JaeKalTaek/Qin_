@@ -44,7 +44,7 @@ public abstract class SC_Character : NetworkBehaviour {
     public float moveDuration;
     public int MovementModifiers { get; set; }
     public int Movement { get { return Mathf.Max(0, baseStats.movement + MovementModifiers - (Hero?.DrainingSteleSlow ?? 0) + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }
-    public bool CanMove { get; set; }    
+    public bool CanBeSelected { get; set; }    
 
     public int RangeModifiers { get; set; }      
     #endregion
@@ -113,7 +113,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         BaseColor = Sprite.color;
 
-        CanMove = Qin == gameManager.QinTurn;        
+        CanBeSelected = Qin == gameManager.QinTurn;        
 
     }
 
@@ -159,7 +159,7 @@ public abstract class SC_Character : NetworkBehaviour {
     }
 
     #region Movement
-    public virtual void TryCheckMovements () {
+    public virtual void TrySelecting () {
 
         activeCharacter = this;
 
@@ -260,9 +260,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
             target.Character = this;            
 
-        }
-
-        CanMove = false;
+        }        
 
         Moving = false;
 
@@ -344,7 +342,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         LastPos.Character = this;
 
-        CanMove = true;        
+        CanBeSelected = true;        
 
         if (Hero)
             SC_DrainingStele.UpdateHeroSlow(Hero);
@@ -400,6 +398,8 @@ public abstract class SC_Character : NetworkBehaviour {
             // activeCharacter.Hero.BerserkTurn = activeCharacter.Hero.Berserk;
 
         }
+
+        activeCharacter.CanBeSelected = false;
 
         activeCharacter.Tire();
 

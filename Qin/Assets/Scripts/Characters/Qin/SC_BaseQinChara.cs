@@ -20,14 +20,14 @@ public class SC_BaseQinChara : SC_Character {
 
     }
 
-    public override void TryCheckMovements () {
+    public override void TrySelecting () {
 
-        if (CanMove) {
+        if (CanBeSelected) {
 
             if(gameManager.QinTurnStarting)
                 SC_Player.localPlayer.CmdSetQinTurnStarting(false);
 
-            base.TryCheckMovements();
+            base.TrySelecting();
 
         }
 

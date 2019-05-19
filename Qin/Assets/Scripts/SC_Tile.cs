@@ -209,7 +209,7 @@ public class SC_Tile : NetworkBehaviour {
 
                 RemoveDisplay();
 
-                Character.CanMove = false;
+                Character.CanBeSelected = false;
 
                 SC_Player.localPlayer.CmdDestroyCharacter(Character.gameObject);
 
@@ -224,7 +224,7 @@ public class SC_Tile : NetworkBehaviour {
             else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy && !activeCharacter) {
 
                 if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
-                    Character.TryCheckMovements();
+                    Character.TrySelecting();
                 else if (Pit && SC_Player.localPlayer.Qin)
                     Pit.SelectPit();
                 else if (Castle && !Character && SC_Player.localPlayer.Qin) {

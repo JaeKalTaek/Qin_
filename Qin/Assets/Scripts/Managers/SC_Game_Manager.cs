@@ -297,7 +297,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             character.UnTired();
 
-            character.CanMove = character.Qin == QinTurn;
+            character.CanBeSelected = character.Qin == QinTurn;
 
         }
 

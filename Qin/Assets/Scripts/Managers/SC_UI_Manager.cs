@@ -226,7 +226,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public void HideInfosIfActive(GameObject g) {
 
         if (CurrentChara == g)
-            HideInfos(true);
+            HideInfos(!endSacrifice.activeSelf);
 
     }
 

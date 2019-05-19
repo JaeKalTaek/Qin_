@@ -100,10 +100,10 @@ public class SC_Hero : SC_Character {
 
     }
 
-    public override void TryCheckMovements () {
+    public override void TrySelecting () {
 
-		if (CanMove /*|| (Berserk && !BerserkTurn)*/)
-            base.TryCheckMovements();
+		if (CanBeSelected /*|| (Berserk && !BerserkTurn)*/)
+            base.TrySelecting();
 
 	}
 

@@ -35,7 +35,7 @@ public class SC_Soldier : SC_BaseQinChara {
 
     public void SetupNew() {
 
-        CanMove = false;
+        CanBeSelected = false;
 
         Tire();
 

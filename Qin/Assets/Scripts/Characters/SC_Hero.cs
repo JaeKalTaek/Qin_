@@ -22,10 +22,10 @@ public class SC_Hero : SC_Character {
 
         List<bool> b = new List<bool>();
 
-        if (weapon1.Range(this, from).In(SC_Tile_Manager.TileDistance(from, AttackTarget)))
+        if (weapon1.Range(this, from).In(SC_Tile_Manager.TileDistance(from, SC_Cursor.Tile)))
             b.Add(true);
 
-        if (weapon2.Range(this, from).In(SC_Tile_Manager.TileDistance(from, AttackTarget)))
+        if (weapon2.Range(this, from).In(SC_Tile_Manager.TileDistance(from, SC_Cursor.Tile)))
             b.Add(false);
 
         return b;
@@ -35,12 +35,14 @@ public class SC_Hero : SC_Character {
     [Tooltip("Characteristics")]
     public bool male;
 
-	//power	
-	/*public bool PowerUsed { get; set; }
+    //power	
+    /*public bool PowerUsed { get; set; }
 	public int PowerBacklash { get; set; }
 
     [Tooltip("Color applied when the character is berserker")]
     public Color berserkColor;*/
+
+    public bool BaseActionDone { get; set; }
 
     public bool ReadyToRegen { get; set; }
 
@@ -117,20 +119,18 @@ public class SC_Hero : SC_Character {
 
 	public void Regen() {
 
-		if (Tile.Village || Tile.Pit) {
+        Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.staminaRegen, MaxHealth);
 
-            if (ReadyToRegen) {
+        if (Tile.Village || Tile.Pit) {
 
+            if (ReadyToRegen)
                 Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.prodConstructionRegen, MaxHealth);
-                UpdateHealth();
-
-            } else {
-
+            else
                 ReadyToRegen = true;
 
-            }
-
         }
+
+        UpdateHealth();
 
 	}
 

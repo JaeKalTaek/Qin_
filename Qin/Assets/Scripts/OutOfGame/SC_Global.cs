@@ -10,8 +10,6 @@ public class SC_Global {
 
     public enum ShiFuMi { Rock, Paper, Scissors, Special }
 
-    public enum Actions { Attack, Inventory, Wait, Build, Sacrifice, Destroy, EndTurn, Concede, Options, Cancel }
-
     public static Vector3 WorldMousePos { get { return Camera.main.ScreenToWorldPoint(Input.mousePosition); } }
 
     public static int XSize { get { return SC_Game_Manager.Instance.CurrentMapPrefab.SizeMapX; } }
@@ -186,6 +184,15 @@ public class SC_Global {
         public Text type, buff;
 
         public Button yes, close;
+
+    }
+
+    [Serializable]
+    public struct StaminaCostPanel {
+
+        public Image background;
+
+        public Text text;
 
     }
 

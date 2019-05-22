@@ -10,6 +10,10 @@ public class SC_Arrow : MonoBehaviour {
 
     public static List<SC_Tile> path;
 
+    static SC_Common_Characters_Variables CharaVariables { get { return SC_Game_Manager.Instance.CommonCharactersVariables; } }
+
+    static SC_UI_Manager UI { get { return SC_UI_Manager.Instance; } }
+
     public static void CursorMoved(SC_Tile newTile) {
 
         if (MovingCharacter && localPlayer.Turn && !localPlayer.Busy) {
@@ -22,11 +26,14 @@ public class SC_Arrow : MonoBehaviour {
 
             SC_Tile tile = (newTile.CurrentDisplay == TDisplay.Movement) ? newTile : SC_Tile_Manager.Instance.ClosestMovementTile(newTile);
 
-            SC_UI_Manager.Instance.PreviewFight(tile);
+            path = SC_Tile_Manager.Instance.PathFinder(activeCharacter.Tile, tile);
+
+            if (activeCharacter.Hero?.BaseActionDone ?? false)
+                UI.SetStaminaCost((path?.Count - 1 ?? 0) * CharaVariables.staminaMovementCost + (newTile.CanAttack && activeCharacter.Hero.CanAttackWithWeapons(tile).Count == 1 ? CharaVariables.staminaActionCost : 0));
+
+            UI.PreviewFight(tile);
 
             #region Setup visual
-            path = SC_Tile_Manager.Instance.PathFinder(activeCharacter.Tile, tile);            
-            
             if (path != null) {
 
                 List<Vector3> pos = new List<Vector3>();

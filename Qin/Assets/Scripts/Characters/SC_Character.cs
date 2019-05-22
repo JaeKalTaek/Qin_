@@ -70,10 +70,6 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public SC_Tile LastPos { get; set; }
 
-    public List<Actions> possiblePlayerActions;
-
-    public List<Actions> possibleCharacterActions;
-
     #region Managers
     protected static SC_Tile_Manager tileManager;
 
@@ -96,7 +92,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
     [HideInInspector]
     [SyncVar]
-    public string characterPath;
+    public string characterPath;    
 
     protected SC_Character loadedCharacter;
 
@@ -158,6 +154,12 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }
 
+    public static bool CanCharacterDoAction (int cost) { 
+
+        return !activeCharacter.Hero || !activeCharacter.Hero.BaseActionDone || (activeCharacter.Health >= cost);
+
+    }
+
     #region Movement
     public virtual void TrySelecting () {
 
@@ -172,6 +174,8 @@ public abstract class SC_Character : NetworkBehaviour {
     }
 
     public static void StartMovement (GameObject target) {
+
+        uiManager.staminaCost.background.gameObject.SetActive(false);
 
         SC_Cursor.SetLock(true);
 
@@ -284,6 +288,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 Hero.ReadyToRegen = false;
 
+                if (Hero.BaseActionDone)
+                    Hero.Hit(path.Count - 1);
+
             }
 
         } else if (Soldier) {
@@ -300,33 +307,44 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }
 
-        if (moved) {
+        if (activeCharacter.gameObject.activeSelf) {
 
-            uiManager.TryRefreshInfos(gameObject, GetType());
+            if (moved) {
 
-            SC_Tile t = uiManager.CurrentTile.GetComponent<SC_Tile>();
+                uiManager.TryRefreshInfos(gameObject, GetType());
 
-            if (t && t.CursorOn)
-                uiManager.TryRefreshInfos(t.gameObject, t.GetType());
+                SC_Tile t = uiManager.CurrentTile.GetComponent<SC_Tile>();
 
-        }
+                if (t && t.CursorOn)
+                    uiManager.TryRefreshInfos(t.gameObject, t.GetType());
 
-        if (ChainAttack) {
+            }
 
-            ChainAttack = false;
+            if (ChainAttack) {
+
+                ChainAttack = false;
+
+                if (SC_Player.localPlayer.Turn)
+                    StartAttack();
+
+            } else if (SC_Player.localPlayer.Turn) {
+
+                tileManager.PreviewAttack();
+
+                uiManager.ActivateMenu(uiManager.characterActionsPanel);
+
+                uiManager.backAction = gameManager.ResetMovement;
+
+            }
+
+        } else {
+
+            activeCharacter = null;
 
             if (SC_Player.localPlayer.Turn)
-                StartAttack();
+                gameManager.FinishAction();
 
-        } else if(SC_Player.localPlayer.Turn) {
-
-            tileManager.PreviewAttack();
-
-            uiManager.ActivateMenu(uiManager.characterActionsPanel);
-
-            uiManager.backAction = gameManager.ResetMovement;
-
-        }        
+        }
 
     }
 
@@ -336,17 +354,27 @@ public abstract class SC_Character : NetworkBehaviour {
 
         tileManager.RemoveAllFilters();
 
+        if (Hero?.BaseActionDone ?? false) {
+
+            Hero.Health += SC_Tile_Manager.TileDistance(Tile, LastPos);
+
+            Hero.UpdateHealth();
+
+        }
+
         Tile.Character = null;
 
         transform.SetPos(LastPos.transform.position);
 
         LastPos.Character = this;
 
-        CanBeSelected = true;        
+        CanBeSelected = true;
 
-        if (Hero)
-            SC_DrainingStele.UpdateHeroSlow(Hero);
-        else if (Demon) {
+        if (Hero) {
+
+            SC_DrainingStele.UpdateHeroSlow(Hero);            
+
+        }  else if (Demon) {
 
             Demon.RemoveAura(true, LastPos);
 
@@ -391,17 +419,32 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (activeCharacter.Hero) {
 
-            activeCharacter.Hero.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
+            if (activeCharacter.AttackTarget && activeCharacter.Hero.BaseActionDone)
+                activeCharacter.Hit(gameManager.CommonCharactersVariables.staminaActionCost);
 
-            SC_Sound_Manager.Instance.SetTempo();
+            if (activeCharacter.gameObject.activeSelf) {
 
-            // activeCharacter.Hero.BerserkTurn = activeCharacter.Hero.Berserk;
+                activeCharacter.Hero.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
+
+                SC_Sound_Manager.Instance.SetTempo();
+
+                // activeCharacter.Hero.BerserkTurn = activeCharacter.Hero.Berserk;
+
+                uiManager.staminaCost.background.gameObject.SetActive(false);
+
+                activeCharacter.Hero.BaseActionDone = true;
+
+            }
+
+        } else if (activeCharacter.BaseQinChara) {
+
+            activeCharacter.CanBeSelected = false;
+
+            activeCharacter.Tire();
 
         }
 
-        activeCharacter.CanBeSelected = false;
-
-        activeCharacter.Tire();
+        activeCharacter.AttackTarget = null;
 
         activeCharacter = null;
 

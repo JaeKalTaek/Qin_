@@ -249,29 +249,34 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         }
 
-        List<SC_Tile> range = (idealTiles.Count > 0) ? idealTiles : validTiles;
+        List<SC_Tile> range = new List<SC_Tile>((idealTiles.Count > 0) ? idealTiles : validTiles);        
 
-        if (currentTile.CanAttack && range.Contains(SC_Character.activeCharacter.Tile))
+        /*if (currentTile.CanAttack && range.Contains(SC_Character.activeCharacter.Tile))
             return SC_Character.activeCharacter.Tile;
-        else if (range.Contains(SC_Character.activeCharacter.Tile) && (range.Count > 1))
+        else*/ if (!currentTile.CanAttack && range.Contains(SC_Character.activeCharacter.Tile) && (range.Count > 1))
             range.Remove(SC_Character.activeCharacter.Tile);
 
         SC_Tile validTile = null;
 
         int minDistance = int.MaxValue;
 
+        int heroMinDistance = int.MaxValue;
+
         foreach (SC_Tile t in range) {
 
             int distance = TileDistance(currentTile, t);
 
-            if (distance < minDistance) {                
+            int heroDistance = TileDistance(SC_Character.activeCharacter.Tile, t);
+
+            if ((distance < minDistance) || ((distance == minDistance) && (heroDistance < heroMinDistance))) {
 
                 validTile = t;
 
                 minDistance = distance;
 
-            }
+                heroMinDistance = heroDistance;
 
+            }
         }
 
         return validTile;
@@ -325,7 +330,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             tile.ChangeDisplay(TDisplay.Attack);
 
             if (tile.CursorOn)
-                uiManager.PreviewFight();
+                uiManager.PreviewFight(null);
 
         }
 

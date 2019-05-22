@@ -178,7 +178,7 @@ public class SC_Tile : NetworkBehaviour {
 
                 SC_Player.localPlayer.CmdConstructAt(transform.position.x.I(), transform.position.y.I());
 
-            } else if (CurrentDisplay == TDisplay.Movement) {
+            } else if ((CurrentDisplay == TDisplay.Movement) && CanCharacterDoAction(SC_Arrow.path?.Count - 1 ?? 0)) {
 
                 StartMovement(gameObject);
 
@@ -250,7 +250,7 @@ public class SC_Tile : NetworkBehaviour {
         CursorOn = true;
 
         if ((CurrentDisplay == TDisplay.Attack) && !MovingCharacter)
-            UIManager.PreviewFight();
+            UIManager.PreviewFight(null);
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
 

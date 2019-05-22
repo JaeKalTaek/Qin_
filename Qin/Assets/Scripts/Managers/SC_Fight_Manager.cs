@@ -5,7 +5,7 @@ using System.Collections;
 
 public class SC_Fight_Manager : MonoBehaviour {
 
-    public static int AttackRange { get { return SC_Tile_Manager.TileDistance(activeCharacter.Tile, activeCharacter.AttackTarget); } }
+    public static int AttackRange { get { return SC_Tile_Manager.TileDistance(activeCharacter.Tile, activeCharacter.AttackTarget ?? SC_Cursor.Tile); } }
 
     SC_UI_Manager uiManager;
 
@@ -187,8 +187,11 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 // SC_Game_Manager.Instance.FinishAction();
 
+                /*if (activeCharacter.Hero?.BaseActionDone ?? false)  
+                    activeCharacter.Hit(SC_Game_Manager.Instance.CommonCharactersVariables.staminaActionCost);*/
+
                 if (SC_Player.localPlayer.isServer)
-                    SC_Player.localPlayer.CmdFinishAction();
+                    SC_Player.localPlayer.CmdFinishAction();                
 
             }
             #endregion
@@ -374,9 +377,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         SC_Construction attackedConstru = counter ? activeCharacter.Tile.AttackableContru : activeCharacter.AttackTarget.AttackableContru;
 
-        // print("Attacker : " + attacker?.characterName + "\nAttacked : " + (attacked?.characterName ?? attackedConstru?.name ?? "Qin"));
-
-        if (attacked)
+       if (attacked)
             CharacterAttack(attacker, attacked);
         else if (attackedConstru)
             HitConstruction(attacker, attackedConstru);

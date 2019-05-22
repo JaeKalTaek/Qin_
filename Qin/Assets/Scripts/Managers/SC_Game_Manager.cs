@@ -274,6 +274,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             if (character.Hero) {
 
+                character.Hero.BaseActionDone = false;
+
                 if (!QinTurn)
                     character.Hero.Regen();
                 else
@@ -357,6 +359,8 @@ public class SC_Game_Manager : NetworkBehaviour {
         SC_Character.activeCharacter = null;
 
         SC_Cursor.Tile.OnCursorEnter();
+
+        uiManager.staminaCost.background.gameObject.SetActive(false);
 
         uiManager.backAction = DoNothing;
 

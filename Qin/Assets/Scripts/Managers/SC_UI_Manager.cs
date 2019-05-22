@@ -47,6 +47,8 @@ public class SC_UI_Manager : MonoBehaviour {
     [Header("Heroes")]
     public RelationshipDetails[] relationshipsDetails;
     public GameObject weaponChoicePanel, weaponChoice1, weaponChoice2;
+    public StaminaCostPanel staminaCost;
+
     // public GameObject usePower;
 
     [Header("Qin")]
@@ -433,30 +435,44 @@ public class SC_UI_Manager : MonoBehaviour {
 
     #region Fight related
     // Also called by UI
-    public void PreviewFight (SC_Tile attackingFrom = null) {
+    public void SelectWeaponPreviewFight (bool weapon) {
 
-        activeCharacter.AttackTarget = SC_Cursor.Tile;
+        activeCharacter.Hero.SetWeapon(weapon);
 
-        if (activeCharacter.AttackTarget.CanAttack) {
+        PreviewFight();
 
-            attackingFrom = attackingFrom ?? activeCharacter.Tile;
+        activeCharacter.Hero.SetWeapon(weapon);
+
+    }
+
+    public void PreviewFight (SC_Tile attackingFrom) {
+
+        if (activeCharacter.Hero?.CanAttackWithWeapons(attackingFrom ?? activeCharacter.Tile).Count == 1)
+                SelectWeaponPreviewFight(activeCharacter.Hero.CanAttackWithWeapons(attackingFrom ?? activeCharacter.Tile)[0]);
+        else if (!activeCharacter.Hero)
+            PreviewFight();
+
+    }
+
+    public void PreviewFight () {
+
+        if (!MovingCharacter && (activeCharacter.Hero?.BaseActionDone ?? false))
+            SetStaminaCost(GameManager.CommonCharactersVariables.staminaActionCost);
+
+        if (SC_Cursor.Tile.CanAttack && (staminaCost.background.color != Color.grey)) {
 
             SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
 
-            bool activeWeapon = activeCharacter.Hero ? (activeCharacter.Hero.CanAttackWithWeapons(attackingFrom).Count > 1) || activeCharacter.Hero.CanAttackWithWeapons(attackingFrom)[0] : true;
-
-            activeCharacter.Hero?.SetWeapon(activeWeapon);
-
             attackerPreviewFight.name.text = activeCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
 
-            SC_Character attacked = activeCharacter.AttackTarget.Character;
-            SC_Construction attackedConstru = activeCharacter.AttackTarget.AttackableContru;
+            SC_Character attacked = SC_Cursor.Tile.Character;
+            SC_Construction attackedConstru = SC_Cursor.Tile.AttackableContru;
 
             attackedPreviewFight.crit.gameObject.SetActive(attacked);
 
             attackedPreviewFight.dodge.gameObject.SetActive(attacked && !attackedConstru);
 
-            if (activeCharacter.AttackTarget.Qin) {
+            if (SC_Cursor.Tile.Qin) {
 
                 attackedPreviewFight.name.text = "Qin";
 
@@ -472,7 +488,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             } else {
 
-                SC_Construction c = activeCharacter.AttackTarget.AttackableContru;
+                SC_Construction c = SC_Cursor.Tile.AttackableContru;
 
                 attackedPreviewFight.name.text = c.Name;
 
@@ -481,8 +497,6 @@ public class SC_UI_Manager : MonoBehaviour {
                 NonCharacterAttackPreview();
 
             }
-
-            activeCharacter.Hero?.SetWeapon(activeWeapon);
 
             previewFightPanel.SetActive(true);
 
@@ -597,6 +611,16 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
     #endregion
+
+    public void SetStaminaCost (int cost) {
+
+        staminaCost.background.gameObject.SetActive(true);
+
+        staminaCost.text.text = "Cost : " + cost;
+
+        staminaCost.background.color = (cost < activeCharacter.Health) ? new Color(0, .6f, 0) : ((cost == activeCharacter.Health) ? new Color(.6f, 0, 0) : Color.grey);
+
+    }
     #endregion
 
     #region Qin

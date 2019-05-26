@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SC_Hero : SC_Character {
@@ -277,11 +278,41 @@ public class SC_Hero : SC_Character {
 
             Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
 
-            Relationships[hero.characterName] += Mathf.RoundToInt(amount / heroesInRange.Count);
-            hero.Relationships[characterName] += Mathf.RoundToInt(amount / heroesInRange.Count);
+            Relationships[hero.characterName] += (int)(amount / heroesInRange.Count + .5f);
+            hero.Relationships[characterName] += (int)(amount / heroesInRange.Count + .5f);
 
         }
 
     }
+
+    #region Stamina system
+    public enum EStaminaCost { NotNeeded, TooHigh, WillDie, Enough }
+
+    static EStaminaCost StaminaCost { get; set; }
+
+    public static EStaminaCost GetStaminaCost { get { return (activeCharacter.Hero?.BaseActionDone ?? false) ? StaminaCost : EStaminaCost.NotNeeded; } } 
+
+    public void SetStaminaCost (int cost) {
+
+        if(cost >= 0)
+            SetStaminaCost(new int[] { cost });
+        else {
+
+            StaminaCost = EStaminaCost.NotNeeded;
+
+            uiManager.staminaCost.background.gameObject.SetActive(false);
+
+        }
+
+    }
+
+    public static void SetStaminaCost (int[] cost) {
+
+        StaminaCost = (activeCharacter.Health > cost.Sum()) ? EStaminaCost.Enough : ((cost.Length == 1 || cost[1] == 0 || activeCharacter.Health > cost[0]) ? EStaminaCost.WillDie : EStaminaCost.TooHigh);
+
+        uiManager.DisplayStaminaCost(cost.Sum());
+
+    }
+    #endregion
 
 }

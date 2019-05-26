@@ -177,41 +177,32 @@ public class SC_Player : NetworkBehaviour {
     }
 
     [Command]
-	public void CmdPrepareForAttack(GameObject targetTileObject) {
+    public void CmdAttack(GameObject target) {
 
-        RpcPrepareForAttack(targetTileObject);
-
-    }
-
-	[ClientRpc]
-	void RpcPrepareForAttack(GameObject targetTileObject) {
-
-        activeCharacter.AttackTarget = targetTileObject.GetComponent<SC_Tile>();
-	}
-
-    [Command]
-    public void CmdAttack() {
-
-        RpcAttack();
+        RpcAttack(target);
 
     }
 
     [ClientRpc]
-    void RpcAttack() {
+    void RpcAttack(GameObject target) {
+
+        activeCharacter.AttackTarget = target.GetComponent<SC_Tile>();
 
         FightManager.Attack();
 
     }
 
     [Command]
-    public void CmdHeroAttack(bool usedActiveWeapon) {
+    public void CmdHeroAttack(GameObject target, bool usedActiveWeapon) {
 
-        RpcHeroAttack(usedActiveWeapon);
+        RpcHeroAttack(usedActiveWeapon, target);
 
     }
 
     [ClientRpc]
-    void RpcHeroAttack(bool usedActiveWeapon) {
+    void RpcHeroAttack(bool usedActiveWeapon, GameObject target) {
+
+        activeCharacter.AttackTarget = target.GetComponent<SC_Tile>();
 
         SC_Hero.Attack(usedActiveWeapon);
 
@@ -411,6 +402,9 @@ public class SC_Player : NetworkBehaviour {
     void RpcDestroyProductionBuilding () {        
 
         activeCharacter.Tile.Construction?.DestroyConstruction(true);
+
+        if (activeCharacter.Hero?.BaseActionDone ?? false)
+            activeCharacter.Hit(GameManager.CommonCharactersVariables.staminaActionCost);
 
         localPlayer.GameManager.FinishAction();
 

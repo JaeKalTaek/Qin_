@@ -314,7 +314,7 @@ public class SC_Game_Manager : NetworkBehaviour {
     #region Methods called by UI  
     public void SetAttackWeapon (bool usedActiveWeapon) {
 
-        Player.CmdHeroAttack(usedActiveWeapon);
+        Player.CmdHeroAttack(SC_Character.activeCharacter.AttackTarget.gameObject, usedActiveWeapon);
 
     }
 
@@ -342,6 +342,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void DestroyProductionBuilding () {
 
+        uiManager.DisplayStaminaActionCost(false);
+
         Player.CmdDestroyProductionBuilding();
 
     }
@@ -356,11 +358,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Character.activeCharacter.Moving = false;
 
+        SC_Character.activeCharacter.Hero?.SetStaminaCost(-1);
+
         SC_Character.activeCharacter = null;
 
-        SC_Cursor.Tile.OnCursorEnter();
-
-        uiManager.staminaCost.background.gameObject.SetActive(false);
+        SC_Cursor.Tile.OnCursorEnter();        
 
         uiManager.backAction = DoNothing;
 
@@ -611,7 +613,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public static float GetCurrentCastleSacrificeValue() {
 
-        return Instance.CommonQinVariables.castleSacrifice.GetValue(Mathf.RoundToInt(((float)Instance.CurrentCastle.Health / Instance.CurrentCastle.maxHealth) * 100));
+        return Instance.CommonQinVariables.castleSacrifice.GetValue((int)(((float)Instance.CurrentCastle.Health / Instance.CurrentCastle.maxHealth) * 100 + .5f));
 
     }
 

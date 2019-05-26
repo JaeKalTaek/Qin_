@@ -175,7 +175,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public static void StartMovement (GameObject target) {
 
-        uiManager.staminaCost.background.gameObject.SetActive(false);
+        activeCharacter.Hero?.SetStaminaCost(-1);
 
         SC_Cursor.SetLock(true);
 
@@ -329,11 +329,27 @@ public abstract class SC_Character : NetworkBehaviour {
 
             } else if (SC_Player.localPlayer.Turn) {
 
-                tileManager.PreviewAttack();
+                if (SC_Cursor.Tile.CanCharacterAttack(this)) {
 
-                uiManager.ActivateMenu(uiManager.characterActionsPanel);
+                    uiManager.ChooseWeapon();
 
-                uiManager.backAction = gameManager.ResetMovement;
+                    uiManager.backAction = () => {
+
+                        ResetMovementFunction();
+
+                        uiManager.HideWeapons();
+
+                    };
+
+                } else {
+
+                    tileManager.PreviewAttack();
+
+                    uiManager.ActivateMenu(uiManager.characterActionsPanel);
+
+                    uiManager.backAction = gameManager.ResetMovement;
+
+                }
 
             }
 
@@ -401,17 +417,17 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public void StartAttack () {
 
-        SC_Player.localPlayer.CmdPrepareForAttack(AttackTarget.gameObject);
+        // SC_Player.localPlayer.CmdPrepareForAttack(AttackTarget.gameObject);
 
         if (Hero) {
 
             if (Hero.CanAttackWithWeapons(Tile).Count == 1)
-                SC_Player.localPlayer.CmdHeroAttack(Hero.CanAttackWithWeapons(Tile)[0]);
+                SC_Player.localPlayer.CmdHeroAttack(AttackTarget.gameObject, Hero.CanAttackWithWeapons(Tile)[0]);
             else
                 uiManager.ChooseWeapon();
 
         } else
-            SC_Player.localPlayer.CmdAttack();
+            SC_Player.localPlayer.CmdAttack(AttackTarget.gameObject);
 
     }
 
@@ -430,7 +446,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 // activeCharacter.Hero.BerserkTurn = activeCharacter.Hero.Berserk;
 
-                uiManager.staminaCost.background.gameObject.SetActive(false);
+                activeCharacter.Hero.SetStaminaCost(-1);
 
                 activeCharacter.Hero.BaseActionDone = true;
 

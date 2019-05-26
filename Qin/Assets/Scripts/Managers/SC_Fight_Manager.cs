@@ -5,7 +5,7 @@ using System.Collections;
 
 public class SC_Fight_Manager : MonoBehaviour {
 
-    public static int AttackRange { get { return SC_Tile_Manager.TileDistance(activeCharacter.Tile, activeCharacter.AttackTarget ?? SC_Cursor.Tile); } }
+    public static int AttackRange { get { return SC_Tile_Manager.TileDistance(SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? activeCharacter.Tile, activeCharacter.AttackTarget ?? SC_Cursor.Tile); } }
 
     SC_UI_Manager uiManager;
 
@@ -161,7 +161,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 // print(attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
-                (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = Mathf.RoundToInt(HealthValue).ToString();               
+                (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = ((int)(HealthValue + .5f)).ToString();               
 
                 yield return new WaitForEndOfFrame();
 
@@ -233,7 +233,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public bool HitConstruction(SC_Character attacker, SC_Construction construction) {
 
-        construction.Health -= Mathf.RoundToInt(CalcAttack(attacker));
+        construction.Health -= CalcAttack(attacker);
 
         construction.Lifebar.UpdateGraph(construction.Health, construction.maxHealth);
 
@@ -255,19 +255,20 @@ public class SC_Fight_Manager : MonoBehaviour {
         //damages = Mathf.CeilToInt(damages * attacker.GetActiveWeapon().ShiFuMiModifier(attacked.GetActiveWeapon()));
 
         if (attacker.Hero)
-            damages += Mathf.RoundToInt(damages * RelationBoost(attacker.Hero));
+            damages += (int)(damages * RelationBoost(attacker.Hero) + .5f);
 
         /*if (attacker.Hero && attacked.Hero)
             damages = Mathf.CeilToInt(damages * RelationMalus(attacker.Hero, attacked.Hero));*/
 
         if (attacker.CriticalAmount == CharactersVariables.critTrigger)
-            damages = Mathf.RoundToInt(damages * CharactersVariables.critMultiplier);
+            damages = (int)(damages * CharactersVariables.critMultiplier + .5f);
 
         /*if (attacker.Hero?.Berserk ?? false)
             damages = Mathf.CeilToInt(damages * CharactersVariables.berserkDamageMultiplier);*/
 
         if (attacker != activeCharacter)
-            damages = Mathf.RoundToInt(damages / CharactersVariables.counterFactor);
+            damages = (int)((damages / CharactersVariables.counterFactor) + .5f);
+
 
         return Mathf.Max(0, damages);
 
@@ -278,7 +279,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         int damages = CalcAttack(attacker);
 
         if (attacked.DodgeAmount == CharactersVariables.dodgeTrigger)
-            damages = Mathf.RoundToInt(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f));
+            damages = (int)(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f) + .5f);
 
         int armor = attacked.Armor;
         int resistance = attacked.Resistance;
@@ -286,12 +287,12 @@ public class SC_Fight_Manager : MonoBehaviour {
         if (attacked.Hero) {
 
             float relationBoost = RelationBoost(attacked.Hero);
-            armor += Mathf.RoundToInt(armor * relationBoost);
-            resistance += Mathf.RoundToInt(resistance * relationBoost);
+            armor += (int)(armor * relationBoost + .5f);
+            resistance += (int)(resistance * relationBoost + .5f);
 
         }
 
-        damages -= (attacker.GetActiveWeapon().physical) ? armor : resistance;               
+        damages -= (attacker.GetActiveWeapon().physical) ? armor : resistance;
 
         return Mathf.Max(0, damages);
 

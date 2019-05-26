@@ -178,11 +178,11 @@ public class SC_Tile : NetworkBehaviour {
 
                 SC_Player.localPlayer.CmdConstructAt(transform.position.x.I(), transform.position.y.I());
 
-            } else if ((CurrentDisplay == TDisplay.Movement) && CanCharacterDoAction(SC_Arrow.path?.Count - 1 ?? 0)) {
+            } else if (CurrentDisplay == TDisplay.Movement) {
 
                 StartMovement(gameObject);
 
-            } else if (CanAttack) {
+            } else if (CanAttack && (SC_Hero.GetStaminaCost != SC_Hero.EStaminaCost.TooHigh)) {
 
                 activeCharacter.AttackTarget = this;
 
@@ -249,7 +249,7 @@ public class SC_Tile : NetworkBehaviour {
 
         CursorOn = true;
 
-        if ((CurrentDisplay == TDisplay.Attack) && !MovingCharacter)
+        if (CanAttack && !MovingCharacter)
             UIManager.PreviewFight(null);
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();

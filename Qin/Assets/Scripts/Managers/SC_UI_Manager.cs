@@ -8,6 +8,7 @@ using static SC_Player;
 using static SC_Character;
 using TMPro;
 using Prototype.NetworkLobby;
+using static SC_Hero;
 
 public class SC_UI_Manager : MonoBehaviour {
 
@@ -456,10 +457,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void PreviewFight () {
 
-        if (!MovingCharacter && (activeCharacter.Hero?.BaseActionDone ?? false))
-            SetStaminaCost(GameManager.CommonCharactersVariables.staminaActionCost);
+        /*if (!MovingCharacter && (activeCharacter.Hero?.BaseActionDone ?? false))
+            SetStaminaCost(GameManager.CommonCharactersVariables.staminaActionCost);*/
 
-        if (SC_Cursor.Tile.CanAttack && (staminaCost.background.color != Color.grey)) {
+        if (GetStaminaCost != EStaminaCost.TooHigh) {
 
             SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
 
@@ -612,15 +613,23 @@ public class SC_UI_Manager : MonoBehaviour {
     }
     #endregion
 
-    public void SetStaminaCost (int cost) {
+    #region Stamina system
+    public void DisplayStaminaActionCost (bool show) {
+
+        activeCharacter?.Hero.SetStaminaCost(show ? GameManager.CommonCharactersVariables.staminaActionCost : -1);
+
+    }
+
+    public void DisplayStaminaCost (int cost) {
 
         staminaCost.background.gameObject.SetActive(true);
 
         staminaCost.text.text = "Cost : " + cost;
 
-        staminaCost.background.color = (cost < activeCharacter.Health) ? new Color(0, .6f, 0) : ((cost == activeCharacter.Health) ? new Color(.6f, 0, 0) : Color.grey);
+        staminaCost.background.color = GetStaminaCost == EStaminaCost.Enough ? new Color(0, .6f, 0) : (GetStaminaCost == EStaminaCost.WillDie ? new Color(.6f, 0, 0) : Color.grey);
 
     }
+    #endregion
     #endregion
 
     #region Qin
@@ -1014,6 +1023,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void Attack() {
 
+        DisplayStaminaActionCost(false);
+
         SC_Cursor.SetLock(false);
 
         characterActionsPanel.SetActive(false);
@@ -1031,6 +1042,8 @@ public class SC_UI_Manager : MonoBehaviour {
     }
 
     void CancelAction() {
+
+        DisplayStaminaActionCost(false);
 
         constructPanel.SetActive(false);
 

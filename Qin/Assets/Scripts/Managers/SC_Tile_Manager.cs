@@ -258,28 +258,34 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         SC_Tile validTile = null;
 
-        int minDistance = int.MaxValue;
+        int minDistanceToHero = int.MaxValue;
 
-        int heroMinDistance = int.MaxValue;
+        int minDistanceToCursor = int.MaxValue;
 
         foreach (SC_Tile t in range) {
 
-            int distance = TileDistance(currentTile, t);
+            int distanceToHero = TileDistance(SC_Character.activeCharacter.Tile, t);
 
-            int heroDistance = TileDistance(SC_Character.activeCharacter.Tile, t);
+            int distanceToCursor = TileDistance(currentTile, t);
 
-            if ((distance < minDistance) || ((distance == minDistance) && (heroDistance < heroMinDistance))) {
+            if (currentTile.CanAttack ? IsMinDistance(distanceToHero, minDistanceToHero, distanceToCursor, minDistanceToCursor) : IsMinDistance(distanceToCursor, minDistanceToCursor, distanceToHero, minDistanceToHero)) {
 
                 validTile = t;
 
-                minDistance = distance;
+                minDistanceToHero = distanceToHero;
 
-                heroMinDistance = heroDistance;
+                minDistanceToCursor = distanceToCursor;
 
             }
         }
 
         return validTile;
+
+    }
+
+    bool IsMinDistance (int a, int b, int c, int d) {
+
+        return (a < b) || ((a == b) && (c < d));
 
     }
 
@@ -329,7 +335,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
             tile.ChangeDisplay(TDisplay.Attack);
 
-            if (tile.CursorOn)
+            if (tile.CursorOn && tile.CanAttack)
                 uiManager.PreviewFight(null);
 
         }

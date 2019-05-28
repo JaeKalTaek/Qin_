@@ -183,15 +183,17 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             } else {
 
+                // SC_Game_Manager.Instance.FinishAction();
+
                 uiManager.fightPanel.panel.SetActive(false);
 
-                // SC_Game_Manager.Instance.FinishAction();
+                SC_Player.localPlayer.CmdSynchroFinishAction();
 
                 /*if (activeCharacter.Hero?.BaseActionDone ?? false)  
                     activeCharacter.Hit(SC_Game_Manager.Instance.CommonCharactersVariables.staminaActionCost);*/
 
-                if (SC_Player.localPlayer.isServer)
-                    SC_Player.localPlayer.CmdFinishAction();                
+                /*if (SC_Player.localPlayer.isServer)
+                    SC_Player.localPlayer.CmdFinishAction();   */
 
             }
             #endregion

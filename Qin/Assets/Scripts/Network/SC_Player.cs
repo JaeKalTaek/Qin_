@@ -462,6 +462,18 @@ public class SC_Player : NetworkBehaviour {
     #endregion
 
     #region Finish Actions
+    static bool synchro;
+
+    [Command]
+    public void CmdSynchroFinishAction () {
+
+        if (synchro)
+            RpcFinishAction();
+
+        synchro ^= true;
+
+    }
+
     [Command]
     public void CmdFinishAction() {
 

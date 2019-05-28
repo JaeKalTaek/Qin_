@@ -4,6 +4,7 @@ using System.Collections;
 using static SC_EditorTile;
 using static SC_Global;
 using System.Reflection;
+using System;
 
 public class SC_Game_Manager : NetworkBehaviour {
 
@@ -105,7 +106,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             go.GetComponent<SC_Tile>().infos = new TileInfos(
                 eTile.tileType.ToString(),
-                Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Tiles/" + eTile.tileType).Length),
+                UnityEngine.Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Tiles/" + eTile.tileType).Length),
                 (int)eTile.riverSprite,
                 (int)eTile.region,
                 borders
@@ -352,7 +353,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         uiManager.HidePreviewFight();
 
-        Destroy(SC_Arrow.arrow);
+        SC_Arrow.DestroyArrow();
 
         tileManager.RemoveAllFilters();
 
@@ -484,10 +485,13 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         }
 
-        FinishAction();
+        if (QinTurnStarting) {
 
-        if (QinTurnStarting)
+            FinishAction();
+
             uiManager.backAction = CancelLastConstruction;
+
+        }
 
     }
     #endregion

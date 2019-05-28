@@ -102,4 +102,12 @@ public class SC_Arrow : MonoBehaviour {
 
     }    
 
+    public static void DestroyArrow () {
+
+        Destroy(arrow);
+
+        path = null;
+
+    }
+
 }

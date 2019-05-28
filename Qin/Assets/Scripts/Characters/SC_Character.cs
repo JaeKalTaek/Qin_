@@ -179,7 +179,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         SC_Cursor.SetLock(true);
 
-        Destroy(SC_Arrow.arrow);
+        SC_Arrow.DestroyArrow();
 
         uiManager.backAction = DoNothing;
 

@@ -154,11 +154,11 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }
 
-    public static bool CanCharacterDoAction (int cost) { 
+    /*public static bool CanCharacterDoAction (int cost) { 
 
         return !activeCharacter.Hero || !activeCharacter.Hero.BaseActionDone || (activeCharacter.Health >= cost);
 
-    }
+    }*/
 
     #region Movement
     public virtual void TrySelecting () {
@@ -289,7 +289,7 @@ public abstract class SC_Character : NetworkBehaviour {
                 Hero.ReadyToRegen = false;
 
                 if (Hero.BaseActionDone)
-                    Hero.Hit(path.Count - 1);
+                    Hero.Hit(Hero.MovementCost(path.Count - 1));
 
             }
 
@@ -372,7 +372,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (Hero?.BaseActionDone ?? false) {
 
-            Hero.Health += SC_Tile_Manager.TileDistance(Tile, LastPos);
+            Hero.Health += Hero.MovementCost(SC_Tile_Manager.TileDistance(Tile, LastPos));
 
             Hero.UpdateHealth();
 
@@ -431,12 +431,12 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }
 
-    public static void FinishCharacterAction() {
+    public static void FinishCharacterAction(bool wait = false) {
 
         if (activeCharacter.Hero) {
 
             if (activeCharacter.AttackTarget && activeCharacter.Hero.BaseActionDone)
-                activeCharacter.Hit(gameManager.CommonCharactersVariables.staminaActionCost);
+                activeCharacter.Hit(activeCharacter.Hero.ActionCost);
 
             if (activeCharacter.gameObject.activeSelf) {
 
@@ -448,7 +448,10 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 activeCharacter.Hero.SetStaminaCost(-1);
 
-                activeCharacter.Hero.BaseActionDone = true;
+                if (!wait || (activeCharacter.LastPos != activeCharacter.Tile))
+                    activeCharacter.Hero.ActionCount++;
+
+                // activeCharacter.Hero.BaseActionDone = true;
 
             }
 

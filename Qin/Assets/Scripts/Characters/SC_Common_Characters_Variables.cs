@@ -34,10 +34,19 @@ public class SC_Common_Characters_Variables : MonoBehaviour {
     public int staminaRegen;
 
     [Tooltip("Stamina cost for each tile walked using stamina")]
-    public int staminaMovementCost;
+    public int baseStaminaMovementCost;
+
+    [Tooltip("Additional cost added for each tile walked while using stamina each staminaCostAugmentation action")]
+    public int staminaMovementAdditionalCost;
 
     [Tooltip("Stamina cost for an additional action (attack or building destruction)")]
-    public int staminaActionCost;
+    public int baseStaminaActionCost;
+
+    [Tooltip("Additional cost added for an additional action (attack or building destruction) each staminaCostAugmentation action")]
+    public int staminaActionAdditionalCost;
+
+    [Tooltip("The stamina costs of the heroes' actions are augmented after this number of actions done")]
+    public int staminaCostsAugmentation;
 
     /*[Tooltip("Amount of health kept by a hero who was saved")]
     public int savedHealthAmount;
@@ -51,6 +60,7 @@ public class SC_Common_Characters_Variables : MonoBehaviour {
     [Tooltip("Damage are multiplied by that amount when the hero is berserker")]
     public float berserkDamageMultiplier;*/
 
+    [Header("Relations")]
     [Tooltip("Relation points gained by heroes")]
     public RelationGains relationGains;
 

@@ -616,7 +616,7 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Stamina system
     public void DisplayStaminaActionCost (bool show) {
 
-        activeCharacter.Hero?.SetStaminaCost(show ? GameManager.CommonCharactersVariables.staminaActionCost : -1);
+        activeCharacter.Hero?.SetStaminaCost(show ? activeCharacter.Hero.ActionCost : -1);
 
     }
 

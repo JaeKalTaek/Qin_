@@ -43,7 +43,13 @@ public class SC_Hero : SC_Character {
     [Tooltip("Color applied when the character is berserker")]
     public Color berserkColor;*/
 
-    public bool BaseActionDone { get; set; }
+    public bool BaseActionDone { get { return ActionCount > 0; } }
+
+    public int ActionCount { get; set; }
+
+    public int MovementCost (int distance) { return distance * (gameManager.CommonCharactersVariables.baseStaminaMovementCost + gameManager.CommonCharactersVariables.staminaMovementAdditionalCost * (ActionCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation)); }
+
+    public int ActionCost { get { return gameManager.CommonCharactersVariables.baseStaminaActionCost + gameManager.CommonCharactersVariables.staminaActionAdditionalCost * (ActionCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation); } }
 
     public bool ReadyToRegen { get; set; }
 

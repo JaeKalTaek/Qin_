@@ -29,7 +29,7 @@ public class SC_Arrow : MonoBehaviour {
             path = SC_Tile_Manager.Instance.PathFinder(activeCharacter.Tile, tile);
 
             if (activeCharacter.Hero?.BaseActionDone ?? false)
-                SC_Hero.SetStaminaCost(new int[] { (path?.Count - 1 ?? 0) * CharaVariables.staminaMovementCost, (newTile.CanAttack /*&& activeCharacter.Hero.CanAttackWithWeapons(tile).Count == 1*/ ? CharaVariables.staminaActionCost : 0) });
+                SC_Hero.SetStaminaCost(new int[] { path != null ? activeCharacter.Hero.MovementCost(path.Count - 1) : 0, (newTile.CanAttack ? activeCharacter.Hero.ActionCost : 0) });
 
             if(newTile.CanAttack)
                 UI.PreviewFight(tile);

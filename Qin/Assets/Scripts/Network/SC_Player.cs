@@ -404,7 +404,7 @@ public class SC_Player : NetworkBehaviour {
         activeCharacter.Tile.Construction?.DestroyConstruction(true);
 
         if (activeCharacter.Hero?.BaseActionDone ?? false)
-            activeCharacter.Hit(GameManager.CommonCharactersVariables.staminaActionCost);
+            activeCharacter.Hit(activeCharacter.Hero.ActionCost);
 
         localPlayer.GameManager.FinishAction();
 
@@ -468,7 +468,7 @@ public class SC_Player : NetworkBehaviour {
     public void CmdSynchroFinishAction () {
 
         if (synchro)
-            RpcFinishAction();
+            RpcFinishAction(false);
 
         synchro ^= true;
 
@@ -477,14 +477,14 @@ public class SC_Player : NetworkBehaviour {
     [Command]
     public void CmdFinishAction() {
 
-        RpcFinishAction();
+        RpcFinishAction(true);
 
     }
 
     [ClientRpc]
-    void RpcFinishAction() {
+    void RpcFinishAction(bool wait) {
 
-        GameManager.FinishAction();
+        GameManager.FinishAction(wait);
 
     }
     #endregion

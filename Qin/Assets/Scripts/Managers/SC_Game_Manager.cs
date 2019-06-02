@@ -275,7 +275,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             if (character.Hero) {
 
-                character.Hero.BaseActionDone = false;
+                character.Hero.ActionCount = 0;
 
                 if (!QinTurn)
                     character.Hero.Regen();
@@ -594,12 +594,12 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
 
-    public void FinishAction () {
+    public void FinishAction (bool wait = false) {
 
         tileManager.RemoveAllFilters();
 
         if (SC_Character.activeCharacter)
-            SC_Character.FinishCharacterAction();
+            SC_Character.FinishCharacterAction(wait);
 
         if (Player.Turn) {
 

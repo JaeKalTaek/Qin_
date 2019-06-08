@@ -43,11 +43,15 @@ public class SC_Hero : SC_Character {
     [Tooltip("Color applied when the character is berserker")]
     public Color berserkColor;*/
 
+    public int MovementPoints { get; set; }
+
     public bool BaseActionDone { get { return ActionCount > 0; } }
 
     public int ActionCount { get; set; }
 
-    public int MovementCost (int distance) { return distance * (gameManager.CommonCharactersVariables.baseStaminaMovementCost + gameManager.CommonCharactersVariables.staminaMovementAdditionalCost * (ActionCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation)); }
+    public int MovementCount { get; set; }
+
+    public int MovementCost (int distance) { return distance * (gameManager.CommonCharactersVariables.baseStaminaMovementCost + gameManager.CommonCharactersVariables.staminaMovementAdditionalCost * (MovementCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation)); }
 
     public int ActionCost { get { return gameManager.CommonCharactersVariables.baseStaminaActionCost + gameManager.CommonCharactersVariables.staminaActionAdditionalCost * (ActionCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation); } }
 
@@ -77,6 +81,8 @@ public class SC_Hero : SC_Character {
         if (heroes.Count == 6)
             SetupHeroesRelationships();
 
+        MovementPoints = Movement;
+
     }
 
     protected override void Start () {
@@ -84,6 +90,10 @@ public class SC_Hero : SC_Character {
         base.Start();
 
         transform.parent = uiManager.heroesT;
+
+        ActionCount = -1;
+
+        MovementCount = -1;
 
     }
 

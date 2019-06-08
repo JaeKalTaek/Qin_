@@ -275,7 +275,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             if (character.Hero) {
 
-                character.Hero.ActionCount = 0;
+                character.Hero.ActionCount = -1;
 
                 if (!QinTurn)
                     character.Hero.Regen();

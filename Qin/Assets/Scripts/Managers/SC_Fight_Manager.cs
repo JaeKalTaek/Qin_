@@ -114,7 +114,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         }
 
-        if(attacking && SC_Player.localPlayer.Turn && (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger) && (attacked.DodgeAmount < SC_Game_Manager.Instance.CommonCharactersVariables.dodgeTrigger))
+        if(attacking && SC_Player.localPlayer.Turn && (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger) && !attacked || (attacked.DodgeAmount < SC_Game_Manager.Instance.CommonCharactersVariables.dodgeTrigger))
             SC_Camera.Instance.StartCoroutine("Screenshake");
 
         yield return new WaitForSeconds(fightDelay);

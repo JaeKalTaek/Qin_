@@ -387,7 +387,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
         OpenList.Clear();
         List<SC_Tile> movementRange = new List<SC_Tile>();
 
-        movementPoints[target.Tile] = target.Movement;
+        movementPoints[target.Tile] = target.Hero?.MovementPoints ?? target.Movement;
 
         ExpandTile(ref movementRange, target.Tile, target);
 

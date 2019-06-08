@@ -42,6 +42,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
     [Tooltip("Time for a character to walk one tile of distance")]
     public float moveDuration;
+
     public int MovementModifiers { get; set; }
     public int Movement { get { return Mathf.Max(0, baseStats.movement + MovementModifiers - (Hero?.DrainingSteleSlow ?? 0) + Tile.CombatModifiers.movement + DemonsModifier("movement")); } }
     public bool CanBeSelected { get; set; }    
@@ -288,6 +289,10 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 Hero.ReadyToRegen = false;
 
+                Hero.MovementPoints = (Hero.MovementPoints <= path.Count - 1) ? Hero.Movement : Hero.MovementPoints - path.Count - 1;
+
+                Hero.MovementCount += Hero.MovementPoints == Hero.Movement ? 1 : 0;
+
                 if (Hero.BaseActionDone)
                     Hero.Hit(Hero.MovementCost(path.Count - 1));
 
@@ -361,6 +366,13 @@ public abstract class SC_Character : NetworkBehaviour {
                 gameManager.FinishAction();
 
         }
+
+    }
+
+    void Update () {
+
+        if(Hero)
+            print(characterName + ", Movement Points : " + Hero.MovementPoints);
 
     }
 

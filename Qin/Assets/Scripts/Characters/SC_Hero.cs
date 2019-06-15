@@ -43,17 +43,21 @@ public class SC_Hero : SC_Character {
     [Tooltip("Color applied when the character is berserker")]
     public Color berserkColor;*/
 
-    public int MovementPoints { get; set; }
-
-    public bool BaseActionDone { get { return ActionCount > 0; } }
+    #region Stamina system   
+    public bool BaseActionDone { get { return ActionCount >= 0; } }
 
     public int ActionCount { get; set; }
 
+    public int ActionCost { get { return BaseActionDone ? gameManager.CommonCharactersVariables.baseStaminaActionCost + gameManager.CommonCharactersVariables.staminaActionAdditionalCost * (ActionCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation) : 0; } }
+
+    public int MovementPoints { get; set; }
+
+    public bool BaseMovementDone { get { return MovementCount >= 0; } }
+
     public int MovementCount { get; set; }
 
-    public int MovementCost (int distance) { return distance * (gameManager.CommonCharactersVariables.baseStaminaMovementCost + gameManager.CommonCharactersVariables.staminaMovementAdditionalCost * (MovementCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation)); }
-
-    public int ActionCost { get { return gameManager.CommonCharactersVariables.baseStaminaActionCost + gameManager.CommonCharactersVariables.staminaActionAdditionalCost * (ActionCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation); } }
+    public int MovementCost (int distance) { return BaseMovementDone ? distance * (gameManager.CommonCharactersVariables.baseStaminaMovementCost + gameManager.CommonCharactersVariables.staminaMovementAdditionalCost * (MovementCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation)) : 0; }
+    #endregion
 
     public bool ReadyToRegen { get; set; }
 
@@ -81,7 +85,7 @@ public class SC_Hero : SC_Character {
         if (heroes.Count == 6)
             SetupHeroesRelationships();
 
-        MovementPoints = Movement;
+        MovementPoints = loadedCharacter.baseStats.movement;
 
     }
 
@@ -304,29 +308,34 @@ public class SC_Hero : SC_Character {
     #region Stamina system
     public enum EStaminaCost { NotNeeded, TooHigh, WillDie, Enough }
 
-    static EStaminaCost StaminaCost { get; set; }
+    public static EStaminaCost StaminaCost { get; set; }
 
-    public static EStaminaCost GetStaminaCost { get { return (activeCharacter.Hero?.BaseActionDone ?? false) ? StaminaCost : EStaminaCost.NotNeeded; } } 
+    // public static EStaminaCost GetStaminaCost { get { return (activeCharacter.Hero?.BaseActionDone ?? false) ? StaminaCost : EStaminaCost.NotNeeded; } } 
 
     public void SetStaminaCost (int cost) {
 
-        if(cost >= 0)
+        //if(cost >= 0)
             SetStaminaCost(new int[] { cost });
-        else {
+        /*else {
 
             StaminaCost = EStaminaCost.NotNeeded;
 
             uiManager.staminaCost.background.gameObject.SetActive(false);
 
-        }
+        }*/
 
     }
 
     public static void SetStaminaCost (int[] cost) {
 
-        StaminaCost = (activeCharacter.Health > cost.Sum()) ? EStaminaCost.Enough : ((cost.Length == 1 || cost[1] == 0 || activeCharacter.Health > cost[0]) ? EStaminaCost.WillDie : EStaminaCost.TooHigh);
+        StaminaCost = cost.Sum() <= 0 ? EStaminaCost.NotNeeded : ((activeCharacter.Health > cost.Sum()) ? EStaminaCost.Enough : ((cost.Length == 1 || cost[1] == 0 || activeCharacter.Health > cost[0]) ? EStaminaCost.WillDie : EStaminaCost.TooHigh));
 
-        uiManager.DisplayStaminaCost(cost.Sum());
+        uiManager.DisplayStaminaCost(cost.Sum());        
+
+        /*if (StaminaCost == EStaminaCost.NotNeeded) 
+            uiManager.staminaCost.background.gameObject.SetActive(false);
+        else           
+            uiManager.DisplayStaminaCost(cost.Sum());*/
 
     }
     #endregion

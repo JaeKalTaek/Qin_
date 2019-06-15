@@ -460,7 +460,7 @@ public class SC_UI_Manager : MonoBehaviour {
         /*if (!MovingCharacter && (activeCharacter.Hero?.BaseActionDone ?? false))
             SetStaminaCost(GameManager.CommonCharactersVariables.staminaActionCost);*/
 
-        if (GetStaminaCost != EStaminaCost.TooHigh) {
+        if (StaminaCost != EStaminaCost.TooHigh) {
 
             SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
 
@@ -616,17 +616,17 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Stamina system
     public void DisplayStaminaActionCost (bool show) {
 
-        activeCharacter.Hero?.SetStaminaCost(show ? activeCharacter.Hero.ActionCost : -1);
+        activeCharacter.Hero?.SetStaminaCost(show /*&& activeCharacter.Hero.BaseActionDone*/ ? activeCharacter.Hero.ActionCost : 0);
 
     }
 
     public void DisplayStaminaCost (int cost) {
 
-        staminaCost.background.gameObject.SetActive(true);
+        staminaCost.background.gameObject.SetActive(StaminaCost != EStaminaCost.NotNeeded);
 
         staminaCost.text.text = "Cost : " + cost;
 
-        staminaCost.background.color = GetStaminaCost == EStaminaCost.Enough ? new Color(0, .6f, 0) : (GetStaminaCost == EStaminaCost.WillDie ? new Color(.6f, 0, 0) : Color.grey);
+        staminaCost.background.color = StaminaCost == EStaminaCost.Enough ? new Color(0, .6f, 0) : (StaminaCost == EStaminaCost.WillDie ? new Color(.6f, 0, 0) : Color.grey);
 
     }
     #endregion

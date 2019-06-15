@@ -289,12 +289,12 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 Hero.ReadyToRegen = false;
 
-                Hero.MovementPoints = (Hero.MovementPoints <= path.Count - 1) ? Hero.Movement : Hero.MovementPoints - path.Count - 1;
-
-                Hero.MovementCount += Hero.MovementPoints == Hero.Movement ? 1 : 0;
-
-                if (Hero.BaseActionDone)
+                //if (Hero.BaseMovementDone)
                     Hero.Hit(Hero.MovementCost(path.Count - 1));
+
+                Hero.MovementPoints = (Hero.MovementPoints > path.Count - 1) ? Hero.MovementPoints - (path.Count - 1) : Hero.Movement;
+
+                Hero.MovementCount += Hero.MovementPoints == Hero.Movement ? 1 : 0;                
 
             }
 
@@ -369,20 +369,29 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }
 
-    void Update () {
-
-        if(Hero)
-            print(characterName + ", Movement Points : " + Hero.MovementPoints);
-
-    }
-
     public void ResetMovementFunction () {
 
         uiManager.characterActionsPanel.SetActive(false);
 
         tileManager.RemoveAllFilters();
 
-        if (Hero?.BaseActionDone ?? false) {
+        if (Hero?.BaseMovementDone ?? false) {            
+
+            if (Hero.MovementPoints == Hero.Movement) {
+
+                if (Tile != LastPos) {
+
+                    Hero.MovementCount--;
+
+                    Hero.MovementPoints = SC_Tile_Manager.TileDistance(Tile, LastPos);
+
+                }
+
+            } else {
+
+                Hero.MovementPoints += SC_Tile_Manager.TileDistance(Tile, LastPos);
+
+            }
 
             Hero.Health += Hero.MovementCost(SC_Tile_Manager.TileDistance(Tile, LastPos));
 
@@ -447,7 +456,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (activeCharacter.Hero) {
 
-            if (activeCharacter.AttackTarget && activeCharacter.Hero.BaseActionDone)
+            if (activeCharacter.AttackTarget /*&& activeCharacter.Hero.BaseActionDone*/)
                 activeCharacter.Hit(activeCharacter.Hero.ActionCost);
 
             if (activeCharacter.gameObject.activeSelf) {
@@ -460,10 +469,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 activeCharacter.Hero.SetStaminaCost(-1);
 
-                if (!wait || (activeCharacter.LastPos != activeCharacter.Tile))
-                    activeCharacter.Hero.ActionCount++;
-
-                // activeCharacter.Hero.BaseActionDone = true;
+                activeCharacter.Hero.ActionCount += wait ? 0 : 1;
 
             }
 

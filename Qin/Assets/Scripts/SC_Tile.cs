@@ -182,7 +182,7 @@ public class SC_Tile : NetworkBehaviour {
 
                 StartMovement(gameObject);
 
-            } else if (CanAttack && (SC_Hero.GetStaminaCost != SC_Hero.EStaminaCost.TooHigh)) {
+            } else if (CanAttack && (SC_Hero.StaminaCost != SC_Hero.EStaminaCost.TooHigh)) {
 
                 activeCharacter.AttackTarget = this;
 

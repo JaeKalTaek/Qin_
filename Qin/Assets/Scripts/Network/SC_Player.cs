@@ -403,8 +403,8 @@ public class SC_Player : NetworkBehaviour {
 
         activeCharacter.Tile.Construction?.DestroyConstruction(true);
 
-        if (activeCharacter.Hero?.BaseActionDone ?? false)
-            activeCharacter.Hit(activeCharacter.Hero.ActionCost);
+        /*if (activeCharacter.Hero?.BaseActionDone ?? false)*/
+            activeCharacter.Hero?.Hit(activeCharacter.Hero.ActionCost);
 
         localPlayer.GameManager.FinishAction();
 

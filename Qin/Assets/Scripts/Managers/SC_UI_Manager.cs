@@ -448,8 +448,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void PreviewFight (SC_Tile attackingFrom) {
 
-        if (activeCharacter.Hero?.CanAttackWithWeapons(attackingFrom ?? activeCharacter.Tile).Count == 1)
-                SelectWeaponPreviewFight(activeCharacter.Hero.CanAttackWithWeapons(attackingFrom ?? activeCharacter.Tile)[0]);
+        if (activeCharacter.Hero?.CanAttackWithWeapons(attackingFrom).Count == 1)
+                SelectWeaponPreviewFight(activeCharacter.Hero.CanAttackWithWeapons(attackingFrom)[0]);
         else if (!activeCharacter.Hero)
             PreviewFight();
 

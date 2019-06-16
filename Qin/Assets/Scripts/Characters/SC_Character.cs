@@ -461,7 +461,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
             if (activeCharacter.gameObject.activeSelf) {
 
-                activeCharacter.Hero.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
+                if (!wait)
+                    activeCharacter.Hero.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
 
                 SC_Sound_Manager.Instance.SetTempo();
 

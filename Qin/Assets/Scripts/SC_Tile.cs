@@ -250,16 +250,27 @@ public class SC_Tile : NetworkBehaviour {
         CursorOn = true;
 
         if (CanAttack && !MovingCharacter)
-            UIManager.PreviewFight(null);
+            UIManager.PreviewFight(activeCharacter.Tile);
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
 
-        Character?.ShowInfos();
-        Qin?.ShowInfos();            
+        SC_Arrow.CursorMoved(this);
+
+        if (!UIManager.previewFightPanel.activeSelf) { 
+
+            Character?.ShowInfos();
+            Qin?.ShowInfos();
+
+        } else {
+
+            UIManager.HideInfosIfActive(activeCharacter.gameObject);
+
+        }
+
+        if (!Character)
+            activeCharacter?.ShowInfos();
 
         this.ShowInfos();
-
-        SC_Arrow.CursorMoved(this);
 
     }
 
@@ -267,9 +278,9 @@ public class SC_Tile : NetworkBehaviour {
 
         CursorOn = false;
 
-        if (UIManager.previewFightPanel.activeSelf)
-            UIManager.HidePreviewFight();
-        else if (CurrentDisplay == TDisplay.Sacrifice)
+        UIManager.HidePreviewFight();
+
+        if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();
 
         UIManager.HideInfos(CanChangeFilters);

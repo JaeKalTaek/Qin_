@@ -336,7 +336,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             tile.ChangeDisplay(TDisplay.Attack);
 
             if (tile.CursorOn && tile.CanAttack)
-                uiManager.PreviewFight(null);
+                uiManager.PreviewFight(SC_Character.activeCharacter.Tile);
 
         }
 

@@ -310,19 +310,9 @@ public class SC_Hero : SC_Character {
 
     public static EStaminaCost StaminaCost { get; set; }
 
-    // public static EStaminaCost GetStaminaCost { get { return (activeCharacter.Hero?.BaseActionDone ?? false) ? StaminaCost : EStaminaCost.NotNeeded; } } 
-
     public void SetStaminaCost (int cost) {
 
-        //if(cost >= 0)
-            SetStaminaCost(new int[] { cost });
-        /*else {
-
-            StaminaCost = EStaminaCost.NotNeeded;
-
-            uiManager.staminaCost.background.gameObject.SetActive(false);
-
-        }*/
+        SetStaminaCost(new int[] { cost });
 
     }
 
@@ -331,11 +321,6 @@ public class SC_Hero : SC_Character {
         StaminaCost = cost.Sum() <= 0 ? EStaminaCost.NotNeeded : ((activeCharacter.Health > cost.Sum()) ? EStaminaCost.Enough : ((cost.Length == 1 || cost[1] == 0 || activeCharacter.Health > cost[0]) ? EStaminaCost.WillDie : EStaminaCost.TooHigh));
 
         uiManager.DisplayStaminaCost(cost.Sum());        
-
-        /*if (StaminaCost == EStaminaCost.NotNeeded) 
-            uiManager.staminaCost.background.gameObject.SetActive(false);
-        else           
-            uiManager.DisplayStaminaCost(cost.Sum());*/
 
     }
     #endregion

@@ -180,28 +180,31 @@ public class SC_Tile : NetworkBehaviour {
 
             } else if (CurrentDisplay == TDisplay.Movement) {
 
-                StartMovement(gameObject);
+                UIManager.TryDoAction(() => { StartMovement(gameObject); });                
 
             } else if (CanAttack && (SC_Hero.StaminaCost != SC_Hero.EStaminaCost.TooHigh)) {
 
-                activeCharacter.AttackTarget = this;
+                SC_UI_Manager.Instance.TryDoAction(() => {
 
-                if (MovingCharacter) {
+                    activeCharacter.AttackTarget = this;
 
-                    if (UIManager.previewFightPanel.activeSelf)
-                        SC_Player.localPlayer.CmdSetChainAttack();
+                    if (MovingCharacter) {
 
-                    StartMovement((SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? activeCharacter.Tile).gameObject);
+                        if (UIManager.previewFightPanel.activeSelf)
+                            SC_Player.localPlayer.CmdSetChainAttack();
 
-                } else {
+                        StartMovement((SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? activeCharacter.Tile).gameObject);
 
-                    SC_Cursor.SetLock(true);
+                    } else {
 
-                    TileManager.RemoveAllFilters();
+                        SC_Cursor.SetLock(true);
 
-                    activeCharacter.StartAttack();
+                        TileManager.RemoveAllFilters();
 
-                }                
+                        activeCharacter.StartAttack();
+
+                    }
+                });                                
 
             } else if (CurrentDisplay == TDisplay.Sacrifice) {
 

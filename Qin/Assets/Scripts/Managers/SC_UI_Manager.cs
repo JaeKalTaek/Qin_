@@ -9,6 +9,7 @@ using static SC_Character;
 using TMPro;
 using Prototype.NetworkLobby;
 using static SC_Hero;
+using UnityEngine.Events;
 
 public class SC_UI_Manager : MonoBehaviour {
 
@@ -49,6 +50,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public RelationshipDetails[] relationshipsDetails;
     public GameObject weaponChoicePanel, weaponChoice1, weaponChoice2;
     public StaminaCostPanel staminaCost;
+    public WarningStaminaDeathPanel warningStaminaDeathPanel;
 
     // public GameObject usePower;
 
@@ -629,6 +631,42 @@ public class SC_UI_Manager : MonoBehaviour {
         staminaCost.background.color = StaminaCost == EStaminaCost.Enough ? new Color(0, .6f, 0) : (StaminaCost == EStaminaCost.WillDie ? new Color(.6f, 0, 0) : Color.grey);
 
     }
+
+    public void TryDoAction(UnityAction action) {
+
+        if (StaminaCost == EStaminaCost.WillDie) {         
+
+            warningStaminaDeathPanel.yes.onClick.RemoveAllListeners();
+
+            warningStaminaDeathPanel.yes.onClick.AddListener(() => { warningStaminaDeathPanel.panel.SetActive(false); } );
+
+            warningStaminaDeathPanel.yes.onClick.AddListener(action);
+
+            warningStaminaDeathPanel.no.onClick.RemoveAllListeners();
+
+            bool b = !SC_Cursor.Instance.Locked;
+
+            warningStaminaDeathPanel.no.onClick.AddListener(() => HideStaminaWarningPanel(b));
+
+            warningStaminaDeathPanel.panel.SetActive(true);
+
+            SC_Cursor.SetLock(true);
+
+        } else {
+
+            action();
+
+        }
+
+    }
+
+    public void HideStaminaWarningPanel(bool unlock) {
+
+        SC_Cursor.SetLock(!unlock);
+
+        warningStaminaDeathPanel.panel.SetActive(false);
+    }
+
     #endregion
     #endregion
 
@@ -1023,15 +1061,19 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void Attack() {
 
-        DisplayStaminaActionCost(false);
+        TryDoAction(() => {
 
-        SC_Cursor.SetLock(false);
+            DisplayStaminaActionCost(false);
 
-        characterActionsPanel.SetActive(false);
+            SC_Cursor.SetLock(false);
 
-        backAction = CancelAction;
+            characterActionsPanel.SetActive(false);
 
-        TileManager.CheckAttack();
+            backAction = CancelAction;
+
+            TileManager.CheckAttack();
+
+        });
 
     }
 

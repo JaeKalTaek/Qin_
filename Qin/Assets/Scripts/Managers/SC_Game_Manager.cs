@@ -5,6 +5,7 @@ using static SC_EditorTile;
 using static SC_Global;
 using System.Reflection;
 using System;
+using static SC_Hero;
 
 public class SC_Game_Manager : NetworkBehaviour {
 
@@ -341,11 +342,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }*/
 
-    public void DestroyProductionBuilding () {
+    public void DestroyProductionBuilding () {           
+
+        SC_UI_Manager.Instance.TryDoAction(() => { Player.CmdDestroyProductionBuilding(); });
 
         uiManager.DisplayStaminaActionCost(false);
-
-        Player.CmdDestroyProductionBuilding();
 
     }
 
@@ -514,7 +515,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 		}
 
-	}*/       
+	}*/           
 
     public void CreateSoldier(Vector3 pos, string soldierName) {
 

@@ -196,6 +196,15 @@ public class SC_Global {
 
     }
 
+    [Serializable]
+    public struct WarningStaminaDeathPanel {
+
+        public GameObject panel;
+
+        public Button yes, no;        
+
+    }
+
     public static bool CanCreateConstruct(string c) {
 
         return (SC_Qin.GetConstruCost(c) < SC_Qin.Energy) && (SC_Tile_Manager.Instance.GetConstructableTiles(c).Count > 0);

@@ -297,7 +297,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
             SC_Construction attackedConstru = SC_Cursor.Tile.Construction;
 
-            bool killed = attackedConstru ? (attackedConstru.Health - SC_Fight_Manager.Instance.CalcAttack(SC_Character.activeCharacter)) <= 0 : (attacked.Health - SC_Fight_Manager.Instance.CalcDamage(SC_Character.activeCharacter, attacked)) <= 0;
+            bool killed = !attackedConstru && (attacked.Health - SC_Fight_Manager.Instance.CalcDamage(SC_Character.activeCharacter, attacked)) <= 0;
 
             return killed || !attacked.GetRange().In(TileDistance(SC_Cursor.Tile, tile));
 

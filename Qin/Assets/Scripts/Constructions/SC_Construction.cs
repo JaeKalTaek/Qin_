@@ -85,8 +85,8 @@ public class SC_Construction : NetworkBehaviour {
         if (playSound)
             SC_Sound_Manager.Instance.OnConstructionDestroyed();
 
-        if (GreatWall)
-            Tile.Soldier?.DestroyCharacter();
+        /*if (GreatWall)
+            Tile.Soldier?.DestroyCharacter();*/
 
         Tile.Construction = null;
 
@@ -95,11 +95,6 @@ public class SC_Construction : NetworkBehaviour {
         Tile.Cost = Tile.baseCost;
 
         Destroy(gameObject);
-
-        //SC_Player.localPlayer.CmdDestroyGameObject(gameObject);
-
-		/*if(isServer)
-			Network.Destroy (gameObject);*/
 
 	}
 

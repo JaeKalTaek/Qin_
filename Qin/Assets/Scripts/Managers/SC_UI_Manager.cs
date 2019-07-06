@@ -459,9 +459,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void PreviewFight () {
 
-        /*if (!MovingCharacter && (activeCharacter.Hero?.BaseActionDone ?? false))
-            SetStaminaCost(GameManager.CommonCharactersVariables.staminaActionCost);*/
-
         if (StaminaCost != EStaminaCost.TooHigh) {
 
             SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
@@ -491,11 +488,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
             } else {
 
-                SC_Construction c = SC_Cursor.Tile.AttackableContru;
+                attackedPreviewFight.name.text = attackedConstru.Name;
 
-                attackedPreviewFight.name.text = c.Name;
-
-                attackedPreviewFight.health.Set(Mathf.Max(0, c.Health - fightManager.CalcAttack(activeCharacter)), c.Health, c.maxHealth);
+                attackedPreviewFight.health.Set(Mathf.Max(0, attackedConstru.Health - 1), attackedConstru.Health, attackedConstru.maxHealth);
 
                 NonCharacterAttackPreview();
 
@@ -530,11 +525,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (c) {
 
-            int healthLeft = c.Health - (cantCounter ? 0 : fightManager.CalcAttack(attacker));
-
-            attackedKilled = healthLeft <= 0;
-
-            attackedPF.health.Set(Mathf.Max(0, healthLeft), c.Health, c.maxHealth);
+            attackedPF.health.Set(Mathf.Max(0, c.Health - (cantCounter ? 0 : 1)), c.Health, c.maxHealth);
 
             attackedPF.dodge.Set(attacked.DodgeAmount, attacked.DodgeAmount, dT);
 

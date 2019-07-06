@@ -129,7 +129,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru?.Health ?? SC_Qin.Energy) - CalcAttack(c));
+            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru ? attackedConstru.Health - 1 : SC_Qin.Energy - CalcAttack(c)));
 
             #region Text Feedback
             string feedbackText = "";
@@ -161,8 +161,6 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(HealthValue, attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
-                // print(attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
-
                 (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = ((int)(HealthValue + .5f)).ToString();               
 
                 yield return new WaitForEndOfFrame();
@@ -179,23 +177,15 @@ public class SC_Fight_Manager : MonoBehaviour {
                 SC_Player.localPlayer.CmdApplyDamage(counter);
 
             #region Counter attack
-            if (/*activeCharacter &&*/ attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
+            if (attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
 
                 StartCoroutine(FightAnim(attacked, travel, true));
 
             } else {
 
-                // SC_Game_Manager.Instance.FinishAction();
-
                 uiManager.fightPanel.panel.SetActive(false);
 
                 SC_Player.localPlayer.CmdSynchroFinishAction();
-
-                /*if (activeCharacter.Hero?.BaseActionDone ?? false)  
-                    activeCharacter.Hit(SC_Game_Manager.Instance.CommonCharactersVariables.staminaActionCost);*/
-
-                /*if (SC_Player.localPlayer.isServer)
-                    SC_Player.localPlayer.CmdFinishAction();   */
 
             }
             #endregion
@@ -207,16 +197,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public void CharacterAttack(SC_Character attacker, SC_Character attacked) {
 
-        bool killed = false;
-
-        if (attacked.Tile.AttackableContru)
-            killed = HitConstruction(attacker, attacked.Tile.AttackableContru);
-        else {
-
-            killed = attacked.Hit(CalcDamage(attacker, attacked));            
-            attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
-
-        }
+        bool killed = attacked.Hit(CalcDamage(attacker, attacked));      
+        
+        attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
 
         if (attacker.Hero) {
 
@@ -235,20 +218,14 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     }
 
-    public bool HitConstruction(SC_Character attacker, SC_Construction construction) {
+    public void HitConstruction(SC_Character attacker, SC_Construction construction) {
 
-        construction.Health -= CalcAttack(attacker);
+        construction.Health -= 1; // CalcAttack(attacker);
 
         construction.Lifebar.UpdateGraph(construction.Health, construction.maxHealth);
 
-        if (construction.Health <= 0) {
-
+        if (construction.Health <= 0)
             construction.DestroyConstruction(true);
-            return true;
-
-        } else
-            return false;
-            // uiManager.TryRefreshInfos(construction.gameObject, construction.GetType());          
     
     }
 
@@ -381,11 +358,11 @@ public class SC_Fight_Manager : MonoBehaviour {
         SC_Character attacked = counter ? activeCharacter : activeCharacter.AttackTarget.Character;        
 
         SC_Construction attackedConstru = counter ? activeCharacter.Tile.AttackableContru : activeCharacter.AttackTarget.AttackableContru;
-
-       if (attacked)
-            CharacterAttack(attacker, attacked);
-        else if (attackedConstru)
+       
+        if (attackedConstru)
             HitConstruction(attacker, attackedConstru);
+        else if (attacked)
+            CharacterAttack(attacker, attacked);
         else
             SC_Qin.ChangeEnergy(-CalcAttack(attacker));
 

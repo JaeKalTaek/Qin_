@@ -396,35 +396,39 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         Player.CmdSetConstru(c);
 
-        Player.CmdConstructAt(SC_Character.activeCharacter.transform.position.x.I(), SC_Character.activeCharacter.transform.position.y.I());
+        Player.CmdConstructAt(SC_Character.activeCharacter.transform.position.x.I(), SC_Character.activeCharacter.transform.position.y.I(), true);
 
     }
 
-    public void ConstructAt (int x, int y) {
+    public void ConstructAt (int x, int y, bool soldier) {
 
         SC_Tile tile = tileManager.GetTileAt(x, y);
 
-        bool qinConstru = !tile.Soldier || QinTurnStarting;
+        // bool qinConstru = !tile.Soldier || QinTurnStarting;
 
-        if (tile.Soldier) {
+        /*if (tile.Soldier) {
 
             if (!tile.Ruin) {
 
-                uiManager.HideInfosIfActive(tile.Soldier.gameObject);
+                if (!QinTurnStarting) {
 
-                if (QinTurnStarting) {
+                    uiManager.HideInfosIfActive(tile.Soldier.gameObject);
 
-                    SC_Construction.lastConstruSoldier = tile.Soldier;
+                    if (QinTurnStarting) {
 
-                    tile.Soldier.gameObject.SetActive(false);
+                        SC_Construction.lastConstruSoldier = tile.Soldier;
 
-                    SC_Qin.ChangeEnergy(tile.Soldier.sacrificeValue);
+                        tile.Soldier.gameObject.SetActive(false);
 
-                    tile.Character = null;
+                        SC_Qin.ChangeEnergy(tile.Soldier.sacrificeValue);
 
-                } else {
+                        tile.Character = null;
+
+                    } else {
 
                     tile.Soldier.DestroyCharacter();
+
+                     }
 
                 }
 
@@ -433,6 +437,15 @@ public class SC_Game_Manager : NetworkBehaviour {
                 SC_Character.FinishCharacterAction();
 
             }
+
+        }*/
+
+        if (soldier) {
+
+            if (tile.Ruin)
+                SC_Character.FinishCharacterAction();
+            else
+                tile.Soldier.DestroyCharacter();
 
         }
 
@@ -450,10 +463,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             NetworkServer.Spawn(go);
 
-            if(qinConstru)
+            if(!soldier)
                 Player.CmdSetLastConstru(go);
 
-            Player.CmdFinishConstruction(qinConstru);
+            Player.CmdFinishConstruction(!soldier);
 
         }
 

@@ -43,7 +43,7 @@ public class SC_Construction : NetworkBehaviour {
 
     public static SC_Construction lastConstru;
 
-    public static SC_Soldier lastConstruSoldier;
+    // public static SC_Soldier lastConstruSoldier;
 
     protected void Awake () {
 
@@ -107,8 +107,8 @@ public class SC_Construction : NetworkBehaviour {
         lastConstru.gameObject.SetActive(false);
 
         lastConstru.DestroyConstruction(false);
-
-        if (lastConstruSoldier) {
+        
+        /*if (lastConstruSoldier) {
 
             SC_Qin.ChangeEnergy(-lastConstruSoldier.sacrificeValue);
 
@@ -116,7 +116,7 @@ public class SC_Construction : NetworkBehaviour {
 
             lastConstruSoldier.Tile.Character = lastConstruSoldier;
 
-        }                
+        }      */
 
         if (SC_Player.localPlayer.Qin) {
 
@@ -145,7 +145,7 @@ public class SC_Construction : NetworkBehaviour {
 
         lastConstru = null;
 
-        lastConstruSoldier = null;        
+        // lastConstruSoldier = null;        
 
     }
 

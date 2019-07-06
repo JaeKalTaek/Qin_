@@ -286,16 +286,16 @@ public class SC_Player : NetworkBehaviour {
     }
 
     [Command]
-	public void CmdConstructAt(int x, int y) {
+	public void CmdConstructAt(int x, int y, bool soldier) {
 
-        RpcConstructAt(x, y);
+        RpcConstructAt(x, y, soldier);
 
     }
 
     [ClientRpc]
-    public void RpcConstructAt(int x, int y) {
+    public void RpcConstructAt(int x, int y, bool soldier) {
 
-        localPlayer.GameManager.ConstructAt(x, y);
+        localPlayer.GameManager.ConstructAt(x, y, soldier);
 
     }
 

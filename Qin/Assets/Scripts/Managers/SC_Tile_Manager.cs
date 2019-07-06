@@ -523,7 +523,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
                 if (construction.GreatWall) {
 
                     foreach (SC_Tile neighbor in GetTilesAtDistance<SC_Tile>(tiles, construction.transform.position, 1))
-                        if (neighbor.Constructable(false) && !constructableTiles.Contains(neighbor))
+                        if (neighbor.Constructable/*(false)*/ && !constructableTiles.Contains(neighbor))
                             constructableTiles.Add(neighbor);
 
                 }
@@ -535,7 +535,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             for (int i = 0; i < regions.Length; i++)
                 if (SC_Castle.castles[i])
                     foreach (SC_Tile tile in regions[i])
-                        if (tile.Constructable(gameManager.QinTurnStarting && tile.Soldier))
+                        if (tile.Constructable/*(gameManager.QinTurnStarting && tile.Soldier)*/)
                             constructableTiles.Add(tile);
 
         }

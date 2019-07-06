@@ -45,10 +45,12 @@ public class SC_Tile : NetworkBehaviour {
 
     }
 
-    public bool Constructable (bool ignoreChara) {
+    public bool Constructable {
+        get /*(bool ignoreChara)*/ {
 
-        return (!Character || ignoreChara) && !Construction && RegionValid;
+            return /*(!Character || ignoreChara) &&*/ !Construction && RegionValid;
 
+        }
     }
 
     bool RegionValid { get { return (Region != -1) && SC_Castle.castles[Region]; } }
@@ -176,7 +178,7 @@ public class SC_Tile : NetworkBehaviour {
 
             if (CurrentDisplay == TDisplay.Construct) {
 
-                SC_Player.localPlayer.CmdConstructAt(transform.position.x.I(), transform.position.y.I());
+                SC_Player.localPlayer.CmdConstructAt(transform.position.x.I(), transform.position.y.I(), false);
 
             } else if (CurrentDisplay == TDisplay.Movement) {
 

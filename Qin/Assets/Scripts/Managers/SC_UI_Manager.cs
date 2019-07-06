@@ -476,7 +476,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 attackedPreviewFight.name.text = "Qin";
 
-                attackedPreviewFight.health.Set(SC_Qin.Energy - fightManager.CalcAttack(activeCharacter), SC_Qin.Energy, SC_Qin.Energy);
+                attackedPreviewFight.health.Set(0, SC_Qin.Energy, SC_Qin.Energy);
 
                 NonCharacterAttackPreview();
 

@@ -129,7 +129,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru ? CalcDamage(c, attackedConstru) : SC_Qin.Energy - CalcAttack(c)));
+            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru ? CalcDamage(c, attackedConstru) : 0));
 
             #region Text Feedback
             string feedbackText = "";
@@ -370,7 +370,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         else if (attacked)
             CharacterAttack(attacker, attacked);
         else
-            SC_Qin.ChangeEnergy(-CalcAttack(attacker));
+            SC_Qin.ChangeEnergy(-SC_Qin.Energy);
 
         attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
 

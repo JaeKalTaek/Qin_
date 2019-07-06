@@ -490,7 +490,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 attackedPreviewFight.name.text = attackedConstru.Name;
 
-                attackedPreviewFight.health.Set(Mathf.Max(0, attackedConstru.Health - 1), attackedConstru.Health, attackedConstru.maxHealth);
+                attackedPreviewFight.health.Set(fightManager.CalcDamage(activeCharacter, attackedConstru), attackedConstru.Health, attackedConstru.maxHealth);
 
                 NonCharacterAttackPreview();
 
@@ -525,7 +525,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (c) {
 
-            attackedPF.health.Set(Mathf.Max(0, c.Health - (cantCounter ? 0 : 1)), c.Health, c.maxHealth);
+            attackedPF.health.Set(cantCounter ? c.Health : fightManager.CalcDamage(attacker, c), c.Health, c.maxHealth);
 
             attackedPF.dodge.Set(attacked.DodgeAmount, attacked.DodgeAmount, dT);
 

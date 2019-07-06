@@ -129,7 +129,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru ? attackedConstru.Health - 1 : SC_Qin.Energy - CalcAttack(c)));
+            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru ? CalcDamage(c, attackedConstru) : SC_Qin.Energy - CalcAttack(c)));
 
             #region Text Feedback
             string feedbackText = "";
@@ -220,7 +220,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public void HitConstruction(SC_Character attacker, SC_Construction construction) {
 
-        construction.Health -= 1; // CalcAttack(attacker);
+        construction.Health = CalcDamage(attacker, construction); // CalcAttack(attacker);
 
         construction.Lifebar.UpdateGraph(construction.Health, construction.maxHealth);
 
@@ -252,6 +252,12 @@ public class SC_Fight_Manager : MonoBehaviour {
 
 
         return Mathf.Max(0, damages);
+
+    }
+
+    public int CalcDamage (SC_Character attacker, SC_Construction constructionAttacked) {
+
+        return Mathf.Max(0, constructionAttacked.Health - (constructionAttacked.GreatWall ? 1 : CalcAttack(attacker)));
 
     }
 

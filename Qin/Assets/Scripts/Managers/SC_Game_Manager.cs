@@ -276,6 +276,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             if (character.Hero) {
 
+                character.Hero.MovementPoints = character.Hero.Movement;
+
                 character.Hero.MovementCount = -1;
 
                 character.Hero.ActionCount = -1;

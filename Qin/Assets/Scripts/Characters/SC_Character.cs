@@ -375,17 +375,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
         tileManager.RemoveAllFilters();
 
-        if (Hero?.BaseMovementDone ?? false) {            
+        if (Hero && Tile != LastPos) {            
 
-            if (Hero.MovementPoints == Hero.Movement) {
+            if (Hero.BaseMovementDone && Hero.MovementPoints == Hero.Movement) {
 
-                if (Tile != LastPos) {
+                Hero.MovementCount--;
 
-                    Hero.MovementCount--;
-
-                    Hero.MovementPoints = SC_Tile_Manager.TileDistance(Tile, LastPos);
-
-                }
+                Hero.MovementPoints = SC_Tile_Manager.TileDistance(Tile, LastPos);
 
             } else {
 
@@ -393,9 +389,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
             }
 
-            Hero.Health += Hero.MovementCost(SC_Tile_Manager.TileDistance(Tile, LastPos));
+            if (Hero.BaseMovementDone) {
 
-            Hero.UpdateHealth();
+                Hero.Health += Hero.MovementCost(SC_Tile_Manager.TileDistance(Tile, LastPos));
+
+                Hero.UpdateHealth();
+
+            }
 
         }
 

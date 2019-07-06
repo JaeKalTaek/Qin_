@@ -495,9 +495,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 Player.CmdChangeQinEnergy(-SC_Qin.GetConstruCost(CurrentConstru));
 
+                FinishAction();
+
             }
 
-        }
+        }        
 
         if (QinTurnStarting) {
 

@@ -48,7 +48,7 @@ public class SC_Tile : NetworkBehaviour {
     public bool Constructable {
         get /*(bool ignoreChara)*/ {
 
-            return /*(!Character || ignoreChara) &&*/ !Construction && RegionValid;
+            return /*(!Character || ignoreChara) &&*/ !Hero && !Construction && RegionValid;
 
         }
     }

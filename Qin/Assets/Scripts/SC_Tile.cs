@@ -272,7 +272,7 @@ public class SC_Tile : NetworkBehaviour {
 
         }
 
-        if (!Character)
+        if (!Character && SC_Player.localPlayer.Turn)
             activeCharacter?.ShowInfos();
 
         this.ShowInfos();

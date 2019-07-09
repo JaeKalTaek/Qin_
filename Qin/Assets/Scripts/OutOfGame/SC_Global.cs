@@ -94,6 +94,8 @@ public class SC_Global {
 
     }
 
+    public enum ColorMode { Default, Health, Param }
+
     [Serializable]
     public class CharacterTooltip {
 
@@ -188,20 +190,20 @@ public class SC_Global {
     }
 
     [Serializable]
-    public struct StaminaCostPanel {
-
-        public Image background;
-
-        public Text text;
-
-    }
-
-    [Serializable]
     public struct WarningStaminaDeathPanel {
 
         public GameObject panel;
 
         public Button yes, no;        
+
+    }
+
+    [Serializable]
+    public struct HeroTooltip {
+
+        public GameObject panel;
+
+        public Text movementCost, movementPoints, actionCost;
 
     }
 

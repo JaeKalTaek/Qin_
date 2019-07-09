@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using static SC_Global;
 
 public static class SC_ExtensionMethods {
 
@@ -35,13 +36,14 @@ public static class SC_ExtensionMethods {
 
     }
 
-    public static void Set (this Slider s, float a, float b, bool c = true) {
+    public static void Set (this Slider s, float a, float b, ColorMode cm = ColorMode.Health, Color param = new Color()) {
 
         s.value = a / b;
 
-        if(c)
+        if (cm == ColorMode.Health)
             s.image.color = Color.Lerp(SC_UI_Manager.Instance.minHealthColor, SC_UI_Manager.Instance.maxHealthColor, s.value);
-
+        else if (cm == ColorMode.Param)
+            s.image.color = param;
     }
 
 }

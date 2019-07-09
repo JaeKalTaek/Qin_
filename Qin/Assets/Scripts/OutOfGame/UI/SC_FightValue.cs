@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using static SC_Global;
 
 public class SC_FightValue : MonoBehaviour {
 
@@ -9,13 +10,13 @@ public class SC_FightValue : MonoBehaviour {
 
     public Text Values { get { return transform.GetChild(3).GetComponent<Text>(); } }
 
-    public void Set (int a, int b, int c) {
+    public void Set (int a, int b, int c, bool trigger = false) {
 
-        Values.text = (a == b) ? a.ToString() : a + " " + (((name == "Crit") || (name == "Dodge")) ? "=>" : "<=") + " " + b;
+        Values.text = trigger ? name + " ! " : ((a == b) ? a.ToString() : a + " " + (((name == "Crit") || (name == "Dodge")) ? "=>" : "<=") + " " + b);
 
-        NewGauge.Set(a, c, false);
+        NewGauge.Set(a, c, ColorMode.Default);
 
-        PrevGauge.Set(b, c, false);
+        PrevGauge.Set(b, c, ColorMode.Default);
 
     }
 

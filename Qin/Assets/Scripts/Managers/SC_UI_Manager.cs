@@ -49,9 +49,9 @@ public class SC_UI_Manager : MonoBehaviour {
     [Header("Heroes")]
     public RelationshipDetails[] relationshipsDetails;
     public GameObject weaponChoicePanel, weaponChoice1, weaponChoice2;
-    public StaminaCostPanel staminaCost;
+    public HeroTooltip heroTooltip;
+    public SC_UI_Stamina[] staminaUsage;
     public WarningStaminaDeathPanel warningStaminaDeathPanel;
-
     // public GameObject usePower;
 
     [Header("Qin")]
@@ -269,11 +269,21 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.health.GetComponentInChildren<Text>().text = character.Health + " / " + character.MaxHealth;
 
-        characterTooltip.crit.Set(character.CriticalAmount, GameManager.CommonCharactersVariables.critTrigger, false);
+        if(character.Hero) {
+
+            heroTooltip.movementCost.text = character.Hero.MovementCost(1).ToString();
+
+            heroTooltip.movementPoints.text = character.Hero.MovementPoints + "/" + character.Movement;
+
+        }
+
+        heroTooltip.panel.SetActive(character.Hero);
+
+        characterTooltip.crit.Set(character.CriticalAmount, GameManager.CommonCharactersVariables.critTrigger, ColorMode.Default);
 
         characterTooltip.crit.GetComponentInChildren<Text>().text = character.CriticalAmount + " / " + GameManager.CommonCharactersVariables.critTrigger;
 
-        characterTooltip.dodge.Set(character.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger, false);
+        characterTooltip.dodge.Set(character.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger, ColorMode.Default);
 
         characterTooltip.dodge.GetComponentInChildren<Text>().text = character.DodgeAmount + " / " + GameManager.CommonCharactersVariables.dodgeTrigger;
 
@@ -427,6 +437,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterTooltip.health.GetComponentInChildren<Text>().text = SC_Qin.Energy + " / " + SC_Qin.Qin.energyToWin;
 
+        heroTooltip.panel.SetActive(false);
+
         characterTooltip.critContainer.SetActive(false);
 
         characterTooltip.dodgeContainer.SetActive(false);
@@ -451,7 +463,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public void PreviewFight (SC_Tile attackingFrom) {
 
         if (activeCharacter.Hero?.CanAttackWithWeapons(attackingFrom).Count == 1)
-                SelectWeaponPreviewFight(activeCharacter.Hero.CanAttackWithWeapons(attackingFrom)[0]);
+            SelectWeaponPreviewFight(activeCharacter.Hero.CanAttackWithWeapons(attackingFrom)[0]);
         else if (!activeCharacter.Hero)
             PreviewFight();
 
@@ -535,13 +547,13 @@ public class SC_UI_Manager : MonoBehaviour {
             
             attackedKilled = healthLeft <= 0;
 
-            attackedPF.health.Set(Mathf.Max(0, healthLeft), attacked.Health, attacked.MaxHealth);            
+            attackedPF.health.Set(Mathf.Max(0, healthLeft), attacked.Health, attacked.MaxHealth);
 
-            attackedPF.dodge.Set(attacked.DodgeAmount, Mathf.Min(attacked.DodgeAmount + (cantCounter ? 0 : attacked.Reflexes), dT), dT);
+            attackedPF.dodge.Set(attacked.DodgeAmount, Mathf.Min(attacked.DodgeAmount + (cantCounter ? 0 : attacked.Reflexes), dT), dT, attacked.DodgeAmount >= dT);
           
         }
 
-        attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : attacked.Technique), cT), cT);
+        attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : attacked.Technique), cT), cT, attacked.CriticalAmount >= cT);
 
         return attackedKilled;
 
@@ -609,17 +621,16 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Stamina system
     public void DisplayStaminaActionCost (bool show) {
 
-        activeCharacter.Hero?.SetStaminaCost(show /*&& activeCharacter.Hero.BaseActionDone*/ ? activeCharacter.Hero.ActionCost : 0);
+        activeCharacter.Hero?.SetStaminaCost(show ? activeCharacter.Hero.ActionCost : 0);        
 
     }
 
     public void DisplayStaminaCost (int cost) {
 
-        staminaCost.background.gameObject.SetActive(StaminaCost != EStaminaCost.NotNeeded);
+        print(StaminaCost);
 
-        staminaCost.text.text = "Cost : " + cost;
-
-        staminaCost.background.color = StaminaCost == EStaminaCost.Enough ? new Color(0, .6f, 0) : (StaminaCost == EStaminaCost.WillDie ? new Color(.6f, 0, 0) : Color.grey);
+        foreach (SC_UI_Stamina s in staminaUsage)
+            s.SetStaminaCost(cost);
 
     }
 

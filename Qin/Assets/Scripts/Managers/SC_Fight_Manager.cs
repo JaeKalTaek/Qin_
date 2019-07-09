@@ -129,16 +129,16 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             float baseValue = attackedConstru?.Health ?? attacked?.Health ?? SC_Qin.Energy;
 
-            float endValue = Mathf.Max(0, (attacked && !attackedConstru) ? attacked.Health - CalcDamage(c, attacked) : (attackedConstru ? CalcDamage(c, attackedConstru) : 0));
+            float endValue = Mathf.Max(0, attackedConstru ? CalcDamage(c, attackedConstru) : (attacked ? attacked.Health - CalcDamage(c, attacked) : 0));
 
             #region Text Feedback
             string feedbackText = "";
 
-            if (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger)
+            if (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger && !attackedConstru)
                 feedbackText += "Crit!";
 
             if (baseValue == endValue)
-                feedbackText += ((feedbackText != "" ? "\n" : "") + "No Damage!");
+                feedbackText += ((feedbackText != "" ? "\n" : "") + (attacked && attacked.DodgeAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.dodgeTrigger ? "Dodged!" :  "No Damage!"));
 
             if(feedbackText != "") {
 
@@ -372,7 +372,8 @@ public class SC_Fight_Manager : MonoBehaviour {
         else
             SC_Qin.ChangeEnergy(-SC_Qin.Energy);
 
-        attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
+        if(!attackedConstru)
+            attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
 
     }
 

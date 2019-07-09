@@ -257,9 +257,7 @@ public class SC_Tile : NetworkBehaviour {
         if (CanAttack && !MovingCharacter)
             UIManager.PreviewFight(activeCharacter.Tile);
         else if (CurrentDisplay == TDisplay.Sacrifice)
-            Soldier.ToggleDisplaySacrificeValue();
-
-        SC_Arrow.CursorMoved(this);
+            Soldier.ToggleDisplaySacrificeValue();        
 
         if (!UIManager.previewFightPanel.activeSelf) { 
 
@@ -274,6 +272,8 @@ public class SC_Tile : NetworkBehaviour {
 
         if (!Character && SC_Player.localPlayer.Turn)
             activeCharacter?.ShowInfos();
+
+        SC_Arrow.CursorMoved(this);
 
         this.ShowInfos();
 

@@ -225,9 +225,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         Turn++;
 
-        SC_Cursor.SetLock(false);
-
-        // tileManager.RemoveAllFilters();        
+        SC_Cursor.SetLock(true);
 
         if(SC_Character.activeCharacter) SC_Character.activeCharacter.Moving = false;
 
@@ -242,7 +240,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             if(SC_DrainingStele.drainingSteles != null)
                 foreach (SC_DrainingStele p in SC_DrainingStele.drainingSteles)
-                 p.Drain();
+                    p.Drain();
 
             foreach(SC_Demon d in SC_Demon.demons)
                 if(d && d.Alive != -1)
@@ -252,7 +250,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             QinTurnStarting = true;
 
-            if (Player.Qin) {
+            /*if (Player.Qin) {
 
                 tileManager.RemoveAllFilters();
 
@@ -260,7 +258,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 tileManager.DisplayConstructableTiles(CurrentConstru);
 
-            }
+            }*/
 
 		}
 
@@ -309,10 +307,25 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         }
 
-        // if (!Player.Qin || (Turn % 3 != 2))
-            uiManager.NextTurn();
+        uiManager.NextTurn();
 
-        // uiManager.turnIndicator.text = QinTurn ? "Qin's Turn" : (Turn % 3 == 1 ? "1st" : "2nd") + " Coalition's Turn";
+    }
+
+    public void StartNextTurn() {
+
+        uiManager.SwapTurnIndicators(true);
+
+        SC_Cursor.SetLock(false);
+
+        if (Player.Qin && Player.Turn) {
+
+            // tileManager.RemoveAllFilters();
+
+            Player.Busy = true;
+
+            tileManager.DisplayConstructableTiles(CurrentConstru);
+
+        }
 
     }
     #endregion

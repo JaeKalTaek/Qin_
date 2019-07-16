@@ -10,6 +10,7 @@ using TMPro;
 using Prototype.NetworkLobby;
 using static SC_Hero;
 using UnityEngine.Events;
+using DG.Tweening;
 
 public class SC_UI_Manager : MonoBehaviour {
 
@@ -29,6 +30,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public Toggle healthBarsToggle;
     public TileTooltip tileTooltip;
     public Slider musicVolume;
+    public NextTurnUI nextTurnUI;
 
     [Header("Fight UI")]
     public GameObject previewFightPanel;
@@ -207,9 +209,27 @@ public class SC_UI_Manager : MonoBehaviour {
 
         backAction = DoNothing;
 
+        SwapTurnIndicators(false);
+
         turnIndicator.text = (GameManager.QinTurn ? "Qin" : "Coalition") + "'s Turn";
 
-        //usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);        
+        // usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);        
+
+        nextTurnUI.text.text = turnIndicator.text;
+
+        DOTween.Sequence().Append(DOTween.To(() => nextTurnUI.panel.color, c => nextTurnUI.panel.color = c, Color.black, 1f))
+            .Append(DOTween.To(() => nextTurnUI.panel.color, c => nextTurnUI.panel.color = c, new Color(0, 0, 0, 0), 1f));
+
+        DOTween.Sequence().Append(DOTween.To(() => nextTurnUI.text.color, c => nextTurnUI.text.color = c, Color.white, 1f))
+            .Append(DOTween.To(() => nextTurnUI.text.color, c => nextTurnUI.text.color = c, new Color(1, 1, 1, 0), 1f).OnComplete(GameManager.StartNextTurn));
+
+    }   
+     
+    public void SwapTurnIndicators(bool b) {
+
+        turnIndicator.transform.parent.gameObject.SetActive(b);
+
+        nextTurnUI.panel.gameObject.SetActive(!b);
 
     }
     #endregion

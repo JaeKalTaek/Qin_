@@ -115,19 +115,20 @@ public class SC_Camera : MonoBehaviour {
     [Tooltip("Stragth of a camera shake")]
     public float shakeMagnitude;
 
-    IEnumerator Screenshake () 
-    {
+    IEnumerator Screenshake () {
+
         Vector3 initialPosition = transform.localPosition;
 
         float shakeTimer = shakeDuration;
 
-        while (shakeTimer > 0) 
-        { 
-                transform.localPosition = initialPosition + Random.insideUnitSphere * shakeMagnitude;
+        while (shakeTimer > 0) { 
 
-                shakeTimer -= Time.deltaTime;
+            transform.localPosition = initialPosition + Random.insideUnitSphere * shakeMagnitude;
 
-                yield return new WaitForEndOfFrame();
+            shakeTimer -= Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+
         }
 
         transform.localPosition = initialPosition;

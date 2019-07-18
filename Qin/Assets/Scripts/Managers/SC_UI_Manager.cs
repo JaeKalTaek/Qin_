@@ -425,7 +425,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         tileTooltip.name.text = construction.Name;
 
-        if (construction.Health > 0) {
+        if (construction.GreatWall) {
+
+
+
+        } else if (construction.Health > 0) {
 
             tileTooltip.health.Set(construction.Health, construction.maxHealth);
             tileTooltip.health.gameObject.SetActive(true);
@@ -433,8 +437,6 @@ public class SC_UI_Manager : MonoBehaviour {
         }
 
         if (SC_Tile.CanChangeFilters && construction.DrainingStele) {
-
-            TileManager.DisplayedDrainingStele = construction.DrainingStele;
 
             foreach (SC_Tile tile in TileManager.GetRange(construction.transform.position, construction.DrainingStele.range))
                 tile.SetFilter(TDisplay.Attack);
@@ -978,7 +980,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
+    public SC_ShieldBar[] shieldBars;
+
     void ActivatePlayerMenu() {
+
+        foreach (SC_ShieldBar s in shieldBars)
+            print(s.RecT.rect.width);
 
         if (localPlayer.Qin) {
 

@@ -16,7 +16,11 @@ public class SC_FightValue : MonoBehaviour {
 
         NewGauge.Set(a, c, ColorMode.Default);
 
+        NewGauge.gameObject.SetActive(true);
+
         PrevGauge.Set(b, c, ColorMode.Default);
+
+        PrevGauge.gameObject.SetActive(true);
 
     }
 

@@ -405,6 +405,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             tileTooltip.name.text = t.infos.type;
             tileTooltip.health.gameObject.SetActive(false);
+            tileTooltip.shields.gameObject.SetActive(false);
 
         }
 
@@ -427,7 +428,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (construction.GreatWall) {
 
-
+            tileTooltip.shields.Set(construction.Health);
 
         } else if (construction.Health > 0) {
 
@@ -495,7 +496,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (StaminaCost != EStaminaCost.TooHigh) {
 
-            SC_Construction attackerConstru = activeCharacter.Tile.AttackableContru;
+            SC_Construction attackerConstru =  activeCharacter.CombatTIle.AttackableContru;
 
             attackerPreviewFight.name.text = activeCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
 
@@ -512,6 +513,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 attackedPreviewFight.health.Set(0, SC_Qin.Energy, SC_Qin.Energy);
 
+                attackedPreviewFight.shields.Set(0);
+
                 NonCharacterAttackPreview();
 
             } else if (attacked) {
@@ -526,6 +529,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 attackedPreviewFight.health.Set(fightManager.CalcDamage(activeCharacter, attackedConstru), attackedConstru.Health, attackedConstru.maxHealth);
 
+                attackedPreviewFight.health.NewGauge.gameObject.SetActive(!attackedConstru.GreatWall);
+                attackedPreviewFight.health.PrevGauge.gameObject.SetActive(!attackedConstru.GreatWall);
+
+                attackedPreviewFight.shields.Set(attackedConstru.GreatWall ? attackedConstru.Health : 0, true);
+                    
                 NonCharacterAttackPreview();
 
             }
@@ -540,6 +548,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackerPreviewFight.health.Set(activeCharacter.Health, activeCharacter.Health, activeCharacter.MaxHealth);
 
+        attackerPreviewFight.shields.Set(activeCharacter.Tile.GreatWall ? activeCharacter.Tile.Construction.Health : 0);
+
         attackerPreviewFight.crit.Set(activeCharacter.CriticalAmount, Mathf.Min(activeCharacter.CriticalAmount + activeCharacter.Technique, GameManager.CommonCharactersVariables.critTrigger), GameManager.CommonCharactersVariables.critTrigger);
 
         attackerPreviewFight.dodge.Set(activeCharacter.DodgeAmount, activeCharacter.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger);
@@ -550,30 +560,25 @@ public class SC_UI_Manager : MonoBehaviour {
 
         bool attackedKilled = false;
 
-        SC_Construction c = attacked.Tile.AttackableContru;
+        SC_Construction c = attacked.CombatTIle.AttackableContru;
 
         PreviewFightValues attackedPF = attacker != activeCharacter ? attackerPreviewFight : attackedPreviewFight;
 
         int dT = GameManager.CommonCharactersVariables.dodgeTrigger;
-        int cT = GameManager.CommonCharactersVariables.critTrigger;
+        int cT = GameManager.CommonCharactersVariables.critTrigger;       
 
-        if (c) {
-
-            attackedPF.health.Set(cantCounter ? c.Health : fightManager.CalcDamage(attacker, c), c.Health, c.maxHealth);
-
-            attackedPF.dodge.Set(attacked.DodgeAmount, attacked.DodgeAmount, dT);
-
-        } else {
-
-            int healthLeft = attacked.Health - (cantCounter ? 0 : fightManager.CalcDamage(attacker, attacked));
+        int healthLeft = attacked.Health - (cantCounter ? 0 : fightManager.CalcDamage(attacker, attacked));
             
-            attackedKilled = healthLeft <= 0;
+        attackedKilled = healthLeft <= 0;
 
-            attackedPF.health.Set(Mathf.Max(0, healthLeft), attacked.Health, attacked.MaxHealth);
+        attackedPF.health.Set(c ? attacked.Health : Mathf.Max(0, healthLeft), attacked.Health, attacked.MaxHealth);
 
-            attackedPF.dodge.Set(attacked.DodgeAmount, Mathf.Min(attacked.DodgeAmount + (cantCounter ? 0 : attacked.Reflexes), dT), dT, attacked.DodgeAmount >= dT);
-          
-        }
+        if(c)
+            attackedPF.health.Values.text = fightManager.CalcDamage(attacker, c) + " <= " + c.Health;
+
+        attackedPF.shields.Set(c?.Health ?? 0, true);  
+
+        attackedPF.dodge.Set(attacked.DodgeAmount, c ? attacked.DodgeAmount : Mathf.Min(attacked.DodgeAmount + (cantCounter ? 0 : attacked.Reflexes), dT), dT, attacked.DodgeAmount >= dT && !c);
 
         attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : attacked.Technique), cT), cT, attacked.CriticalAmount >= cT);
 
@@ -649,7 +654,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void DisplayStaminaCost (int cost) {
 
-        print(StaminaCost);
+        // print(StaminaCost);
 
         foreach (SC_UI_Stamina s in staminaUsage)
             s.SetStaminaCost(cost);
@@ -980,12 +985,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    public SC_ShieldBar[] shieldBars;
-
     void ActivatePlayerMenu() {
-
-        foreach (SC_ShieldBar s in shieldBars)
-            print(s.RecT.rect.width);
 
         if (localPlayer.Qin) {
 

@@ -364,13 +364,15 @@ public class SC_Fight_Manager : MonoBehaviour {
         SC_Character attacked = counter ? activeCharacter : activeCharacter.AttackTarget.Character;        
 
         SC_Construction attackedConstru = counter ? activeCharacter.Tile.AttackableContru : activeCharacter.AttackTarget.AttackableContru;
-       
+
         if (attackedConstru)
             HitConstruction(attacker, attackedConstru);
         else if (attacked)
             CharacterAttack(attacker, attacked);
-        else
+        else if (activeCharacter.AttackTarget.Qin)
             SC_Qin.ChangeEnergy(-SC_Qin.Energy);
+        else
+            print("Attack target error");
 
         if(!attackedConstru)
             attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);

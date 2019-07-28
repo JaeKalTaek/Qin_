@@ -137,6 +137,8 @@ public class SC_Global {
 
         public SC_FightValue health, crit, dodge;
 
+        public SC_ShieldBar shields;
+
     }
 
     [Serializable]
@@ -145,6 +147,8 @@ public class SC_Global {
         public GameObject panel;
 
         public Slider health;
+
+        public SC_ShieldBar shields;
 
         public Text name, power, defense, technique, reflexes, range, movement;
 

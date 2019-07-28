@@ -163,16 +163,16 @@ public class SC_Player : NetworkBehaviour {
 
     #region Attack
     [Command]
-    public void CmdSetChainAttack() {
+    public void CmdSetChainAttack(bool c) {
 
-        RpcSetChainAttack();
+        RpcSetChainAttack(c);
 
     }
 
     [ClientRpc]
-    void RpcSetChainAttack() {
+    void RpcSetChainAttack(bool c) {
 
-        ChainAttack = true;
+        ChainAttack = c;
 
     }
 

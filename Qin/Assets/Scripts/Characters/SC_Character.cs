@@ -440,8 +440,6 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public void StartAttack () {
 
-        // SC_Player.localPlayer.CmdPrepareForAttack(AttackTarget.gameObject);
-
         if (Hero) {
 
             if (Hero.CanAttackWithWeapons(Tile).Count == 1)

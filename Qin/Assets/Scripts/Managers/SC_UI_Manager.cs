@@ -654,10 +654,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void DisplayStaminaCost (int cost) {
 
-        // print(StaminaCost);
+        if (CurrentChara == activeCharacter.gameObject)
+            staminaUsage[0].SetStaminaCost(cost);
 
-        foreach (SC_UI_Stamina s in staminaUsage)
-            s.SetStaminaCost(cost);
+        staminaUsage[1].SetStaminaCost(cost);
 
     }
 
@@ -679,6 +679,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
             warningStaminaDeathPanel.panel.SetActive(true);
 
+            if (previewFightPanel.activeSelf)
+                localPlayer.CmdSetChainAttack(true);
+
             SC_Cursor.SetLock(true);
 
         } else {
@@ -690,6 +693,8 @@ public class SC_UI_Manager : MonoBehaviour {
     }
 
     public void HideStaminaWarningPanel(bool unlock) {
+
+        localPlayer.CmdSetChainAttack(false);
 
         SC_Cursor.SetLock(!unlock);
 

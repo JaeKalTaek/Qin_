@@ -193,7 +193,7 @@ public class SC_Tile : NetworkBehaviour {
                     if (MovingCharacter) {
 
                         if (UIManager.previewFightPanel.activeSelf)
-                            SC_Player.localPlayer.CmdSetChainAttack();
+                            SC_Player.localPlayer.CmdSetChainAttack(true);
 
                         StartMovement((SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? activeCharacter.Tile).gameObject);
 
@@ -206,6 +206,7 @@ public class SC_Tile : NetworkBehaviour {
                         activeCharacter.StartAttack();
 
                     }
+
                 });                                
 
             } else if (CurrentDisplay == TDisplay.Sacrifice) {

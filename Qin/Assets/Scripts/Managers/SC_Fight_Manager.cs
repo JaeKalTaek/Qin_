@@ -115,7 +115,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         }
 
         #region Critical strike feedback
-        if(attacking && SC_Player.localPlayer.Turn && (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger) && (!attacked || (attacked.DodgeAmount < SC_Game_Manager.Instance.CommonCharactersVariables.dodgeTrigger)))
+        if(attacking && SC_Player.localPlayer.Turn && (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger) && attacked && (attacked.DodgeAmount < SC_Game_Manager.Instance.CommonCharactersVariables.dodgeTrigger))
             SC_Camera.Instance.StartCoroutine("Screenshake");
         #endregion
 
@@ -374,8 +374,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         else
             print("Attack target error");
 
-        if(!attackedConstru)
-            attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
+        attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) && !attackedConstru ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
 
     }
 

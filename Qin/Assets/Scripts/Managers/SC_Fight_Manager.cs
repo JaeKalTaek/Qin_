@@ -2,6 +2,7 @@ using UnityEngine;
 using static SC_Global;
 using static SC_Character;
 using System.Collections;
+using UnityEngine.UI;
 
 public class SC_Fight_Manager : MonoBehaviour {
 
@@ -59,6 +60,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         uiManager.fightPanel.attackerSlider.Set(activeCharacter.Tile.AttackableContru?.Health ?? activeCharacter.Health, activeCharacter.Tile.AttackableContru?.maxHealth ?? activeCharacter.MaxHealth);
         uiManager.fightPanel.attackedSlider.Set(currentAttackedHealth, targetConstruction?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+
+        uiManager.fightPanel.attackerShield.Set(activeCharacter.Tile.GreatWall?.Health ?? 0);
+        uiManager.fightPanel.attackedShield.Set(targetConstruction?.GreatWall?.Health ?? 0);
 
         float y = Mathf.Min(activeCharacter.transform.position.y, activeCharacter.AttackTarget.transform.position.y);
         float x = Mathf.Lerp(activeCharacter.transform.position.x, activeCharacter.AttackTarget.transform.position.x, .5f);
@@ -151,17 +155,25 @@ public class SC_Fight_Manager : MonoBehaviour {
             }                
             #endregion
 
-            timer = 0;           
+            timer = 0;
 
             while (timer < healthBarAnimTime) {
 
                 timer += Time.deltaTime;
 
-                float HealthValue = Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
+                if (attackedConstru?.GreatWall) {
 
-                (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(HealthValue, attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+                    uiManager.fightPanel.attackedShield.transform.GetChild(uiManager.fightPanel.attackedShield.transform.childCount - 1).GetComponent<Image>().color = Color.Lerp(Color.white, new Color(1, 1, 1, 0), Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
 
-                (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = ((int)(HealthValue + .5f)).ToString();               
+                } else {
+
+                    float HealthValue = Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
+
+                    (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(HealthValue, attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+
+                    (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = ((int)(HealthValue + .5f)).ToString();
+
+                }
 
                 yield return new WaitForEndOfFrame();
 

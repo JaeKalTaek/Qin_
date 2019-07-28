@@ -553,7 +553,7 @@ public abstract class SC_Character : NetworkBehaviour {
         if (t.Character)
             return Qin == t.Character.Qin;
         else if (t.Construction)
-            return (Qin || !t.Construction.GreatWall) && !t.DrainingStele;
+            return (Qin || t.Construction.Health == 0);
         else if (t.Qin)
             return Qin;
         else

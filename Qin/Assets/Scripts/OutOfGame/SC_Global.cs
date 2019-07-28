@@ -161,6 +161,8 @@ public class SC_Global {
 
         public Slider attackerSlider, attackedSlider;
 
+        public SC_ShieldBar attackerShield, attackedShield;
+
         public Text attackerName, attackedName, attackerHealth, attackedHealth;
 
     }

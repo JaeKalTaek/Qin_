@@ -532,7 +532,7 @@ public class SC_UI_Manager : MonoBehaviour {
                 attackedPreviewFight.health.NewGauge.gameObject.SetActive(!attackedConstru.GreatWall);
                 attackedPreviewFight.health.PrevGauge.gameObject.SetActive(!attackedConstru.GreatWall);
 
-                attackedPreviewFight.shields.Set(attackedConstru.GreatWall ? attackedConstru.Health : 0, true);
+                attackedPreviewFight.shields.Set(attackedConstru.GreatWall?.Health ?? 0, true);
                     
                 NonCharacterAttackPreview();
 
@@ -548,7 +548,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackerPreviewFight.health.Set(activeCharacter.Health, activeCharacter.Health, activeCharacter.MaxHealth);
 
-        attackerPreviewFight.shields.Set(activeCharacter.Tile.GreatWall ? activeCharacter.Tile.Construction.Health : 0);
+        attackerPreviewFight.shields.Set(activeCharacter.Tile.GreatWall?.Health ?? 0);
 
         attackerPreviewFight.crit.Set(activeCharacter.CriticalAmount, Mathf.Min(activeCharacter.CriticalAmount + activeCharacter.Technique, GameManager.CommonCharactersVariables.critTrigger), GameManager.CommonCharactersVariables.critTrigger);
 
@@ -556,7 +556,7 @@ public class SC_UI_Manager : MonoBehaviour {
         
     }
 
-    bool PreviewCharacterAttack(SC_Character attacker, SC_Character attacked, bool cantCounter = false) {
+    bool PreviewCharacterAttack(SC_Character attacker, SC_Character attacked, bool cantHit = false) {
 
         bool attackedKilled = false;
 
@@ -567,18 +567,18 @@ public class SC_UI_Manager : MonoBehaviour {
         int dT = GameManager.CommonCharactersVariables.dodgeTrigger;
         int cT = GameManager.CommonCharactersVariables.critTrigger;       
 
-        int healthLeft = attacked.Health - (cantCounter ? 0 : fightManager.CalcDamage(attacker, attacked));
+        int healthLeft = attacked.Health - (cantHit ? 0 : fightManager.CalcDamage(attacker, attacked));
             
         attackedKilled = healthLeft <= 0;
 
         attackedPF.health.Set(c ? attacked.Health : Mathf.Max(0, healthLeft), attacked.Health, attacked.MaxHealth);
 
         if(c)
-            attackedPF.health.Values.text = fightManager.CalcDamage(attacker, c) + " <= " + c.Health;
+            attackedPF.health.Values.text = (cantHit ? "" : fightManager.CalcDamage(attacker, c) + " <= ") + c.Health;
 
-        attackedPF.shields.Set(c?.Health ?? 0, true);  
+        attackedPF.shields.Set(c?.Health ?? 0, !cantHit);  
 
-        attackedPF.dodge.Set(attacked.DodgeAmount, c ? attacked.DodgeAmount : Mathf.Min(attacked.DodgeAmount + (cantCounter ? 0 : attacked.Reflexes), dT), dT, attacked.DodgeAmount >= dT && !c);
+        attackedPF.dodge.Set(attacked.DodgeAmount, c ? attacked.DodgeAmount : Mathf.Min(attacked.DodgeAmount + (cantHit ? 0 : attacked.Reflexes), dT), dT, attacked.DodgeAmount >= dT && !c);
 
         attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : attacked.Technique), cT), cT, attacked.CriticalAmount >= cT);
 

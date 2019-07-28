@@ -63,7 +63,7 @@ public class SC_Tile : NetworkBehaviour {
 
     public SC_Castle Castle { get { return Construction as SC_Castle; } }
 
-    public bool GreatWall { get { return Construction?.GreatWall ?? false; } }
+    public SC_Bastion GreatWall { get { return Construction?.GreatWall; } }
 
     public SC_Pit Pit { get { return Construction as SC_Pit; } }
 

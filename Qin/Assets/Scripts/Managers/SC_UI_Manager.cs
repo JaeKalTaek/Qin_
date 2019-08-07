@@ -370,11 +370,16 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
+    Action previousBackAction;
+
     void DisplayCharacterDetails(bool b) {
 
         SC_Cursor.SetLock(b);
 
-        backAction = b ? (Action)(() => DisplayCharacterDetails(false)) : DoNothing;
+        if(b)
+            previousBackAction = backAction;
+
+        backAction = b ? () => DisplayCharacterDetails(false) : previousBackAction;
 
         characterDetails.panel.SetActive(b);
 

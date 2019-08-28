@@ -372,7 +372,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     Action previousBackAction;
 
-    void DisplayCharacterDetails(bool b) {
+    public void DisplayCharacterDetails(bool b) {
 
         SC_Cursor.SetLock(b);
 
@@ -1141,7 +1141,7 @@ public class SC_UI_Manager : MonoBehaviour {
     }    
     #endregion
 
-    #region Utility
+    #region Utility   
     IEnumerator ClickSafety (Action a) {
 
         yield return new WaitForSeconds(clickSecurityDuration);

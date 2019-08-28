@@ -421,9 +421,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Tile tile = tileManager.GetTileAt(x, y);
 
-        // bool qinConstru = !tile.Soldier || QinTurnStarting;
+        /*bool qinConstru = !tile.Soldier || QinTurnStarting;
 
-        /*if (tile.Soldier) {
+        if (tile.Soldier) {
 
             if (!tile.Ruin) {
 
@@ -469,6 +469,18 @@ public class SC_Game_Manager : NetworkBehaviour {
         tile.Ruin?.DestroyConstruction(false);
 
         SC_Sound_Manager.Instance.OnConstruct();
+
+        if (!Player.Turn) {
+
+            uiManager.DisplayCharacterDetails (false);
+
+            uiManager.backAction = DoNothing;
+
+            Cursor.visible = false;
+
+            SC_Cursor.Instance.transform.position = Vector3.Scale (tile.transform.position, new Vector3 (1, 1, 0));
+
+        }
 
         if (isServer) {
 

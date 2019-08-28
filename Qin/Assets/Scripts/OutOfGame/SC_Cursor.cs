@@ -22,6 +22,8 @@ public class SC_Cursor : NetworkBehaviour {
 
     Vector3 oldMousePos, newMousePos, oldCamPos;
 
+    float mouseDist;
+
     SC_Camera cam;
 
     public static SC_Cursor Instance { get; set; }    
@@ -42,20 +44,27 @@ public class SC_Cursor : NetworkBehaviour {
 
     }
 
-    void Update () {    
+    void Update () {
 
         #region Set mouse cursor visibility
-        if (Input.GetButton("Horizontal") || Input.GetButton("Vertical"))
-            Cursor.visible = false;      
-        
-        oldMousePos = newMousePos;
+        if (Input.GetButton ("Horizontal") || Input.GetButton ("Vertical")) {
 
-        newMousePos = WorldMousePos;
+            Cursor.visible = false;
 
-        if ((Vector3.Distance(oldMousePos, newMousePos) >= mouseThreshold) && (oldCamPos == cam.transform.position))
-            Cursor.visible = true;
+        } else {
 
-        oldCamPos = cam.transform.position;
+            oldMousePos = newMousePos;
+
+            newMousePos = WorldMousePos;
+
+            mouseDist = Cursor.visible ? 0 : mouseDist + Vector3.Distance (oldMousePos, newMousePos);
+
+            if ((mouseDist >= mouseThreshold) && (oldCamPos == cam.transform.position))
+                Cursor.visible = true;
+
+            oldCamPos = cam.transform.position;
+
+        }        
         #endregion
 
         #region Cursor Movement

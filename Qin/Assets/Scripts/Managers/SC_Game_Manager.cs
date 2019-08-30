@@ -480,6 +480,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             SC_Cursor.Instance.transform.position = Vector3.Scale (tile.transform.position, new Vector3 (1, 1, 0));
 
+            SC_Camera.Instance.SetTargetPos (new Vector3 (tile.transform.position.x, tile.transform.position.y, -16f));
+
         }
 
         if (isServer) {

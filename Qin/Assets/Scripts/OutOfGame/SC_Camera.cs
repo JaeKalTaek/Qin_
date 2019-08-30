@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using static SC_Game_Manager;
 using static SC_Global;
@@ -108,7 +108,14 @@ public class SC_Camera : MonoBehaviour {
 
     }
 
-    [Header("Camera shake variables")]
+    public void SetTargetPos (Vector3 v) {
+
+        targetPos = v;
+
+    }
+
+    #region Camera Shake
+    [Header ("Camera shake variables")]
     [Tooltip("Duration of a camera shake")]
     public float shakeDuration;
 
@@ -134,4 +141,6 @@ public class SC_Camera : MonoBehaviour {
         transform.localPosition = initialPosition;
         
     }
+    #endregion
+
 }

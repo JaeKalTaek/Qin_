@@ -67,7 +67,7 @@ public class SC_Player : NetworkBehaviour {
         else
             SC_Cursor.Instance.transform.position = Vector3.zero;
 
-        FindObjectOfType<SC_Camera>().Setup(GameManager.CurrentMapPrefab.SizeMapX, GameManager.CurrentMapPrefab.SizeMapY);
+        FindObjectOfType<SC_Camera>().Setup();
 
         UIManager.connectingPanel.SetActive(false);
 
@@ -407,6 +407,24 @@ public class SC_Player : NetworkBehaviour {
             activeCharacter.Hero?.Hit(activeCharacter.Hero.ActionCost);
 
         localPlayer.GameManager.FinishAction();
+
+    }
+    #endregion
+
+    #region Sacrificed Soldier
+    [Command]
+    public void CmdSacrificedSoldier(int value, Vector3 pos) {
+
+        RpcSacrificedSoldier (value, pos);
+
+    }
+
+    [ClientRpc]
+    void RpcSacrificedSoldier(int value, Vector3 pos) {
+
+        SC_Qin.ChangeEnergy (value);
+
+        localPlayer.GameManager.TryFocusOn (pos);
 
     }
     #endregion

@@ -206,7 +206,10 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     }
 
-    public SC_Tile GetTileAt (Vector3 pos) {
+    public SC_Tile GetTileAt (Vector3 pos, bool clampFirst = false) {
+
+        if(clampFirst)
+            return tiles[Mathf.Clamp (pos.x.I (), 0, XSize - 1), Mathf.Clamp (pos.y.I (), 0, YSize - 1)];
 
         try {
 

@@ -4,8 +4,6 @@ using System.Collections;
 using static SC_EditorTile;
 using static SC_Global;
 using System.Reflection;
-using System;
-using static SC_Hero;
 
 public class SC_Game_Manager : NetworkBehaviour {
 
@@ -47,8 +45,12 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public bool ServerStarted { get; set; }
 
+    public bool FocusOn { get; set; }
+
     #region Setup
     private void Awake () {
+
+        FocusOn = true;
 
         Instance = this;
 
@@ -470,19 +472,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Sound_Manager.Instance.OnConstruct();
 
-        if (!Player.Turn) {
-
-            uiManager.DisplayCharacterDetails (false);
-
-            uiManager.backAction = DoNothing;
-
-            Cursor.visible = false;
-
-            SC_Cursor.Instance.transform.position = Vector3.Scale (tile.transform.position, new Vector3 (1, 1, 0));
-
-            SC_Camera.Instance.SetTargetPos (new Vector3 (tile.transform.position.x, tile.transform.position.y, -16f));
-
-        }
+        TryFocusOn (tile.transform.position);
 
         if (isServer) {
 
@@ -633,6 +623,20 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
     #endregion
+
+    public void TryFocusOn (Vector3 pos) {
+
+        if (FocusOn && !Player.Turn && (uiManager.IsFullScreenMenuOn || SC_Camera.Instance.ShouldFocus(pos))) {
+
+            uiManager.CloseFullScreen ();
+
+            SC_Cursor.FocusOn (pos);
+
+            SC_Camera.Instance.FocusOn (pos);
+
+        }
+
+    }
 
     // Called by UI
     public void Wait () {

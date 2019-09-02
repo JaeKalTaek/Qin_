@@ -144,4 +144,12 @@ public class SC_Cursor : NetworkBehaviour {
 
     }
 
+    public static void FocusOn (Vector3 pos) {
+
+        Cursor.visible = false;
+
+        Instance.transform.position = Vector3.Scale (pos, new Vector3 (1, 1, 0));
+
+    }
+
 }

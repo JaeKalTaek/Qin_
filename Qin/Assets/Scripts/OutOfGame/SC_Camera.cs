@@ -5,7 +5,7 @@ using static SC_Global;
 
 public class SC_Camera : MonoBehaviour {
 		
-    [Header("Camera Variables")]
+    [Header("Camera movement & zoom variables")]
     [Tooltip("Speed at which the camera lerps to its target position")]
 	public float moveSpeed;
 
@@ -28,6 +28,13 @@ public class SC_Camera : MonoBehaviour {
     [Tooltip("Margins between the board and the camera border, depending on the current zoom")]
     public float[] boardMargins;
 
+    [Header("Camera focus variables")]
+    [Tooltip("Camera will focus on target if it's out of screen or at this distance of being out of screen")]
+    public int tileDistanceFocus;
+
+    [Tooltip ("If the camera centers on the tile to focus or if it just moves enough for it to be included in the in-focus zone")]
+    public bool centeredFocus;
+
     Vector3 CursorPos { get { return SC_Cursor.Instance.transform.position; } }
 
     Vector3 targetPos;
@@ -42,7 +49,7 @@ public class SC_Camera : MonoBehaviour {
 
     }
 
-    public void Setup(int sizeX, int sizeY) {
+    public void Setup () {
 
         Instance = this;
 
@@ -52,11 +59,12 @@ public class SC_Camera : MonoBehaviour {
 
         cam.orthographicSize = zooms[zoomIndex] * TileSize;
 
-        transform.position = ClampedPos(CursorPos - Vector3.forward);
+        transform.position = ClampedPos(CursorPos - (Vector3.forward * -16f));
 
     }
 
-    void Update() {        
+    #region Movement
+    void Update () {        
 
         if (cam) {
 
@@ -92,7 +100,7 @@ public class SC_Camera : MonoBehaviour {
 
     }
 
-    Vector3 ClampedPos(Vector3 p) {
+    Vector3 ClampedPos (Vector3 p) {
 
         float xMax = (XSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize * cam.aspect;
         float xMin = (-boardMargins[zoomIndex] - .5f) * TileSize + cam.orthographicSize * cam.aspect;
@@ -107,12 +115,51 @@ public class SC_Camera : MonoBehaviour {
         return new Vector3(x, y, -16);
 
     }
+    #endregion
 
-    public void SetTargetPos (Vector3 v) {
+    #region Focus
+    Vector2 TargetOnScreen (Vector3 pos) {
 
-        targetPos = v;
+        Vector3 min = cam.WorldToViewportPoint (pos - new Vector3 (1, 1, 0) * (TileSize * (tileDistanceFocus - .5f)));
+
+        Vector3 max = cam.WorldToViewportPoint (pos + new Vector3 (1, 1, 0) * (TileSize * (tileDistanceFocus + .5f)));
+
+        return new Vector2 (min.x < 0 ? -1 : (max.x > 1 ? 1 : 0), min.y < 0 ? -1 : (max.y > 1 ? 1 : 0));
 
     }
+
+    public bool ShouldFocus (Vector3 pos) {
+
+        return TargetOnScreen (pos).magnitude != 0;
+
+    }
+
+    public void FocusOn (Vector3 pos) {
+
+        if (centeredFocus) {
+
+            targetPos = new Vector3 (pos.x, pos.y, -16f);
+
+        } else {
+            
+            Vector2 target = TargetOnScreen (pos);
+
+            if (target.x != 0)
+                targetPos.x += pos.x - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.x == 1 ? Vector3.one : Vector3.zero) + Vector3.left * TileSize * Mathf.Sign(target.x), true).transform.position.x;
+
+            if (target.y != 0)
+                targetPos.y += pos.y - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.y == 1 ? Vector3.one : Vector3.zero) + Vector3.down * TileSize * Mathf.Sign (target.y), true).transform.position.y;
+
+        }
+
+    }
+
+    float ScreenToWorldDistance (Vector3 a, Vector3 b) {
+
+        return Vector3.Distance (cam.ViewportToWorldPoint (a), cam.ViewportToWorldPoint (b));
+
+    }
+    #endregion
 
     #region Camera Shake
     [Header ("Camera shake variables")]

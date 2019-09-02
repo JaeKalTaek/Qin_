@@ -1142,6 +1142,20 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Utility   
+    public bool IsFullScreenMenuOn { get { return characterDetails.panel.activeSelf; } }
+
+    public void CloseFullScreen() {
+
+        if (IsFullScreenMenuOn) {
+
+            backAction = DoNothing;
+
+            DisplayCharacterDetails (false);
+
+        }
+
+    }
+
     IEnumerator ClickSafety (Action a) {
 
         yield return new WaitForSeconds(clickSecurityDuration);

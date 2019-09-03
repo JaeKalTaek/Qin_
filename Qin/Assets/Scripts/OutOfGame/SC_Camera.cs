@@ -145,10 +145,10 @@ public class SC_Camera : MonoBehaviour {
             Vector2 target = TargetOnScreen (pos);
 
             if (target.x != 0)
-                targetPos.x += pos.x - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.x == 1 ? Vector3.one : Vector3.zero) + Vector3.left * TileSize * Mathf.Sign(target.x), true).transform.position.x;
+                targetPos.x += pos.x - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.x == 1 ? Vector3.one : Vector3.zero) + Vector3.left * TileSize * Mathf.Sign(target.x) * tileDistanceFocus, true).transform.position.x;
 
             if (target.y != 0)
-                targetPos.y += pos.y - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.y == 1 ? Vector3.one : Vector3.zero) + Vector3.down * TileSize * Mathf.Sign (target.y), true).transform.position.y;
+                targetPos.y += pos.y - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.y == 1 ? Vector3.one : Vector3.zero) + Vector3.down * TileSize * Mathf.Sign (target.y) * tileDistanceFocus, true).transform.position.y;
 
         }
 

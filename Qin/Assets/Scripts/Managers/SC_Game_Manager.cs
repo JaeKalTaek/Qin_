@@ -574,6 +574,8 @@ public class SC_Game_Manager : NetworkBehaviour {
             else
                 Player.CmdCreateDemon(CurrentCastle.gameObject);
 
+            Player.CmdTryFocus (CurrentCastle.transform.position);
+
             uiManager.EndQinAction();
 
         }
@@ -601,6 +603,8 @@ public class SC_Game_Manager : NetworkBehaviour {
     }
 
     public void SacrificeCastle (SC_Castle castle) {
+
+        TryFocusOn (castle.transform.position);
 
         CurrentCastle = castle;
 

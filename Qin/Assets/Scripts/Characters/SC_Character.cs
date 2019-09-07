@@ -211,6 +211,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	IEnumerator Move() {
 
+        gameManager.TryFocusOn (transform.position);
+
         SC_Sound_Manager.Instance.SetFootsteps(true);
 
         int pathIndex = 1;

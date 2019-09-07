@@ -38,7 +38,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     }
 
-    public void Attack () {        
+    public void Attack () {
+
+        SC_Game_Manager.Instance.TryFocusOn (activeCharacter.transform.position);
 
         uiManager.HideWeapons();
 

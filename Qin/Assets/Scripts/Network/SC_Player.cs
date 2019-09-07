@@ -403,8 +403,9 @@ public class SC_Player : NetworkBehaviour {
 
         activeCharacter.Tile.Construction?.DestroyConstruction(true);
 
-        /*if (activeCharacter.Hero?.BaseActionDone ?? false)*/
-            activeCharacter.Hero?.Hit(activeCharacter.Hero.ActionCost);
+        localPlayer.GameManager.TryFocusOn (activeCharacter.transform.position);
+
+        activeCharacter.Hero?.Hit(activeCharacter.Hero.ActionCost);        
 
         localPlayer.GameManager.FinishAction();
 
@@ -480,6 +481,20 @@ public class SC_Player : NetworkBehaviour {
     #endregion
 
     #region Finish Actions
+    [Command]
+    public void CmdTryFocus (Vector3 pos) {
+
+        RpcTryFocus (pos);
+
+    }
+
+    [ClientRpc]
+    void RpcTryFocus (Vector3 pos) {
+
+        localPlayer.GameManager.TryFocusOn (pos);
+
+    }
+
     static bool synchro;
 
     [Command]

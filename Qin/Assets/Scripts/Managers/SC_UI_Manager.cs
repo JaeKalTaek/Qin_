@@ -423,6 +423,8 @@ public class SC_UI_Manager : MonoBehaviour {
         tileTooltip.range.text = t.CombatModifiers.range + (movingDemon ? 0 : t.DemonsModifier("range", localPlayer.Qin)) + "";
         tileTooltip.movement.text = t.CombatModifiers.movement + (movingDemon ? 0 : t.DemonsModifier("movement", localPlayer.Qin)) + "";
 
+        tileTooltip.subPanel.ReCalculate ();
+
         tileTooltip.panel.SetActive(true);
 
     }

@@ -78,6 +78,8 @@ public class SC_Construction : NetworkBehaviour {
 
         transform.SetPos(transform.position, 2);
 
+        // uiManager.TryRefreshInfos (Tile.gameObject, Tile.GetType ());
+
     }
 
 	public virtual void DestroyConstruction(bool playSound) {

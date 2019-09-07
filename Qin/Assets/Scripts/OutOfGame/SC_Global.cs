@@ -146,6 +146,8 @@ public class SC_Global {
 
         public GameObject panel;
 
+        public SC_Scroll_Menu subPanel;
+
         public Slider health;
 
         public SC_ShieldBar shields;

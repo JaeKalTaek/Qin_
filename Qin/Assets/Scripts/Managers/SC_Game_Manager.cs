@@ -505,8 +505,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 uiManager.UpdateCreationPanel(uiManager.qinConstrus);
 
-                if (CanCreateConstruct(CurrentConstru))
-                    tileManager.DisplayConstructableTiles(CurrentConstru);
+                if (CanCreateConstruct (CurrentConstru))
+                    tileManager.DisplayConstructableTiles (CurrentConstru);
+                else
+                    tileManager.RemoveAllFilters ();
 
                 uiManager.backAction = uiManager.SelectConstruct;
 

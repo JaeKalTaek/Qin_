@@ -59,6 +59,8 @@ public class SC_Cursor : NetworkBehaviour {
 
             mouseDist = Cursor.visible ? 0 : mouseDist + Vector3.Distance (oldMousePos, newMousePos);
 
+            print (mouseDist);
+
             if ((mouseDist >= mouseThreshold) && (oldCamPos == cam.transform.position))
                 Cursor.visible = true;
 
@@ -107,20 +109,20 @@ public class SC_Cursor : NetworkBehaviour {
             }
             #endregion
 
-        }
-        #endregion       
+            #region Cursor Inputs
+            if (Input.GetButtonDown ("Submit") || (Input.GetMouseButtonDown (0) && Cursor.visible))
+                Tile?.CursorClick ();
+            #endregion
 
-        #region Cursor Inputs
-        if (!Locked && (Input.GetButtonDown("Submit") || (Input.GetMouseButtonDown(0) && Cursor.visible)))
-            Tile?.CursorClick();           
-        #endregion
+        }
+        #endregion   
     }
     
     public static void SetLock(bool b) {
 
         Instance.Locked = b;
 
-        Instance.gameObject.SetActive(!b);
+        Instance.GetComponent<SpriteRenderer> ().enabled = !b;
 
         if(b)
             Tile?.OnCursorExit();

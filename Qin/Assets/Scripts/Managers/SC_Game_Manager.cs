@@ -632,7 +632,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         if (FocusOn && !Player.Turn && (uiManager.IsFullScreenMenuOn || SC_Camera.Instance.ShouldFocus(pos))) {
 
-            uiManager.CloseFullScreen ();
+            uiManager.FocusOn (pos);
 
             SC_Cursor.FocusOn (pos);
 

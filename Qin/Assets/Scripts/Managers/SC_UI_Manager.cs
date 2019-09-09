@@ -11,6 +11,7 @@ using Prototype.NetworkLobby;
 using static SC_Hero;
 using UnityEngine.Events;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class SC_UI_Manager : MonoBehaviour {
 
@@ -71,6 +72,14 @@ public class SC_UI_Manager : MonoBehaviour {
     [Header("Transforms")]
     public Transform tilesT;
     public Transform bordersT, soldiersT, heroesT, demonsT, wallsT, bastionsT, castlesT, pitsT, ruinsT, villagesT, drainingStelesT;
+
+    [Header ("Transparency Focus")]
+    [Tooltip("List of menus that can become transparent when camera needs to focus \"behind them\"")]
+    public List<GameObject> transparencyFocusMenus;
+
+    [Tooltip ("Transparency to set the menus affected to")]
+    [Range (0, 1)]
+    public float transparency;
     #endregion
 
     #region Variables
@@ -90,6 +99,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public static bool CanInteract { get { return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !GameManager.prep; } }
 
+    [Header("Other variables")]
     public float clickSecurityDuration;
 
     public static bool clickSecurity;
@@ -217,11 +227,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         nextTurnUI.text.text = turnIndicator.text;
 
-        DOTween.Sequence().Append(DOTween.To(() => nextTurnUI.panel.color, c => nextTurnUI.panel.color = c, Color.black, 1f))
-            .Append(DOTween.To(() => nextTurnUI.panel.color, c => nextTurnUI.panel.color = c, new Color(0, 0, 0, 0), 1f));
+        DOTween.Sequence ().Append (nextTurnUI.panel.DOFade (1, 1)).Append (nextTurnUI.panel.DOFade (0, 1));
 
-        DOTween.Sequence().Append(DOTween.To(() => nextTurnUI.text.color, c => nextTurnUI.text.color = c, Color.white, 1f))
-            .Append(DOTween.To(() => nextTurnUI.text.color, c => nextTurnUI.text.color = c, new Color(1, 1, 1, 0), 1f).OnComplete(GameManager.StartNextTurn));
+        DOTween.Sequence ().Append (nextTurnUI.text.DOFade (1, 1)).Append (nextTurnUI.text.DOFade (0, 1).OnComplete (GameManager.StartNextTurn));
 
     }   
      
@@ -968,26 +976,29 @@ public class SC_UI_Manager : MonoBehaviour {
     void Update () {
 
         if (Input.GetButtonDown("Cancel"))
-            backAction();
+            backAction ();
         else if (Input.GetButtonDown("DisplayDetails")) {
 
             if (CurrentChara?.GetComponent<SC_Character>() && !SC_Cursor.Instance.Locked)
-                DisplayCharacterDetails(CurrentChara.GetComponent<SC_Character>());
+                DisplayCharacterDetails (CurrentChara.GetComponent<SC_Character>());
             else if (characterDetails.panel.activeSelf)
-                backAction();
+                backAction ();
 
         }
 
-        if(draggedCastle)
+        if (draggedCastle)
             draggedCastle.transform.position = WorldMousePos;
 
         if (victoryPanel.activeSelf && Input.anyKeyDown) {
 
-            StopCoroutine(ForceMainMenuReturn());
+            StopCoroutine (ForceMainMenuReturn ());
 
-            LobbyManager.s_Singleton.StopClientClbk();
+            LobbyManager.s_Singleton.StopClientClbk ();
 
         }
+
+        if (Cursor.visible)
+            SetMenuTransparencyAt (Input.mousePosition, true);
 
     }
 
@@ -1027,6 +1038,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (menu == playerActionsPanel)
             ActivatePlayerMenu();
+
+        SetMenuTransparency (menu, false);
 
         menu.SetActive(true);
 
@@ -1146,7 +1159,11 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Utility   
     public bool IsFullScreenMenuOn { get { return characterDetails.panel.activeSelf; } }
 
-    public void CloseFullScreen() {
+    GraphicRaycaster GR { get { return GetComponent<GraphicRaycaster> (); } }
+
+    public void FocusOn (Vector3 pos) {
+
+        SetMenuTransparencyAt (pos, true);
 
         if (IsFullScreenMenuOn) {
 
@@ -1155,6 +1172,27 @@ public class SC_UI_Manager : MonoBehaviour {
             DisplayCharacterDetails (false);
 
         }
+
+    }
+
+    void SetMenuTransparencyAt (Vector3 pos, bool transparent) {
+
+        PointerEventData pED = new PointerEventData (EventSystem.current) { position = Camera.main.WorldToScreenPoint (pos) };
+
+        List<RaycastResult> results = new List<RaycastResult> ();
+
+        GR.Raycast (pED, results);
+
+        foreach (RaycastResult r in results)
+            SetMenuTransparency (r.gameObject, transparent);
+
+    }
+
+    void SetMenuTransparency (GameObject menu, bool transparent) {
+
+        if (transparencyFocusMenus.Contains (menu))
+            foreach (MaskableGraphic g in menu.GetComponentsInChildren<MaskableGraphic> ())
+                g.DOFade (transparent ? transparency : 1, 0);
 
     }
 

@@ -57,11 +57,9 @@ public class SC_Cursor : NetworkBehaviour {
 
             newMousePos = WorldMousePos;
 
-            mouseDist = Cursor.visible ? 0 : mouseDist + Vector3.Distance (oldMousePos, newMousePos);
+            mouseDist = (oldCamPos == cam.transform.position) && !Cursor.visible ? mouseDist + Vector3.Distance (oldMousePos, newMousePos) : 0;
 
-            print (mouseDist);
-
-            if ((mouseDist >= mouseThreshold) && (oldCamPos == cam.transform.position))
+            if (mouseDist >= mouseThreshold)
                 Cursor.visible = true;
 
             oldCamPos = cam.transform.position;

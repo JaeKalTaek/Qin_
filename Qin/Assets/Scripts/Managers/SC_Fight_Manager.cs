@@ -65,16 +65,24 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         uiManager.fightPanel.attackerShield.Set(activeCharacter.Tile.GreatWall?.Health ?? 0);
         uiManager.fightPanel.attackedShield.Set(targetConstruction?.GreatWall?.Health ?? 0);
-
-        float y = Mathf.Min(activeCharacter.transform.position.y, activeCharacter.AttackTarget.transform.position.y);
-        float x = Mathf.Lerp(activeCharacter.transform.position.x, activeCharacter.AttackTarget.transform.position.x, .5f);
         #endregion
 
         #region Setup pos
-        uiManager.fightPanel.panel.transform.position = new Vector3(x, y, 0);
+        RectTransform RecT = uiManager.fightPanel.panel.GetComponent<RectTransform> ();
 
-        uiManager.fightPanel.panel.GetComponent<RectTransform>().anchoredPosition -= new Vector2(0, uiManager.fightPanel.panel.GetComponent<RectTransform>().sizeDelta.y);
+        float x = Camera.main.WorldToViewportPoint (Vector3.Lerp (activeCharacter.transform.position, activeCharacter.AttackTarget.transform.position, .5f)).x * UISize.x;
+
+        RecT.anchoredPosition = new Vector2 (Mathf.Clamp (x, RecT.sizeDelta.x / 2, UISize.x - (RecT.sizeDelta.x / 2)), 0);
+
+        float minY = Mathf.Min (activeCharacter.transform.position.y, activeCharacter.AttackTarget.transform.position.y);
+        float maxY = Mathf.Max (activeCharacter.transform.position.y, activeCharacter.AttackTarget.transform.position.y);
+
+        bool canBelow = Camera.main.WorldToViewportPoint (Vector3.up * minY).y * UISize.y - RecT.sizeDelta.y * 1.25f * 1.5f > 0;
+
+        RecT.anchoredPosition += new Vector2 (0, Camera.main.WorldToViewportPoint (Vector3.up * (canBelow ? minY : maxY)).y * UISize.y + RecT.sizeDelta.y * (canBelow ? -1 : 1) * 1.25f);
         #endregion
+
+        uiManager.staticUIs.Add (uiManager.fightPanel.panel, uiManager.fightPanel.panel.transform.position);
 
         uiManager.fightPanel.panel.SetActive(true);
         #endregion
@@ -198,6 +206,8 @@ public class SC_Fight_Manager : MonoBehaviour {
             } else {
 
                 uiManager.fightPanel.panel.SetActive(false);
+
+                uiManager.staticUIs.Remove (uiManager.fightPanel.panel);
 
                 SC_Player.localPlayer.CmdSynchroFinishAction();
 

@@ -83,6 +83,8 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Variables
+    public Dictionary<GameObject, Vector3> staticUIs;
+
     public GameObject CurrentChara { get; set; }
 
     public GameObject CurrentTile { get; set; }
@@ -117,6 +119,8 @@ public class SC_UI_Manager : MonoBehaviour {
         Instance = this;
 
         backAction = DoNothing;
+
+        staticUIs = new Dictionary<GameObject, Vector3> ();
 
     }
 
@@ -974,6 +978,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
     #region Both Players  
     void Update () {
+
+        foreach (KeyValuePair<GameObject, Vector3> entry in staticUIs)
+            entry.Key.transform.position = entry.Value;
 
         if (Input.GetButtonDown("Cancel"))
             backAction ();

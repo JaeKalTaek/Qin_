@@ -19,6 +19,8 @@ public class SC_Global {
 
     public static int Size { get { return XSize + YSize; } }
 
+    public static Vector2 UISize { get { return SC_UI_Manager.Instance.GetComponent<RectTransform> ().sizeDelta; } }
+
     [Serializable]
     public struct SC_CombatModifiers {
 

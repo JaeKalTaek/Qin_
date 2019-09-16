@@ -632,6 +632,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void TryFocusOn (Vector3 pos) {
 
+        uiManager.SetMenuTransparencyAt (pos, true);
+
         if (FocusOn && !Player.Turn && (uiManager.IsFullScreenMenuOn || SC_Camera.Instance.ShouldFocus(pos))) {
 
             uiManager.FocusOn (pos);

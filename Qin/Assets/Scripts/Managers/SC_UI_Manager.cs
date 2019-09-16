@@ -1005,7 +1005,7 @@ public class SC_UI_Manager : MonoBehaviour {
         }
 
         if (Cursor.visible)
-            SetMenuTransparencyAt (Input.mousePosition, true);
+            SetMenuTransparencyAt (Camera.main.ScreenToWorldPoint (Input.mousePosition), false);
 
     }
 
@@ -1170,8 +1170,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void FocusOn (Vector3 pos) {
 
-        SetMenuTransparencyAt (pos, true);
-
         if (IsFullScreenMenuOn) {
 
             backAction = DoNothing;
@@ -1182,7 +1180,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    void SetMenuTransparencyAt (Vector3 pos, bool transparent) {
+    public void SetMenuTransparencyAt (Vector3 pos, bool transparent) {
 
         PointerEventData pED = new PointerEventData (EventSystem.current) { position = Camera.main.WorldToScreenPoint (pos) };
 

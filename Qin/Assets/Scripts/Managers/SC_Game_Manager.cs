@@ -630,6 +630,12 @@ public class SC_Game_Manager : NetworkBehaviour {
     }
     #endregion
 
+    public void ToggleFocus () {
+
+        FocusOn ^= true;
+
+    }
+
     public void TryFocusOn (Vector3 pos) {
 
         uiManager.SetMenuTransparencyAt (pos, true);

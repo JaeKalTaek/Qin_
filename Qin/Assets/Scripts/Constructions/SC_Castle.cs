@@ -67,14 +67,6 @@ public class SC_Castle : SC_Bastion {
 
     }
 
-    /* Move code here ?
-     * 
-     * public void Sacrifice () {
-
-        
-
-    }*/
-
     public override void DestroyConstruction (bool playSound) {
 
         base.DestroyConstruction(playSound);

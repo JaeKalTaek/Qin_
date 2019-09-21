@@ -124,10 +124,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 	void SetupTileManager() {
 
 		GameObject tm = Instantiate (Resources.Load<GameObject>("Prefabs/P_Tile_Manager"));
-		/*SC_Tile_Manager stm = tm.GetComponent<SC_Tile_Manager> ();
-
-        stm.xSize = CurrentMapPrefab.SizeMapX;
-        stm.ySize = CurrentMapPrefab.SizeMapY;	*/
 
 		NetworkServer.Spawn (tm);
 

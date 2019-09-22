@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Networking;
 
 public class SC_Castle : SC_Bastion {
@@ -7,9 +7,7 @@ public class SC_Castle : SC_Bastion {
     [Tooltip("Energy gained by Qin when he sacrifices this castle")]
     public int sacrificeValue;
 
-    [HideInInspector]
-    [SyncVar]
-    public string CastleType;
+    public string CastleType { get; set; }
 
     public static bool[] castles;
 

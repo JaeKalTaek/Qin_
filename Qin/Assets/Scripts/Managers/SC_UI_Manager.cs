@@ -154,10 +154,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         bool canSetReady = true;
 
-        if(localPlayer.Qin)
-            foreach (SC_Castle castle in FindObjectsOfType<SC_Castle>())
-                if (castle.CastleType == null)             
-                    canSetReady = false;
+        if (localPlayer.Qin)
+            foreach (SC_Castle castle in FindObjectsOfType<SC_Castle> ())
+                canSetReady &= castle.CastleType != null;
 
         if (canSetReady) {
 
@@ -175,7 +174,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         g.GetComponent<Image>().color = r ? readyColor : notReadyColor;
 
-        g.GetComponentInChildren<Text>().text = ((g == readyButton) ? "" : "Other Player ") + (r ? "Ready" : "Not Ready");
+        g.GetComponentInChildren<Text> ().text = (g == readyButton) ? (r ? "Cancel" : "Confirm") : "Other Player is " + (r ? "" : "not ") + " ready";
 
     }
 
@@ -183,11 +182,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void StartDragCastle(string castleType) {
 
-        GameObject go = Resources.Load<GameObject>("Prefabs/UI/P_Drag&DropCastle");
+        draggedCastle = Instantiate(Resources.Load<GameObject> ("Prefabs/UI/P_Drag&DropCastle"), new Vector3(WorldMousePos.x, WorldMousePos.y, 0) , Quaternion.identity);
 
-        go.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/Castle/Roofs/" + castleType);
-
-        draggedCastle = Instantiate(go, new Vector3(WorldMousePos.x, WorldMousePos.y, -.54f) , Quaternion.identity);
+        draggedCastle.transform.GetChild (0).GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Sprites/Constructions/Castle/Roofs/" + castleType);
 
         draggedCastle.name = castleType;
 
@@ -994,7 +991,7 @@ public class SC_UI_Manager : MonoBehaviour {
         }
 
         if (draggedCastle)
-            draggedCastle.transform.position = WorldMousePos;
+            draggedCastle.transform.position = new Vector3 (WorldMousePos.x, WorldMousePos.y, 0);
 
         if (victoryPanel.activeSelf && Input.anyKeyDown) {
 

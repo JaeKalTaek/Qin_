@@ -37,11 +37,11 @@ public class SC_Global {
         [Tooltip("resistance Modifier")]
         public int resistance;
 
-        [Tooltip("Technique Modifier")]
-        public int technique;
+        [Tooltip("Preparation Modifier")]
+        public int preparation;
 
-        [Tooltip("Reflexes Modifier")]
-        public int reflexes;
+        [Tooltip("Anticipation Modifier")]
+        public int anticipation;
 
         [Tooltip("Range Modifier")]
         public int range;
@@ -102,13 +102,13 @@ public class SC_Global {
     [Serializable]
     public class CharacterTooltip {
 
-        public GameObject panel, critContainer, dodgeContainer;
+        public GameObject panel, prepContainer, anticipContainer;
 
         public Image icon;
 
         public Text name, healthLabel;
 
-        public Slider health, crit, dodge;
+        public Slider health, prep, anticip;
 
     }
 
@@ -137,7 +137,7 @@ public class SC_Global {
 
         public Text name;
 
-        public SC_FightValue health, crit, dodge;
+        public SC_FightValue health, prep, anticip;
 
         public SC_ShieldBar shields;
 
@@ -154,7 +154,7 @@ public class SC_Global {
 
         public SC_ShieldBar shields;
 
-        public Text name, power, defense, technique, reflexes, range, movement;
+        public Text name, power, defense, preparation, anticipation, range, movement;
 
     }
 
@@ -249,7 +249,7 @@ public class SC_Global {
     [Serializable]
     public class BaseCharacterStats {
 
-        public int maxHealth, strength, chi, armor, resistance, technique, reflexes, movement;
+        public int maxHealth, strength, chi, armor, resistance, preparation, anticipation, movement;
 
         public BaseCharacterStats (BaseCharacterStats other) {
 
@@ -258,8 +258,8 @@ public class SC_Global {
             chi = other.chi;
             armor = other.armor;
             resistance = other.resistance;
-            technique = other.technique;
-            reflexes = other.reflexes;
+            preparation = other.preparation;
+            anticipation = other.anticipation;
             movement = other.movement;
 
         }

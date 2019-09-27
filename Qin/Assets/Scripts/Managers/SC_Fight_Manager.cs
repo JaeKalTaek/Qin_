@@ -129,7 +129,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         }
 
         #region Critical strike feedback
-        if(attacking && SC_Player.localPlayer.Turn && (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger) && attacked && (attacked.DodgeAmount < SC_Game_Manager.Instance.CommonCharactersVariables.dodgeTrigger))
+        if(attacking && SC_Player.localPlayer.Turn && (c.PreparationCharge >= c.Preparation) && attacked && (attacked.AnticipationCharge < attacked.Anticipation))
             SC_Camera.Instance.StartCoroutine("Screenshake");
         #endregion
 
@@ -148,11 +148,11 @@ public class SC_Fight_Manager : MonoBehaviour {
             #region Text Feedback
             string feedbackText = "";
 
-            if (c.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger && !attackedConstru)
+            if (c.PreparationCharge >= c.Preparation && !attackedConstru)
                 feedbackText += "Crit!";
 
             if (baseValue == endValue)
-                feedbackText += ((feedbackText != "" ? "\n" : "") + (attacked && attacked.DodgeAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.dodgeTrigger ? "Dodged!" :  "No Damage!"));
+                feedbackText += ((feedbackText != "" ? "\n" : "") + (attacked && attacked.AnticipationCharge >= attacked.Anticipation ? "Dodged!" :  "No Damage!"));
 
             if(feedbackText != "") {
 
@@ -223,7 +223,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         bool killed = attacked.Hit(CalcDamage(attacker, attacked));      
         
-        attacked.DodgeAmount = (attacked.DodgeAmount >= CharactersVariables.dodgeTrigger) ? 0 : Mathf.Min((attacked.DodgeAmount + attacked.Reflexes), CharactersVariables.dodgeTrigger);
+        attacked.AnticipationCharge = (attacked.AnticipationCharge >= attacked.Anticipation) ? 0 : Mathf.Min(attacked.AnticipationCharge + 1, attacked.Anticipation);
 
         if (attacker.Hero) {
 
@@ -265,7 +265,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         /*if (attacker.Hero && attacked.Hero)
             damages = Mathf.CeilToInt(damages * RelationMalus(attacker.Hero, attacked.Hero));*/
 
-        if (attacker.CriticalAmount == CharactersVariables.critTrigger)
+        if (attacker.PreparationCharge >= attacker.Preparation)
             damages = (int)(damages * CharactersVariables.critMultiplier + .5f);
 
         /*if (attacker.Hero?.Berserk ?? false)
@@ -289,7 +289,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         int damages = CalcAttack(attacker);
 
-        if (attacked.DodgeAmount == CharactersVariables.dodgeTrigger)
+        if (attacked.AnticipationCharge >= attacked.Anticipation)
             damages = (int)(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f) + .5f);
 
         int armor = attacked.Armor;
@@ -398,7 +398,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         else
             print("Attack target error");
 
-        attacker.CriticalAmount = (attacker.CriticalAmount >= CharactersVariables.critTrigger) && !attackedConstru ? 0 : Mathf.Min((attacker.CriticalAmount + attacker.Technique), CharactersVariables.critTrigger);
+        attacker.PreparationCharge += (attacker.PreparationCharge >= attacker.Preparation) && !attackedConstru ? -attacker.Preparation : 1;
 
     }
 

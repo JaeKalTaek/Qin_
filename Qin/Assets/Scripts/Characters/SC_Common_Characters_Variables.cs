@@ -7,14 +7,8 @@ public class SC_Common_Characters_Variables : MonoBehaviour {
     [Tooltip("Damage is multiplied by this amount when landing a critical hit")]
     public float critMultiplier;
 
-    [Tooltip("Amount of critical jauge needed to trigger a critical hit")]
-    public int critTrigger;
-
     [Tooltip("Percentage of damage reduced when a character dodges")]
     public float dodgeReductionPercentage;
-
-    [Tooltip("Amount of dodge jauge needed to trigger a dodge")]
-    public int dodgeTrigger;
 
     [Tooltip("Damage is divided by this amount if this is a counter-attack")]
     public float counterFactor;

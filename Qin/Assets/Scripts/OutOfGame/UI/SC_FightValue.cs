@@ -12,7 +12,7 @@ public class SC_FightValue : MonoBehaviour {
 
     public void Set (int a, int b, int c, bool trigger = false) {
 
-        Values.text = trigger ? name + " ! " : ((a == b) ? a.ToString() : a + " " + (((name == "Crit") || (name == "Dodge")) ? "=>" : "<=") + " " + b);
+        Values.text = trigger ? name + " ! " : ((a == b) ? a.ToString() : a + " " + (((name == "Preparation") || (name == "Anticipation")) ? "=>" : "<=") + " " + b);
 
         NewGauge.Set(a, c, ColorMode.Default);
 

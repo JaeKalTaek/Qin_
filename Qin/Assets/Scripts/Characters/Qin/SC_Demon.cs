@@ -133,9 +133,9 @@ public class SC_Demon : SC_BaseQinChara {
 
                 Lifebar.lifebar.SetActive(uiManager.healthBarsToggle.isOn);
 
-                CriticalAmount = 0;
+                PreparationCharge = 0;
 
-                DodgeAmount = 0;
+                AnticipationCharge = 0;
 
                 transform.SetPos(respawnTile.transform.position);
 

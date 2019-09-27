@@ -308,17 +308,17 @@ public class SC_UI_Manager : MonoBehaviour {
 
         heroTooltip.panel.SetActive(character.Hero);
 
-        characterTooltip.crit.Set(character.CriticalAmount, GameManager.CommonCharactersVariables.critTrigger, ColorMode.Default);
+        characterTooltip.prep.Set(character.PreparationCharge, character.Preparation, ColorMode.Default);
 
-        characterTooltip.crit.GetComponentInChildren<Text>().text = character.CriticalAmount + " / " + GameManager.CommonCharactersVariables.critTrigger;
+        characterTooltip.prep.GetComponentInChildren<Text>().text = character.PreparationCharge + " / " + character.Preparation;
 
-        characterTooltip.dodge.Set(character.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger, ColorMode.Default);
+        characterTooltip.anticip.Set(character.AnticipationCharge, character.Anticipation, ColorMode.Default);
 
-        characterTooltip.dodge.GetComponentInChildren<Text>().text = character.DodgeAmount + " / " + GameManager.CommonCharactersVariables.dodgeTrigger;
+        characterTooltip.anticip.GetComponentInChildren<Text>().text = character.AnticipationCharge + " / " + character.Anticipation;
 
-        characterTooltip.critContainer.SetActive(true);
+        characterTooltip.prepContainer.SetActive(true);
 
-        characterTooltip.dodgeContainer.SetActive(true);
+        characterTooltip.anticipContainer.SetActive(true);
 
         characterTooltip.panel.SetActive(true);
 
@@ -427,8 +427,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         tileTooltip.power.text = t.CombatModifiers.strength + (movingDemon ? 0 : t.DemonsModifier("strength", localPlayer.Qin)) + "";
         tileTooltip.defense.text = t.CombatModifiers.armor + (movingDemon ? 0 : t.DemonsModifier("armor", localPlayer.Qin)) + "";
-        tileTooltip.technique.text = t.CombatModifiers.technique + (movingDemon ? 0 : t.DemonsModifier("technique", localPlayer.Qin)) + "";
-        tileTooltip.reflexes.text = t.CombatModifiers.reflexes + (movingDemon ? 0 : t.DemonsModifier("reflexes", localPlayer.Qin)) + "";
+        tileTooltip.preparation.text = t.CombatModifiers.preparation + (movingDemon ? 0 : t.DemonsModifier("preparation", localPlayer.Qin)) + "";
+        tileTooltip.anticipation.text = t.CombatModifiers.anticipation + (movingDemon ? 0 : t.DemonsModifier("anticipation", localPlayer.Qin)) + "";
         tileTooltip.range.text = t.CombatModifiers.range + (movingDemon ? 0 : t.DemonsModifier("range", localPlayer.Qin)) + "";
         tileTooltip.movement.text = t.CombatModifiers.movement + (movingDemon ? 0 : t.DemonsModifier("movement", localPlayer.Qin)) + "";
 
@@ -478,9 +478,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         heroTooltip.panel.SetActive(false);
 
-        characterTooltip.critContainer.SetActive(false);
+        characterTooltip.prepContainer.SetActive(false);
 
-        characterTooltip.dodgeContainer.SetActive(false);
+        characterTooltip.anticipContainer.SetActive(false);
 
         characterTooltip.panel.SetActive(true);
 
@@ -512,16 +512,16 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (StaminaCost != EStaminaCost.TooHigh) {
 
-            SC_Construction attackerConstru =  activeCharacter.CombatTIle.AttackableContru;
+            SC_Construction attackerConstru =  activeCharacter.CombatTile.AttackableContru;
 
             attackerPreviewFight.name.text = activeCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
 
             SC_Character attacked = SC_Cursor.Tile.Character;
             SC_Construction attackedConstru = SC_Cursor.Tile.AttackableContru;
 
-            attackedPreviewFight.crit.gameObject.SetActive(attacked);
+            attackedPreviewFight.prep.gameObject.SetActive(attacked);
 
-            attackedPreviewFight.dodge.gameObject.SetActive(attacked && !attackedConstru);
+            attackedPreviewFight.anticip.gameObject.SetActive(attacked && !attackedConstru);
 
             if (SC_Cursor.Tile.Qin) {
 
@@ -566,9 +566,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackerPreviewFight.shields.Set(activeCharacter.Tile.GreatWall?.Health ?? 0);
 
-        attackerPreviewFight.crit.Set(activeCharacter.CriticalAmount, Mathf.Min(activeCharacter.CriticalAmount + activeCharacter.Technique, GameManager.CommonCharactersVariables.critTrigger), GameManager.CommonCharactersVariables.critTrigger);
+        attackerPreviewFight.prep.Set(activeCharacter.PreparationCharge, activeCharacter.PreparationCharge + 1, activeCharacter.Preparation);
 
-        attackerPreviewFight.dodge.Set(activeCharacter.DodgeAmount, activeCharacter.DodgeAmount, GameManager.CommonCharactersVariables.dodgeTrigger);
+        attackerPreviewFight.anticip.Set(activeCharacter.AnticipationCharge, activeCharacter.AnticipationCharge, activeCharacter.Anticipation);
         
     }
 
@@ -576,12 +576,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         bool attackedKilled = false;
 
-        SC_Construction c = attacked.CombatTIle.AttackableContru;
+        SC_Construction c = attacked.CombatTile.AttackableContru;
 
         PreviewFightValues attackedPF = attacker != activeCharacter ? attackerPreviewFight : attackedPreviewFight;
-
-        int dT = GameManager.CommonCharactersVariables.dodgeTrigger;
-        int cT = GameManager.CommonCharactersVariables.critTrigger;       
 
         int healthLeft = attacked.Health - (cantHit ? 0 : fightManager.CalcDamage(attacker, attacked));
             
@@ -594,9 +591,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackedPF.shields.Set(c?.Health ?? 0, !cantHit);  
 
-        attackedPF.dodge.Set(attacked.DodgeAmount, c ? attacked.DodgeAmount : Mathf.Min(attacked.DodgeAmount + (cantHit ? 0 : attacked.Reflexes), dT), dT, attacked.DodgeAmount >= dT && !c);
+        attackedPF.anticip.Set(attacked.AnticipationCharge, c ? attacked.AnticipationCharge : Mathf.Min(attacked.AnticipationCharge + (cantHit ? 0 : 1), attacked.Anticipation), attacked.Anticipation, attacked.AnticipationCharge >= attacked.Anticipation && !c);
 
-        attackedPF.crit.Set(attacked.CriticalAmount, Mathf.Min(attacked.CriticalAmount + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : attacked.Technique), cT), cT, attacked.CriticalAmount >= cT);
+        attackedPF.prep.Set(attacked.PreparationCharge, Mathf.Min(attacked.PreparationCharge + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : 1), attacked.Preparation), attacked.Preparation, attacked.PreparationCharge >= attacked.Preparation);
 
         return attackedKilled;
 

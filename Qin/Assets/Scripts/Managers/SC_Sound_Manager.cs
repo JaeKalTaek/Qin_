@@ -224,7 +224,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         string b = constru ? "BUILDING" : ((!attacked || attacked.BaseQinChara) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
 
-        bool c = attacker.CriticalAmount >= SC_Game_Manager.Instance.CommonCharactersVariables.critTrigger;
+        bool c = attacker.PreparationCharge >= attacker.Preparation;
 
         foreach (EventDescription e in hitEvents) {
 

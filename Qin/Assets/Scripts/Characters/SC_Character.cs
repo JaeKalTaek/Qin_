@@ -20,27 +20,28 @@ public abstract class SC_Character : NetworkBehaviour {
     public int Health { get; set; }
     public SC_Lifebar Lifebar { get; set; }
 
-    public SC_Tile CombatTIle { get { return this == activeCharacter ? SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? Tile : Tile; } }
+    public SC_Tile CombatTile { get { return this == activeCharacter ? SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? Tile : Tile; } }
 
     public int StrengthModifiers { get; set; }
-    public int Strength { get { return Mathf.Max(0, baseStats.strength + StrengthModifiers + CombatTIle.CombatModifiers.strength + DemonsModifier("strength")); } }
+    public int Strength { get { return Mathf.Max(0, baseStats.strength + StrengthModifiers + CombatTile.CombatModifiers.strength + DemonsModifier("strength")); } }
      
     public int ChiModifiers { get; set; }
-    public int Chi { get { return Mathf.Max(0, baseStats.chi + ChiModifiers + CombatTIle.CombatModifiers.chi + DemonsModifier("chi")); } }
+    public int Chi { get { return Mathf.Max(0, baseStats.chi + ChiModifiers + CombatTile.CombatModifiers.chi + DemonsModifier("chi")); } }
 
     public int ArmorModifiers { get; set; }
-    public int Armor { get { return baseStats.armor + ArmorModifiers + CombatTIle.CombatModifiers.armor + DemonsModifier("armor"); } }
+    public int Armor { get { return baseStats.armor + ArmorModifiers + CombatTile.CombatModifiers.armor + DemonsModifier("armor"); } }
 
     public int ResistanceModifiers { get; set; }
-    public int Resistance { get { return baseStats.resistance + ResistanceModifiers + CombatTIle.CombatModifiers.resistance + DemonsModifier("resistance"); } }
+    public int Resistance { get { return baseStats.resistance + ResistanceModifiers + CombatTile.CombatModifiers.resistance + DemonsModifier("resistance"); } }
 
-    public int TechniqueModifiers { get; set; }
-    public int Technique { get { return Mathf.Max(0, baseStats.technique + TechniqueModifiers + CombatTIle.CombatModifiers.technique + DemonsModifier("technique")); } }
-    public int CriticalAmount { get; set; }
+    public int PreparationModifiers { get; set; }
+    public int Preparation { get { return Mathf.Max(0, baseStats.preparation + PreparationModifiers + CombatTile.CombatModifiers.preparation + DemonsModifier("preparation")); } }
+    public int PreparationCharge { get; set; }
+    public int MaxPrep { get { return Preparation * 3; } }
 
-    public int ReflexesModifiers { get; set; }
-    public int Reflexes { get { return Mathf.Max(0, baseStats.reflexes + ReflexesModifiers + CombatTIle.CombatModifiers.reflexes + DemonsModifier("reflexes")); } }
-    public int DodgeAmount { get; set; }
+    public int AnticipationModifiers { get; set; }
+    public int Anticipation { get { return Mathf.Max(0, baseStats.anticipation + AnticipationModifiers + CombatTile.CombatModifiers.anticipation + DemonsModifier("anticipation")); } }
+    public int AnticipationCharge { get; set; }
 
     [Tooltip("Time for a character to walk one tile of distance")]
     public float moveDuration;

@@ -26,7 +26,7 @@ public class SC_ShieldBar : MonoBehaviour {
 
                 if (!e || i != 0) {
 
-                    RectTransform r = Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_Shield"), RecT).transform as RectTransform;
+                    RectTransform r = Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_Shield"), transform).transform as RectTransform;
 
                     r.sizeDelta = new Vector2(w, Height);
 

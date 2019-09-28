@@ -279,6 +279,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void TryRefreshInfos(GameObject g, Type t) {
 
+        g.GetComponent<SC_Character> ()?.UpdateStats ();
+
         if((CurrentChara == g) || (CurrentTile == g))
             ShowInfos(g, t);
 
@@ -566,7 +568,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackerPreviewFight.shields.Set(activeCharacter.Tile.GreatWall?.Health ?? 0);
 
-        attackerPreviewFight.prep.Set(activeCharacter.PreparationCharge, activeCharacter.PreparationCharge + 1, activeCharacter.Preparation);
+        attackerPreviewFight.prep.Set(activeCharacter.PreparationCharge, Mathf.Min (activeCharacter.PreparationCharge + 1, activeCharacter.Preparation), activeCharacter.Preparation);
 
         attackerPreviewFight.anticip.Set(activeCharacter.AnticipationCharge, activeCharacter.AnticipationCharge, activeCharacter.Anticipation);
         
@@ -591,9 +593,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackedPF.shields.Set(c?.Health ?? 0, !cantHit);  
 
-        attackedPF.anticip.Set(attacked.AnticipationCharge, c ? attacked.AnticipationCharge : Mathf.Min(attacked.AnticipationCharge + (cantHit ? 0 : 1), attacked.Anticipation), attacked.Anticipation, attacked.AnticipationCharge >= attacked.Anticipation && !c);
+        attackedPF.anticip.Set(attacked.AnticipationCharge, c ? attacked.AnticipationCharge : Mathf.Min(attacked.AnticipationCharge + (cantHit || attackedKilled ? 0 : 1), attacked.Anticipation), attacked.Anticipation, attacked.Anticiping && !c);
 
-        attackedPF.prep.Set(attacked.PreparationCharge, Mathf.Min(attacked.PreparationCharge + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : 1), attacked.Preparation), attacked.Preparation, attacked.PreparationCharge >= attacked.Preparation);
+        attackedPF.prep.Set(attacked.PreparationCharge, Mathf.Min(attacked.PreparationCharge + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : 1), attacked.Preparation), attacked.Preparation, attacked.Prepared);
 
         return attackedKilled;
 

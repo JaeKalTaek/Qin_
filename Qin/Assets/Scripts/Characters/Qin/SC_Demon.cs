@@ -66,7 +66,7 @@ public class SC_Demon : SC_BaseQinChara {
 
         }
 
-        AddAura(true);
+        AddAura();
 
         spawnTile = Tile;
 
@@ -85,30 +85,26 @@ public class SC_Demon : SC_BaseQinChara {
 
     }
 
-    public void AddAura(bool refreshInfos) {
+    public void AddAura() {
 
         PerformAction((SC_Tile tile) => {
 
             tile.TryAddAura(characterName, auraModifiers);
 
-            if (/*refreshInfos &&*/ tile.Character)
+            if (tile.Character)
                 uiManager.TryRefreshInfos(tile.Character.gameObject, tile.Character.GetType());
 
         });
 
     }
 
-    public void RemoveAura(bool refreshInfos, SC_Tile center = null) {
+    public void RemoveAura(SC_Tile center = null) {
 
         PerformAction((SC_Tile tile) => {
 
-            //print("Before : " + tile.DemonAuras.Count);
-
             tile.DemonAuras.Remove(new DemonAura(characterName, auraModifiers));
 
-            //print("After : " + tile.DemonAuras.Count);
-
-            if (/*refreshInfos &&*/ tile.Character)
+            if (tile.Character)
                 uiManager.TryRefreshInfos(tile.Character.gameObject, tile.Character.GetType());
 
         }, center);
@@ -143,7 +139,7 @@ public class SC_Demon : SC_BaseQinChara {
 
                 LastPos = respawnTile;
 
-                AddAura(true);
+                AddAura();
 
                 gameObject.SetActive(true);
 
@@ -155,7 +151,7 @@ public class SC_Demon : SC_BaseQinChara {
 
     public override void DestroyCharacter () {
 
-        RemoveAura(true);
+        RemoveAura();
 
         base.DestroyCharacter();
 

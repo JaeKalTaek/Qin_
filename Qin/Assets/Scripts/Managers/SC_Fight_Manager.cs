@@ -106,9 +106,13 @@ public class SC_Fight_Manager : MonoBehaviour {
         SC_Character attacked = counter ? activeCharacter : activeCharacter.AttackTarget.Character;
 
         SC_Construction attackedConstru = counter ? activeCharacter.Tile.AttackableContru : activeCharacter.AttackTarget.AttackableContru;
+
+        Transform attackedShields = counter ? uiManager.fightPanel.attackerShield.transform : uiManager.fightPanel.attackedShield.transform;
+
+        Slider attackedHealth = counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider;
         #endregion
 
-        if(attacking)
+        if (attacking)
             SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
 
         #region Current character moves
@@ -129,7 +133,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         }
 
         #region Critical strike feedback
-        if(attacking && SC_Player.localPlayer.Turn && (c.PreparationCharge >= c.Preparation) && attacked && (attacked.AnticipationCharge < attacked.Anticipation))
+        if(attacking && SC_Player.localPlayer.Turn && c.Prepared && attacked && !attacked.Anticiping)
             SC_Camera.Instance.StartCoroutine("Screenshake");
         #endregion
 
@@ -148,11 +152,11 @@ public class SC_Fight_Manager : MonoBehaviour {
             #region Text Feedback
             string feedbackText = "";
 
-            if (c.PreparationCharge >= c.Preparation && !attackedConstru)
+            if (c.Prepared && !attackedConstru)
                 feedbackText += "Crit!";
 
             if (baseValue == endValue)
-                feedbackText += ((feedbackText != "" ? "\n" : "") + (attacked && attacked.AnticipationCharge >= attacked.Anticipation ? "Dodged!" :  "No Damage!"));
+                feedbackText += ((feedbackText != "" ? "\n" : "") + (attacked?.Anticiping ?? false ? "Dodged!" :  "No Damage!"));
 
             if(feedbackText != "") {
 
@@ -171,15 +175,17 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                 timer += Time.deltaTime;
 
+                attackedHealth.gameObject.SetActive (attacked || (attackedConstru && !attackedConstru.GreatWall));
+
                 if (attackedConstru?.GreatWall) {
 
-                    uiManager.fightPanel.attackedShield.transform.GetChild(uiManager.fightPanel.attackedShield.transform.childCount - 1).GetComponent<Image>().color = Color.Lerp(Color.white, new Color(1, 1, 1, 0), Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
+                    attackedShields.GetChild(attackedShields.childCount - 1).GetComponent<Image>().color = Color.Lerp(Color.white, new Color(1, 1, 1, 0), Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
 
                 } else {
 
                     float HealthValue = Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
 
-                    (counter ? uiManager.fightPanel.attackerSlider : uiManager.fightPanel.attackedSlider).Set(HealthValue, attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
+                    attackedHealth.Set(HealthValue, attackedConstru?.maxHealth ?? attacked?.MaxHealth ?? SC_Qin.Qin.energyToWin);
 
                     (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = ((int)(HealthValue + .5f)).ToString();
 
@@ -221,9 +227,10 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public void CharacterAttack(SC_Character attacker, SC_Character attacked) {
 
-        bool killed = attacked.Hit(CalcDamage(attacker, attacked));      
-        
-        attacked.AnticipationCharge = (attacked.AnticipationCharge >= attacked.Anticipation) ? 0 : Mathf.Min(attacked.AnticipationCharge + 1, attacked.Anticipation);
+        bool killed = attacked.Hit(CalcDamage(attacker, attacked));
+
+        if (!killed)
+            attacked.AnticipationCharge = attacked.Anticiping ? 0 : attacked.AnticipationCharge + 1;
 
         if (attacker.Hero) {
 
@@ -265,7 +272,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         /*if (attacker.Hero && attacked.Hero)
             damages = Mathf.CeilToInt(damages * RelationMalus(attacker.Hero, attacked.Hero));*/
 
-        if (attacker.PreparationCharge >= attacker.Preparation)
+        if (attacker.Prepared)
             damages = (int)(damages * CharactersVariables.critMultiplier + .5f);
 
         /*if (attacker.Hero?.Berserk ?? false)
@@ -289,7 +296,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         int damages = CalcAttack(attacker);
 
-        if (attacked.AnticipationCharge >= attacked.Anticipation)
+        if (attacked.Anticiping)
             damages = (int)(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f) + .5f);
 
         int armor = attacked.Armor;
@@ -398,7 +405,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         else
             print("Attack target error");
 
-        attacker.PreparationCharge += (attacker.PreparationCharge >= attacker.Preparation) && !attackedConstru ? -attacker.Preparation : 1;
+        attacker.PreparationCharge = attacker.Prepared && !attackedConstru ? 0 : attacker.PreparationCharge + 1;
 
     }
 

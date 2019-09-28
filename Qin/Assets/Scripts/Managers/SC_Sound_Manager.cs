@@ -224,15 +224,13 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         string b = constru ? "BUILDING" : ((!attacked || attacked.BaseQinChara) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
 
-        bool c = attacker.PreparationCharge >= attacker.Preparation;
-
         foreach (EventDescription e in hitEvents) {
 
             string p;
 
             e.getPath(out p);
 
-            if (p.Contains("/" + b + "_HIT_" + a + "_SLOW") && (p.Contains("CRIT") == c)) {
+            if (p.Contains("/" + b + "_HIT_" + a + "_SLOW") && (p.Contains("CRIT") == attacker.Prepared)) {
 
                 EventInstance hitSound = RuntimeManager.CreateInstance(p);
                 hitSound.setVolume(.35f);

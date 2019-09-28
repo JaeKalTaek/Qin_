@@ -35,13 +35,14 @@ public abstract class SC_Character : NetworkBehaviour {
     public int Resistance { get { return baseStats.resistance + ResistanceModifiers + CombatTile.CombatModifiers.resistance + DemonsModifier("resistance"); } }
 
     public int PreparationModifiers { get; set; }
-    public int Preparation { get { return Mathf.Max(0, baseStats.preparation + PreparationModifiers + CombatTile.CombatModifiers.preparation + DemonsModifier("preparation")); } }
+    public int Preparation { get { return Mathf.Max(1, baseStats.preparation - PreparationModifiers - CombatTile.CombatModifiers.preparation - DemonsModifier("preparation")); } }
     public int PreparationCharge { get; set; }
-    public int MaxPrep { get { return Preparation * 3; } }
+    public bool Prepared { get { return PreparationCharge >= Preparation; } }
 
     public int AnticipationModifiers { get; set; }
-    public int Anticipation { get { return Mathf.Max(0, baseStats.anticipation + AnticipationModifiers + CombatTile.CombatModifiers.anticipation + DemonsModifier("anticipation")); } }
+    public int Anticipation { get { return Mathf.Max(1, baseStats.anticipation - AnticipationModifiers - CombatTile.CombatModifiers.anticipation - DemonsModifier("anticipation")); } }
     public int AnticipationCharge { get; set; }
+    public bool Anticiping { get { return AnticipationCharge >= Anticipation; } }
 
     [Tooltip("Time for a character to walk one tile of distance")]
     public float moveDuration;
@@ -311,9 +312,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
             uiManager.buildConstruButton.SetActive(false);
 
-            Demon.RemoveAura(false, LastPos);
+            Demon.RemoveAura(LastPos);
 
-            Demon.AddAura(false);
+            Demon.AddAura();
 
         }
 
@@ -418,11 +419,13 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }  else if (Demon) {
 
-            Demon.RemoveAura(true, LastPos);
+            Demon.RemoveAura(LastPos);
 
-            Demon.AddAura(true);
+            Demon.AddAura();
 
         }
+
+        uiManager.TryRefreshInfos (gameObject, GetType ());
 
         if (SC_Player.localPlayer.Turn) {            
 
@@ -536,6 +539,13 @@ public abstract class SC_Character : NetworkBehaviour {
         Sprite.color = BaseColor;
 
 	}
+
+    public void UpdateStats () {
+
+        PreparationCharge = Mathf.Min (Preparation, PreparationCharge);
+        AnticipationCharge = Mathf.Min (Anticipation, AnticipationCharge);
+
+    }
 
     public abstract Vector2 GetRange (SC_Tile t = null);
 

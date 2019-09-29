@@ -46,12 +46,11 @@ public class SC_UI_Manager : MonoBehaviour {
     [Header("Characters")]
     public CharacterTooltip characterTooltip;
     public CharacterDetails characterDetails;
-    public GameObject characterActionsPanel;
+    public GameObject characterActionsPanel, weaponChoicePanel;
     public GameObject attackButton, destroyConstruButton, buildConstruButton;    
 
     [Header("Heroes")]
     public RelationshipDetails[] relationshipsDetails;
-    public GameObject weaponChoicePanel, weaponChoice1, weaponChoice2;
     public HeroTooltip heroTooltip;
     public SC_UI_Stamina[] staminaUsage;
     public WarningStaminaDeathPanel warningStaminaDeathPanel;
@@ -330,20 +329,35 @@ public class SC_UI_Manager : MonoBehaviour {
     }
 
     #region Characters Details
-    public void DisplayCharacterDetails(SC_Character c) {
+    public void DisplayCharacterDetails(SC_Character c) {        
 
-        DisplayCharacterDetails(true);
-
-        ShowCharacterInfos(c);
+        ShowCharacterInfos (c);
 
         foreach (Transform t in characterDetails.stats.GetChild(0))
             if(t.gameObject.activeSelf)
                 t.GetChild(1).GetComponent<Text>().text = GetStat(c, t.name);
 
-        for (int i = 0; i < characterDetails.weapons.GetChild(0).childCount; i++)
-            characterDetails.weapons.GetChild(0).GetChild(i).GetComponent<Text>().text = (i == 0) ? c.GetActiveWeapon().weaponName : (i == 1) ? (c.Hero?.GetWeapon(false).weaponName) : "";
+        for (int i = 0; i < Mathf.Max (characterDetails.weapons.childCount, c.weapons.Count) ; i++) {
 
-        if(c.Hero) {
+            if (i < c.weapons.Count) {
+
+                if (i < characterDetails.weapons.childCount) {
+
+                    characterDetails.weapons.GetChild (i).GetComponent<Text> ().text = c.weapons [i].weaponName;
+                    characterDetails.weapons.GetChild (i).gameObject.SetActive (true);
+
+                } else
+                    Instantiate (Resources.Load<GameObject> ("Prefabs/UI/UI_Weapon"), characterDetails.weapons).GetComponent<Text> ().text = c.weapons[i].weaponName;
+
+            } else {
+
+                characterDetails.weapons.GetChild (i).gameObject.SetActive (false);
+
+            }
+
+        }
+
+        if (c.Hero) {
 
             for (int i = 0; i < c.Hero.RelationshipKeys.Count; i++) {
 
@@ -369,7 +383,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
         }
 
-        characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);    
+        characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);
+
+        DisplayCharacterDetails (true);
 
     }
 
@@ -491,13 +507,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
     #region Fight related
     // Also called by UI
-    public void SelectWeaponPreviewFight (bool weapon) {
+    public void SelectWeaponPreviewFight (int index) {
 
-        activeCharacter.Hero.SetWeapon(weapon);
+        activeCharacter.Hero.SetActiveWeapon (index);
 
         PreviewFight();
 
-        activeCharacter.Hero.SetWeapon(weapon);
+        activeCharacter.Hero.SetActiveWeapon (index);
 
     }
 
@@ -620,19 +636,33 @@ public class SC_UI_Manager : MonoBehaviour {
 	}*/
 
     #region Weapons
-    public void ShowHideWeapon (bool firstWeapon, bool active) {
+    public void ChooseWeapon () {
 
-        (firstWeapon ? weaponChoice1 : weaponChoice2).SetActive(active);
+        foreach (Transform t in weaponChoicePanel.transform) {
 
-        (firstWeapon ? weaponChoice1 : weaponChoice2).GetComponentInChildren<Text>().text = activeCharacter.Hero.GetWeapon(firstWeapon).weaponName;
+            t.gameObject.SetActive (false);
 
-    }
+            Destroy (t.gameObject);
 
-    public void ChooseWeapon () {        
+        }
 
-        ShowHideWeapon(true, activeCharacter.Hero.weapon1.Range(activeCharacter.Hero).In(SC_Fight_Manager.AttackRange));
+        foreach (SC_Weapon w in activeCharacter.weapons) {
 
-        ShowHideWeapon(false, activeCharacter.Hero.weapon2.Range(activeCharacter.Hero).In(SC_Fight_Manager.AttackRange));
+            if (w.Range (activeCharacter).In (SC_Fight_Manager.AttackRange)) {
+
+                GameObject weaponChoice = Instantiate (Resources.Load<GameObject> ("Prefabs/UI/WeaponChoice"), weaponChoicePanel.transform);
+
+                weaponChoice.GetComponentInChildren<Text> ().text = w.weaponName;
+
+                weaponChoice.GetComponent<Button> ().onClick.AddListener (() => { GameManager.ActiveCharacterAttack (w.Index); });        
+
+                weaponChoice.GetComponent<EventTrigger> ().triggers.Add (CreateEventTriggerEntry (EventTriggerType.PointerEnter, (eventData) => { SelectWeaponPreviewFight (w.Index); }));
+
+                weaponChoice.GetComponent<EventTrigger> ().triggers.Add (CreateEventTriggerEntry (EventTriggerType.PointerExit, (eventData) => { HidePreviewFight (); }));
+
+            }
+
+        }
 
         weaponChoicePanel.SetActive(true);
 
@@ -653,8 +683,6 @@ public class SC_UI_Manager : MonoBehaviour {
     public void HideWeapons () {        
 
         weaponChoicePanel.SetActive(false);
-        weaponChoice1.SetActive(false);
-        weaponChoice2.SetActive(false);
         previewFightPanel.SetActive(false);
 
     }
@@ -1202,6 +1230,14 @@ public class SC_UI_Manager : MonoBehaviour {
         yield return new WaitForSeconds(clickSecurityDuration);
 
         a();
+
+    }
+
+    EventTrigger.Entry CreateEventTriggerEntry (EventTriggerType type, UnityAction <BaseEventData> action) {
+
+        EventTrigger.Entry entry = new EventTrigger.Entry { eventID = type };
+        entry.callback.AddListener (action);
+        return entry;
 
     }
     #endregion

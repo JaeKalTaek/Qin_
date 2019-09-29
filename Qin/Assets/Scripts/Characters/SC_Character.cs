@@ -44,6 +44,9 @@ public abstract class SC_Character : NetworkBehaviour {
     public int AnticipationCharge { get; set; }
     public bool Anticiping { get { return AnticipationCharge >= Anticipation; } }
 
+    [Tooltip ("Weapons of this character")]
+    public List<SC_Weapon> weapons;
+
     [Tooltip("Time for a character to walk one tile of distance")]
     public float moveDuration;
 
@@ -129,6 +132,8 @@ public abstract class SC_Character : NetworkBehaviour {
         moveDuration = loadedCharacter.moveDuration;
 
         Health = baseStats.maxHealth;
+
+        weapons = new List<SC_Weapon> (loadedCharacter.weapons);
 
         Lifebar = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Components/P_Lifebar"), transform).GetComponent<SC_Lifebar>();
         Lifebar.transform.position += new Vector3(0, -.44f, 0);        
@@ -446,15 +451,10 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public void StartAttack () {
 
-        if (Hero) {
-
-            if (Hero.CanAttackWithWeapons(Tile).Count == 1)
-                SC_Player.localPlayer.CmdHeroAttack(AttackTarget.gameObject, Hero.CanAttackWithWeapons(Tile)[0]);
-            else
-                uiManager.ChooseWeapon();
-
-        } else
-            SC_Player.localPlayer.CmdAttack(AttackTarget.gameObject);
+        if (CanAttackWithWeapons (Tile).Count == 1)
+            SC_Player.localPlayer.CmdAttack (AttackTarget.gameObject, CanAttackWithWeapons (Tile)[0]);
+        else
+            uiManager.ChooseWeapon ();
 
     }
 
@@ -504,7 +504,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	public SC_Weapon GetActiveWeapon() {
 
-		return Hero?.GetWeapon(true) ?? BaseQinChara.weapon;
+        return weapons[0];
 
 	}	
 
@@ -547,7 +547,43 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }
 
-    public abstract Vector2 GetRange (SC_Tile t = null);
+    public Vector2 GetRange (SC_Tile t = null) {
+
+        float min = float.MaxValue;
+        float max = 0;
+
+        foreach (SC_Weapon w in weapons) {
+
+            min = Mathf.Min (min, w.minRange);
+            max = Mathf.Max (max, w.Range (this, t).y);
+
+        }
+
+        return new Vector2 (min, max);
+
+    }
+
+    public void SetActiveWeapon (int index) {
+
+        if (index == 0) return;
+
+        SC_Weapon temp = weapons[0];
+        weapons[0] = weapons[index];
+        weapons[index] = temp;
+
+    }
+
+    public List<int> CanAttackWithWeapons (SC_Tile from) {
+
+        List<int> indexes = new List<int> ();
+
+        foreach (SC_Weapon w in weapons)
+            if (w.Range (this, from).In (SC_Tile_Manager.TileDistance (from, SC_Cursor.Tile)))
+                indexes.Add (weapons.IndexOf (w));
+
+        return indexes;
+
+    }
 
     public int Range (SC_Tile t) {
 

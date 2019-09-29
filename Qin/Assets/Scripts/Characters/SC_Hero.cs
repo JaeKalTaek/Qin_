@@ -8,30 +8,11 @@ public class SC_Hero : SC_Character {
 	public Dictionary<string, int> Relationships { get; set; }
 	public List<string> RelationshipKeys { get; set; }
 
-	bool saved;
+	//bool saved;
 
 	//Berserk	
 	/*public bool Berserk { get; set; }
     public bool BerserkTurn { get; set; }*/
-
-	//Weapons
-    [Header("Heroes Variables")]
-    [Tooltip("Weapons of this hero")]
-	public SC_Weapon weapon1, weapon2;
-
-    public List<bool> CanAttackWithWeapons (SC_Tile from) {
-
-        List<bool> b = new List<bool>();
-
-        if (weapon1.Range(this, from).In(SC_Tile_Manager.TileDistance(from, SC_Cursor.Tile)))
-            b.Add(true);
-
-        if (weapon2.Range(this, from).In(SC_Tile_Manager.TileDistance(from, SC_Cursor.Tile)))
-            b.Add(false);
-
-        return b;
-
-    }
 
     [Tooltip("Characteristics")]
     public bool male;
@@ -68,10 +49,6 @@ public class SC_Hero : SC_Character {
     public override void OnStartClient () {
 
         base.OnStartClient();
-
-        weapon1 = loadedCharacter.Hero.weapon1;
-
-        weapon2 = loadedCharacter.Hero.weapon2;
 
         male = loadedCharacter.Hero.male;
 
@@ -130,13 +107,13 @@ public class SC_Hero : SC_Character {
 
 	}
 
-    public static void Attack(bool usedActiveWeapon) {
+    /*public static void Attack(bool usedActiveWeapon) {
 
         activeCharacter.Hero.SetWeapon(usedActiveWeapon);
 
         fightManager.Attack();
 
-    }    
+    }*/ 
 
 	public void Regen() {
 
@@ -260,32 +237,6 @@ public class SC_Hero : SC_Character {
 			uiManager.ShowVictory (true);
 
 	}
-
-	public SC_Weapon GetWeapon(bool active) {
-
-		return active ? weapon1 : weapon2;
-
-	}
-
-	public void SetWeapon(bool activeWeaponUsed) {
-
-		if(!activeWeaponUsed) {
-
-			SC_Weapon temp = GetWeapon(true);
-			weapon1 = weapon2;
-			weapon2 = temp;
-
-		}
-
-	}
-
-    public override Vector2 GetRange (SC_Tile t = null) {
-
-        t = t ? t : Tile;
-
-        return new Vector2(Mathf.Min(weapon1.minRange, weapon2.minRange), Mathf.Max(weapon1.MaxRange(this, t), weapon2.MaxRange(this, t)));
-
-    }
 
     public void IncreaseRelationships (int amount) {        
 

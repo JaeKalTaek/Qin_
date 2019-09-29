@@ -177,22 +177,24 @@ public class SC_Player : NetworkBehaviour {
     }
 
     [Command]
-    public void CmdAttack(GameObject target) {
+    public void CmdAttack (GameObject target, int weaponIndex) {
 
-        RpcAttack(target);
+        RpcAttack (target, weaponIndex);
 
     }
 
     [ClientRpc]
-    void RpcAttack(GameObject target) {
+    void RpcAttack (GameObject target, int weaponIndex) {
 
         activeCharacter.AttackTarget = target.GetComponent<SC_Tile>();
 
-        FightManager.Attack();
+        activeCharacter.SetActiveWeapon (weaponIndex);
+
+        FightManager.Attack ();
 
     }
 
-    [Command]
+    /*[Command]
     public void CmdHeroAttack(GameObject target, bool usedActiveWeapon) {
 
         RpcHeroAttack(usedActiveWeapon, target);
@@ -206,7 +208,7 @@ public class SC_Player : NetworkBehaviour {
 
         SC_Hero.Attack(usedActiveWeapon);
 
-    }
+    }*/
 
     [Command]
     public void CmdApplyDamage(bool counter) {

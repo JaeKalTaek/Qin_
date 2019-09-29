@@ -16,17 +16,11 @@ public class SC_Weapon : MonoBehaviour {
     [Tooltip("Maxmimum range of this weapon")]
     public int maxRange;    
 
+    public int Index { get { return SC_Character.activeCharacter.weapons.IndexOf (this); } }
+
     public Vector2 Range (SC_Character owner, SC_Tile t = null) {
 
-        t = t ?? owner.Tile;
-
-        return new Vector2(minRange, MaxRange(owner, t));
-
-    }
-
-    public int MaxRange(SC_Character owner, SC_Tile t) {
-
-        return (maxRange == 1) ? maxRange : Mathf.Max(minRange, maxRange + owner.Range(t));
+        return new Vector2(minRange, maxRange == 1 ? maxRange : Mathf.Max (minRange, maxRange + owner.Range (t ?? owner.Tile)));
 
     }
 

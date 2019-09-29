@@ -317,8 +317,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         if (Player.Qin && Player.Turn) {
 
-            // tileManager.RemoveAllFilters();
-
             Player.Busy = true;
 
             tileManager.DisplayConstructableTiles(CurrentConstru);
@@ -329,9 +327,9 @@ public class SC_Game_Manager : NetworkBehaviour {
     #endregion
 
     #region Methods called by UI  
-    public void SetAttackWeapon (bool usedActiveWeapon) {
+    public void ActiveCharacterAttack (int weaponIndex) {
 
-        Player.CmdHeroAttack(SC_Character.activeCharacter.AttackTarget.gameObject, usedActiveWeapon);
+        Player.CmdAttack (SC_Character.activeCharacter.AttackTarget.gameObject, weaponIndex);
 
     }
 

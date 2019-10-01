@@ -300,4 +300,6 @@ public class SC_Global {
 
     }    
 
+    public enum EPreparationElement { Hero, Weapon, Trap, Deployment }
+
 }

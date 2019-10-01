@@ -17,10 +17,19 @@ public class SC_UI_Manager : MonoBehaviour {
 
     #region UI Elements
     [Header("Preparation")]
-    public GameObject connectingPanel, preparationPanel;
-    public GameObject qinPreparationPanel, heroesPreparationPanel;
+    public GameObject connectingPanel, preparationPanel;    
     public GameObject readyButton, otherPlayerReady;
     public Color readyColor, notReadyColor;
+
+    [Header ("Qin Preparation")]
+    public GameObject qinPreparationPanel;
+
+    [Header("Heroes Preparation")]
+    public GameObject heroesPreparationPanel;
+    public List<SC_HeroDeck> heroDecks;
+    public GameObject heroesPoolPanel, weaponsPoolPanel, trapsPoolPanel;
+    public TextMeshProUGUI preparationSlotsCountText;
+    public Button preparationContinueButton, preparationReturnButton;
 
     [Header("Game")]
     public GameObject gamePanel;
@@ -110,10 +119,14 @@ public class SC_UI_Manager : MonoBehaviour {
     public Action backAction;
 
     Selectable previouslySelected;
+
+    public int CurrentMaxSlotsCount { get; set; }
     #endregion
 
     #region Setup
     private void Awake() {
+
+        CurrentMaxSlotsCount = 6;
 
         Instance = this;
 
@@ -177,26 +190,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    GameObject draggedCastle;
-
-    public void StartDragCastle(string castleType) {
-
-        draggedCastle = Instantiate(Resources.Load<GameObject> ("Prefabs/UI/P_Drag&DropCastle"), new Vector3(WorldMousePos.x, WorldMousePos.y, 0) , Quaternion.identity);
-
-        draggedCastle.transform.GetChild (0).GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Sprites/Constructions/Castle/Roofs/" + castleType);
-
-        draggedCastle.name = castleType;
-
-    }
-
-    public void DropCastle() {
-
-        TileManager.GetTileAt(WorldMousePos)?.Castle?.SetCastle(draggedCastle.name);
-
-        Destroy(draggedCastle);
-
-    }
-
     public void Load() {
 
         loadingPanel.SetActive(true);
@@ -206,6 +199,160 @@ public class SC_UI_Manager : MonoBehaviour {
         gamePanel.SetActive(true);
 
     }
+
+    #region Heroes
+    public EPreparationElement preparationPhase = EPreparationElement.Hero;
+
+    int preparationSlotsCount;
+
+    public int PreparationSlotsCount {
+
+        get { return preparationSlotsCount; }
+
+        set {
+
+            preparationSlotsCount = value;
+
+            preparationSlotsCountText.text = value + "/" + CurrentMaxSlotsCount;
+
+            bool b = true;
+
+            if (preparationPhase != EPreparationElement.Weapon)
+                b = value == CurrentMaxSlotsCount;
+            else {
+
+                foreach (SC_HeroDeck heroDeck in heroDecks)
+                    b &= heroDeck.Weapons[0].Sprite != heroDeck.Weapons[0].DefaultSprite;
+
+                b &= value <= CurrentMaxSlotsCount;
+
+            }
+
+            preparationContinueButton.interactable = b;
+
+        }
+
+    }    
+
+    public void PreparationContinue () {
+
+        switch (preparationPhase) {
+
+            case EPreparationElement.Hero:
+
+                preparationPhase = EPreparationElement.Weapon;                
+
+                CurrentMaxSlotsCount = GameManager.CommonCharactersVariables.maxTotalWeaponsCount;
+
+                preparationSlotsCount = 0;
+
+                foreach (SC_HeroDeck heroDeck in heroDecks) {
+
+                    foreach (SC_HeroPreparationSlot s in heroDeck.Weapons) {
+
+                        s.gameObject.SetActive (true);
+
+                        preparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;                    
+
+                    }
+
+                }
+
+                PreparationSlotsCount = preparationSlotsCount;
+
+                heroesPoolPanel.SetActive (false);
+                weaponsPoolPanel.SetActive (true);
+
+                preparationReturnButton.gameObject.SetActive (true);
+
+                break;
+
+            case EPreparationElement.Weapon:
+
+                preparationPhase = EPreparationElement.Trap;
+
+                CurrentMaxSlotsCount = 6;
+
+                preparationSlotsCount = 0;                
+
+                foreach (SC_HeroDeck heroDeck in heroDecks) {
+
+                    heroDeck.Trap.gameObject.SetActive (true);
+
+                    preparationSlotsCount += heroDeck.Trap.Sprite != heroDeck.Trap.DefaultSprite ? 1 : 0;
+
+                }
+
+                PreparationSlotsCount = preparationSlotsCount;
+
+                weaponsPoolPanel.SetActive (false);
+                trapsPoolPanel.SetActive (true);
+
+                break;
+
+            case EPreparationElement.Trap:
+
+                preparationPhase = EPreparationElement.Deployment;
+
+                trapsPoolPanel.SetActive (false);
+
+                break;
+
+        }
+
+    }
+
+    public void PreparationReturn () {
+
+        switch (preparationPhase) {
+
+            case EPreparationElement.Weapon:
+
+                preparationPhase = EPreparationElement.Hero;
+
+                CurrentMaxSlotsCount = 6;
+
+                PreparationSlotsCount = 0;
+
+                foreach (SC_HeroDeck heroDeck in heroDecks)
+                    PreparationSlotsCount += heroDeck.Hero.Sprite != heroDeck.Hero.DefaultSprite ? 1 : 0;
+
+                heroesPoolPanel.SetActive (true);
+                weaponsPoolPanel.SetActive (false);
+
+                preparationReturnButton.gameObject.SetActive (false);
+
+                break;
+
+            case EPreparationElement.Trap:
+
+                preparationPhase = EPreparationElement.Weapon;
+
+                CurrentMaxSlotsCount = GameManager.CommonCharactersVariables.maxTotalWeaponsCount;
+
+                PreparationSlotsCount = 0;
+
+                foreach (SC_HeroDeck heroDeck in heroDecks)
+                    foreach (SC_HeroPreparationSlot s in heroDeck.Weapons)
+                        PreparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;
+
+                weaponsPoolPanel.SetActive (true);
+                trapsPoolPanel.SetActive (false);
+
+                break;
+
+            case EPreparationElement.Deployment:
+
+                preparationPhase = EPreparationElement.Trap;
+
+                trapsPoolPanel.SetActive (true);
+
+                break;
+
+        }
+
+    }
+    #endregion
     #endregion
 
     #region Next Turn 
@@ -1016,9 +1163,6 @@ public class SC_UI_Manager : MonoBehaviour {
                 backAction ();
 
         }
-
-        if (draggedCastle)
-            draggedCastle.transform.position = new Vector3 (WorldMousePos.x, WorldMousePos.y, 0);
 
         if (victoryPanel.activeSelf && Input.anyKeyDown) {
 

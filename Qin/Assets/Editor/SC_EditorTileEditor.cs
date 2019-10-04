@@ -19,11 +19,9 @@ public class SC_EditorTileEditor : Editor {
 
                 string s = (tile.IsChanging ? "Changing" : (tile.IsRiver ? "River/" + tile.riverSprite : tile.tileType + "/0"));
 
-                // Debug.Log("Sprites/Tiles/" + s);
-
                 tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Tiles/" + s);
 
-                tile.SetSprite(0, tile.construction == ConstructionType.None ? "" : "Sprites/Constructions/" + tile.construction);
+                tile.SetSprite(1, tile.construction == ConstructionType.None ? "" : "Constructions/" + tile.construction);
 
                 if (tile.construction == ConstructionType.Castle) {
 
@@ -32,10 +30,6 @@ public class SC_EditorTileEditor : Editor {
                         SpriteRenderer sr = new GameObject("Roof").AddComponent<SpriteRenderer>();
 
                         sr.transform.parent = tile.transform.GetChild(0);
-
-                        /*sr.sortingLayerName = "Constructions";
-
-                        sr.sortingOrder = 1;*/
 
                         sr.sprite = Resources.Load<Sprite>("Sprites/Constructions/Castle/Roofs/" + tile.castleType);
 
@@ -50,7 +44,29 @@ public class SC_EditorTileEditor : Editor {
                 /*if (tile.PrevRegion != tile.region)
                     ChangeTileRegion(tile);*/
 
+                if (tile.heroDeployTile) {
+
+                    heroesDeployTilesCount += tile.PrevHeroDeployTile ? 1 : 0;
+                    tile.PrevHeroDeployTile = true;
+
+                    tile.soldier = SoldierType.None;
+                    tile.PrevSoldier = SoldierType.None;
+
+                    tile.Qin = false;
+                    tile.PrevQin = false;
+
+                    tile.SetSprite (0, "Tiles/Filters/MovementFilter");
+
+                } else
+                    tile.SetSprite (0, "");
+
                 if (tile.Hero != HeroType.None) {
+
+                    tile.soldier = SoldierType.None;
+                    tile.PrevSoldier = SoldierType.None;
+
+                    tile.Qin = false;
+                    tile.PrevQin = false;
 
                     SC_EditorTile t = GetHeroTile(tile.Hero);
 
@@ -59,13 +75,13 @@ public class SC_EditorTileEditor : Editor {
                         t.Hero = HeroType.None;
                         t.PrevHero = HeroType.None;
 
-                        t.SetSprite(1, "");
+                        t.SetSprite(2, "");
 
                         heroesOnTiles.Remove(new HeroTile(tile.Hero, t));
 
                     }
 
-                    if (tile.PrevHero == HeroType.None) {
+                    if (tile.PrevHero == HeroType.None) {                        
 
                         tile.soldier = SoldierType.None;
                         tile.PrevSoldier = SoldierType.None;
@@ -73,7 +89,7 @@ public class SC_EditorTileEditor : Editor {
                         tile.Qin = false;
                         tile.PrevQin = false;
 
-                        heroesOnTiles.Add(new HeroTile(tile.Hero, tile));
+                        //heroesOnTiles.Add(new HeroTile(tile.Hero, tile));
 
                     } else if (tile.PrevHero != tile.Hero) {
 
@@ -85,9 +101,9 @@ public class SC_EditorTileEditor : Editor {
 
                     tile.PrevHero = tile.Hero;
 
-                    tile.SetSprite(1, "Sprites/Characters/Heroes/" + tile.Hero);
+                    tile.SetSprite(2, "Characters/Heroes/" + tile.Hero);
 
-                } else if (tile.PrevHero != HeroType.None) {
+                } else if (tile.PrevHero != HeroType.None) {                    
 
                     heroesOnTiles.Remove(new HeroTile(tile.PrevHero, tile));
 
@@ -105,6 +121,10 @@ public class SC_EditorTileEditor : Editor {
                         tile.Hero = HeroType.None;
                         tile.PrevHero = HeroType.None;
 
+                        heroesDeployTilesCount -= tile.heroDeployTile ? 1 : 0;
+                        tile.heroDeployTile = false;
+                        tile.PrevHeroDeployTile = false;
+
                         tile.Qin = false;
                         tile.PrevQin = false;
 
@@ -112,7 +132,7 @@ public class SC_EditorTileEditor : Editor {
 
                     tile.PrevSoldier = tile.soldier;
 
-                    tile.SetSprite(1, "Sprites/Characters/Soldiers/" + tile.soldier);
+                    tile.SetSprite(2, "Characters/Soldiers/" + tile.soldier);
 
                 }
 
@@ -136,11 +156,15 @@ public class SC_EditorTileEditor : Editor {
                         tile.Hero = HeroType.None;
                         tile.PrevHero = HeroType.None;
 
+                        heroesDeployTilesCount -= tile.heroDeployTile ? 1 : 0;
+                        tile.heroDeployTile = false;
+                        tile.PrevHeroDeployTile = false;
+
                     }
 
                     tile.PrevQin = true;
 
-                    tile.SetSprite(1, "Sprites/Characters/Qin");
+                    tile.SetSprite(2, "Characters/Qin");
 
                     currentQinTile = tile;
 
@@ -152,8 +176,8 @@ public class SC_EditorTileEditor : Editor {
 
                 }
 
-                if ((tile.Hero == HeroType.None) && (tile.soldier == SoldierType.None) && !tile.Qin)
-                    tile.SetSprite(1, "");
+                if (tile.Hero == HeroType.None && tile.soldier == SoldierType.None && !tile.Qin)
+                    tile.SetSprite(2, "");
 
             }
 

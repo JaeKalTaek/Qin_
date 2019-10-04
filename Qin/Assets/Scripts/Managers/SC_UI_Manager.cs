@@ -20,16 +20,10 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject connectingPanel, preparationPanel;    
     public GameObject readyButton, otherPlayerReady;
     public Color readyColor, notReadyColor;
+    public HeroesPreparationUI heroPreparationUI;
 
     [Header ("Qin Preparation")]
-    public GameObject qinPreparationPanel;
-
-    [Header("Heroes Preparation")]
-    public GameObject heroesPreparationPanel;
-    public List<SC_HeroDeck> heroDecks;
-    public GameObject heroesPoolPanel, weaponsPoolPanel, trapsPoolPanel;
-    public TextMeshProUGUI preparationSlotsCountText;
-    public Button preparationContinueButton, preparationReturnButton;
+    public GameObject qinPreparationPanel;    
 
     [Header("Game")]
     public GameObject gamePanel;
@@ -144,9 +138,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
             qinPreparationPanel.SetActive(qin);
 
-            heroesPreparationPanel.SetActive(!qin);
+            heroPreparationUI.panel.SetActive(!qin);
 
             preparationPanel.SetActive(true);
+
+            readyButton.gameObject.SetActive (qin);
 
         } else
             gamePanel.SetActive(true);
@@ -213,7 +209,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             preparationSlotsCount = value;
 
-            preparationSlotsCountText.text = value + "/" + CurrentMaxSlotsCount;
+            heroPreparationUI.preparationSlotsCount.text = value + "/" + CurrentMaxSlotsCount;
 
             bool b = true;
 
@@ -221,14 +217,14 @@ public class SC_UI_Manager : MonoBehaviour {
                 b = value == CurrentMaxSlotsCount;
             else {
 
-                foreach (SC_HeroDeck heroDeck in heroDecks)
+                foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks)
                     b &= heroDeck.Weapons[0].Sprite != heroDeck.Weapons[0].DefaultSprite;
 
                 b &= value <= CurrentMaxSlotsCount;
 
             }
 
-            preparationContinueButton.interactable = b;
+            heroPreparationUI.continueButton.interactable = b;
 
         }
 
@@ -246,7 +242,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 preparationSlotsCount = 0;
 
-                foreach (SC_HeroDeck heroDeck in heroDecks) {
+                foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks) {
 
                     foreach (SC_HeroPreparationSlot s in heroDeck.Weapons) {
 
@@ -260,10 +256,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 PreparationSlotsCount = preparationSlotsCount;
 
-                heroesPoolPanel.SetActive (false);
-                weaponsPoolPanel.SetActive (true);
+                heroPreparationUI.heroesPool.SetActive (false);
+                heroPreparationUI.weaponsPool.SetActive (true);
 
-                preparationReturnButton.gameObject.SetActive (true);
+                heroPreparationUI.returnButton.gameObject.SetActive (true);
 
                 break;
 
@@ -275,7 +271,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 preparationSlotsCount = 0;                
 
-                foreach (SC_HeroDeck heroDeck in heroDecks) {
+                foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks) {
 
                     heroDeck.Trap.gameObject.SetActive (true);
 
@@ -285,8 +281,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 PreparationSlotsCount = preparationSlotsCount;
 
-                weaponsPoolPanel.SetActive (false);
-                trapsPoolPanel.SetActive (true);
+                heroPreparationUI.weaponsPool.SetActive (false);
+                heroPreparationUI.trapsPool.SetActive (true);
 
                 break;
 
@@ -294,7 +290,25 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 preparationPhase = EPreparationElement.Deployment;
 
-                trapsPoolPanel.SetActive (false);
+                heroPreparationUI.pool.SetActive (false);
+                heroPreparationUI.returnButton2.gameObject.SetActive (true);
+                heroPreparationUI.confirmButton.gameObject.SetActive (true);
+                
+                if (!FindObjectOfType <SC_DeploymentHero> ())
+                    for (int i = 0; i < heroPreparationUI.heroDecks.Count; i++)
+                        Instantiate (Resources.Load<SC_DeploymentHero> ("Prefabs/Characters/Heroes/P_DeploymentHero"), TileManager.DeploymentTiles [i].transform.position, Quaternion.identity).SpriteR.sprite = heroPreparationUI.heroDecks [i].Hero.Sprite;
+
+                break;
+
+            case EPreparationElement.Deployment:
+
+                preparationPhase = EPreparationElement.Confirmation;
+
+                heroPreparationUI.returnButton2.gameObject.SetActive (false);
+                heroPreparationUI.confirmButton.gameObject.SetActive (false);
+                heroPreparationUI.cancelButton.gameObject.SetActive (true);
+
+                SetReady ();
 
                 break;
 
@@ -314,13 +328,14 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 PreparationSlotsCount = 0;
 
-                foreach (SC_HeroDeck heroDeck in heroDecks)
+                foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks)
                     PreparationSlotsCount += heroDeck.Hero.Sprite != heroDeck.Hero.DefaultSprite ? 1 : 0;
 
-                heroesPoolPanel.SetActive (true);
-                weaponsPoolPanel.SetActive (false);
+                heroPreparationUI.heroesPool.SetActive (true);
+                heroPreparationUI.returnButton.gameObject.SetActive (false);
+                heroPreparationUI.weaponsPool.SetActive (false);
 
-                preparationReturnButton.gameObject.SetActive (false);
+                heroPreparationUI.returnButton.gameObject.SetActive (false);
 
                 break;
 
@@ -332,12 +347,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 PreparationSlotsCount = 0;
 
-                foreach (SC_HeroDeck heroDeck in heroDecks)
+                foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks)
                     foreach (SC_HeroPreparationSlot s in heroDeck.Weapons)
                         PreparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;
 
-                weaponsPoolPanel.SetActive (true);
-                trapsPoolPanel.SetActive (false);
+                heroPreparationUI.weaponsPool.SetActive (true);
+                heroPreparationUI.trapsPool.SetActive (false);
 
                 break;
 
@@ -345,7 +360,23 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 preparationPhase = EPreparationElement.Trap;
 
-                trapsPoolPanel.SetActive (true);
+                heroPreparationUI.pool.SetActive (true);
+                heroPreparationUI.returnButton2.gameObject.SetActive (false);
+                heroPreparationUI.confirmButton.gameObject.SetActive (false);
+
+                //SC_Cursor.SetLock (true);
+
+                break;
+
+            case EPreparationElement.Confirmation:
+
+                preparationPhase = EPreparationElement.Deployment;
+
+                heroPreparationUI.returnButton2.gameObject.SetActive (true);
+                heroPreparationUI.confirmButton.gameObject.SetActive (true);
+                heroPreparationUI.cancelButton.gameObject.SetActive (false);
+
+                SetReady ();                
 
                 break;
 
@@ -1334,7 +1365,7 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Utility   
     public bool IsFullScreenMenuOn { get { return characterDetails.panel.activeSelf; } }
 
-    GraphicRaycaster GR { get { return GetComponent<GraphicRaycaster> (); } }
+    public GraphicRaycaster GR { get { return GetComponent<GraphicRaycaster> (); } }
 
     public void FocusOn (Vector3 pos) {
 

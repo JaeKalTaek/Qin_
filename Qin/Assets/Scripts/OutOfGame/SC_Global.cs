@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 [Serializable]
 public class SC_Global {
 
-    public enum TDisplay { None = -1, Attack = 0, Sacrifice = 1, Construct = 2, Movement = 3 }
+    public enum TDisplay { None = -1, Attack = 0, Sacrifice = 1, Construct = 2, Deploy = 3, Movement = 4 }
 
     public enum ShiFuMi { Rock, Paper, Scissors, Special }
 
@@ -57,6 +58,8 @@ public class SC_Global {
 
         public string type;
 
+        public bool heroDeploy;
+
         public int sprite;
 
         public int riverSprite;
@@ -65,9 +68,11 @@ public class SC_Global {
 
         public bool[] borders;
 
-        public TileInfos(string t, int s, int rS, int r, bool[] b) {
+        public TileInfos(string t, bool d, int s, int rS, int r, bool[] b) {
 
             type = t;
+
+            heroDeploy = d;
 
             sprite = s;
 
@@ -227,6 +232,21 @@ public class SC_Global {
 
     }
 
+    [Serializable]
+    public struct HeroesPreparationUI {
+
+        public GameObject panel, decks, pool;
+
+        public List<SC_HeroDeck> heroDecks;
+
+        public GameObject heroesPool, weaponsPool, trapsPool;
+
+        public TextMeshProUGUI preparationSlotsCount;
+
+        public Button continueButton, returnButton, returnButton2, confirmButton, cancelButton;
+
+    }
+
     public static bool CanCreateConstruct(string c) {
 
         return (SC_Qin.GetConstruCost(c) < SC_Qin.Energy) && (SC_Tile_Manager.Instance.GetConstructableTiles(c).Count > 0);
@@ -300,6 +320,6 @@ public class SC_Global {
 
     }    
 
-    public enum EPreparationElement { Hero, Weapon, Trap, Deployment }
+    public enum EPreparationElement { Hero, Weapon, Trap, Deployment, Confirmation }
 
 }

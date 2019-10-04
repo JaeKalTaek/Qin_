@@ -109,7 +109,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             go.GetComponent<SC_Tile>().infos = new TileInfos(
                 eTile.tileType.ToString(),
-                UnityEngine.Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Tiles/" + eTile.tileType).Length),
+                eTile.heroDeployTile,
+                Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Tiles/" + eTile.tileType).Length),
                 (int)eTile.riverSprite,
                 (int)eTile.region,
                 borders
@@ -169,7 +170,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 			}
 
-            if ((eTile.soldier != SoldierType.None) || eTile.Qin || (eTile.Hero != HeroType.None)) {
+            if ((eTile.soldier != SoldierType.None) || eTile.Qin || (eTile.Hero != HeroType.None && !prep)) {
 
                 string basePath = "Prefabs/Characters/" + (eTile.soldier != SoldierType.None ? "Soldiers/P_BaseSoldier" : (eTile.Qin ? "P_Qin" : "Heroes/P_BaseHero"));
 

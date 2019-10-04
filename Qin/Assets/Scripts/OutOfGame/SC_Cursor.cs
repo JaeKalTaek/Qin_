@@ -32,7 +32,9 @@ public class SC_Cursor : NetworkBehaviour {
 
     void Start() {
 
-        Locked = true;
+        Locked = !SC_Player.localPlayer.Qin;
+
+        GetComponent<SpriteRenderer> ().enabled = SC_Player.localPlayer.Qin;
 
         cam = FindObjectOfType<SC_Camera>();
 

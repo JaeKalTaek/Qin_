@@ -31,8 +31,11 @@ public class SC_MapEditor : Editor {
                 if (!currentQinTile)
                     EditorGUILayout.HelpBox("Qin is missing from the map", MessageType.Warning);
 
-                if (heroesOnTiles.Count < 6)
+                if (heroesOnTiles.Count < 6 && !map.prepMap)
                     EditorGUILayout.HelpBox("Not all heroes are on this map", MessageType.Warning);
+
+                if (heroesDeployTilesCount < 6 && map.prepMap)
+                    EditorGUILayout.HelpBox ("Not enough deployment tiles for heroes on this map", MessageType.Warning);
 
                 if (regions != null) {
 

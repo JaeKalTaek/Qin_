@@ -20,6 +20,8 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     public List<SC_Tile> ChangingTiles { get; set; }
 
+    public List<SC_Tile> DeploymentTiles { get; set; }
+
     static SC_Game_Manager gameManager;
 
     static SC_UI_Manager uiManager;
@@ -45,8 +47,6 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         SC_Fight_Manager.Instance.TileManager = this;
 
-        // tiles = new SC_Tile[xSize, ySize];
-
         tiles = new SC_Tile[XSize, YSize];
 
         regions = new List<SC_Tile>[6];
@@ -55,6 +55,8 @@ public class SC_Tile_Manager : NetworkBehaviour {
             regions[i] = new List<SC_Tile>();
 
         ChangingTiles = new List<SC_Tile>();
+
+        DeploymentTiles = new List<SC_Tile> ();
 
         foreach (SC_Tile t in FindObjectsOfType<SC_Tile>()) {
 
@@ -65,6 +67,14 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
             if(t.Region != -1)
                 regions[t.Region].Add(t);
+
+            if (t.infos.heroDeploy && !gameManager.Player.Qin) {
+
+                t.ChangeDisplay (TDisplay.Deploy);
+
+                DeploymentTiles.Add (t);                
+                
+            }
 
         }
 
@@ -109,7 +119,6 @@ public class SC_Tile_Manager : NetworkBehaviour {
 		gameManager.FinishSetup ();
 
         OpenList = new List<SC_Tile>();
-        // MovementRange = new List<SC_Tile>();
 
     }
 
@@ -224,6 +233,8 @@ public class SC_Tile_Manager : NetworkBehaviour {
     }
 
     public void RemoveAllFilters (bool async = false) {
+
+        print ("Remove all filters");
 
         if(SC_Player.localPlayer.Turn || async)
             foreach (SC_Tile tile in tiles)

@@ -41,8 +41,10 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
 
         if (Renderer.color.a == 1) {
 
-            draggedElement = Instantiate (new GameObject (), new Vector3 (WorldMousePos.x, WorldMousePos.y, 0), Quaternion.identity).AddComponent<SpriteRenderer> ();
+            draggedElement = new GameObject ("Dragged Element").AddComponent<SpriteRenderer> ();
 
+            draggedElement.transform.position = new Vector3 (WorldMousePos.x, WorldMousePos.y, 0);
+           
             draggedElement.sortingOrder = 11;
 
             draggedElement.sprite = GetComponent<Image> ().sprite;
@@ -96,7 +98,7 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
 
         }
 
-        Destroy (draggedElement);
+        Destroy (draggedElement.gameObject);
 
     }
 

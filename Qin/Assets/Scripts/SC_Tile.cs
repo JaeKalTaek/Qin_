@@ -28,6 +28,8 @@ public class SC_Tile : NetworkBehaviour {
     [SyncVar]
     public TileInfos infos;
 
+    public SC_DeploymentHero DeployedHero { get; set; }
+
     public int Region { get { return infos.region; } }    
 
     public bool CanAttack { get { return CurrentDisplay == TDisplay.Attack && !Empty; } }

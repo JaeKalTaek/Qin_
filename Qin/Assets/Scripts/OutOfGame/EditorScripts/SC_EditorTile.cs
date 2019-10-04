@@ -37,9 +37,15 @@ public class SC_EditorTile : MonoBehaviour {
     public HeroType Hero;
     public HeroType PrevHero { get; set; }
 
+    [Tooltip ("Is this tile a possible deployment tile for heroes ?")]
+    public bool heroDeployTile;
+    public bool PrevHeroDeployTile { get; set; }
+
+    public static int heroesDeployTilesCount;
+
     public static SC_EditorTile currentQinTile;
 
-    public static List<HeroTile> heroesOnTiles = new List<HeroTile>();
+    public static List<HeroTile> heroesOnTiles = new List<HeroTile>();    
 
     public bool IsRiver { get { return tileType == TileType.River; } }
 
@@ -119,7 +125,7 @@ public class SC_EditorTile : MonoBehaviour {
 
     public void SetSprite (int index, string s) {
 
-        transform.GetChild(index).GetComponent<SpriteRenderer>().sprite = (s == "") ? null : Resources.Load<Sprite>(s);
+        transform.GetChild(index).GetComponent<SpriteRenderer>().sprite = (s == "") ? null : Resources.Load<Sprite>("Sprites/" + s);
 
     }
 

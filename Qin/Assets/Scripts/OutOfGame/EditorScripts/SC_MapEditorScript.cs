@@ -14,6 +14,8 @@ public class SC_MapEditorScript : MonoBehaviour {
     [Tooltip("Size of a tile")]
     public float TileSize = .96f;
 
+    public bool prepMap;
+
     public SC_EditorTile[] Tiles { get; set; }
 
     public void GenerateMap() {              

@@ -62,43 +62,47 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
 
     void IEndDragHandler.OnEndDrag (PointerEventData eventData) {
 
-        SC_HeroPreparationSlot slot = null;
+        if (draggedElement) {
 
-        foreach (GameObject g in eventData.hovered)
-            slot = g.GetComponent<SC_HeroPreparationSlot> () ?? slot;
+            SC_HeroPreparationSlot slot = null;
 
-        if (slot?.elementType == elementType) {
+            foreach (GameObject g in eventData.hovered)
+                slot = g.GetComponent<SC_HeroPreparationSlot> () ?? slot;
 
-            if (slot.Sprite == slot.DefaultSprite) {
+            if (slot?.elementType == elementType) {
 
-                if (elementType == EPreparationElement.Weapon) {
+                if (slot.Sprite == slot.DefaultSprite) {
 
-                    SC_HeroPreparationSlot correctSlot = null;
+                    if (elementType == EPreparationElement.Weapon) {
 
-                    foreach (SC_HeroPreparationSlot w in slot.GetComponentInParent<SC_HeroDeck> ().Weapons)
-                        if (!correctSlot && w.Sprite == w.DefaultSprite)
-                            correctSlot = w;
+                        SC_HeroPreparationSlot correctSlot = null;
 
-                    correctSlot.Sprite = draggedElement.sprite;
+                        foreach (SC_HeroPreparationSlot w in slot.GetComponentInParent<SC_HeroDeck> ().Weapons)
+                            if (!correctSlot && w.Sprite == w.DefaultSprite)
+                                correctSlot = w;
 
-                } else
+                        correctSlot.Sprite = draggedElement.sprite;
+
+                    } else
+                        slot.Sprite = draggedElement.sprite;
+
+                    SC_UI_Manager.Instance.PreparationSlotsCount++;
+
+                } else {
+
+                    GiveBackElement (elementType, slot.Sprite);
+
                     slot.Sprite = draggedElement.sprite;
 
-                SC_UI_Manager.Instance.PreparationSlotsCount++;
+                }
 
-            } else {
-
-                GiveBackElement (elementType, slot.Sprite);
-
-                slot.Sprite = draggedElement.sprite;
+                Renderer.DOFade (.5f, 0);
 
             }
 
-            Renderer.DOFade (.5f, 0);
+            Destroy (draggedElement.gameObject);
 
         }
-
-        Destroy (draggedElement.gameObject);
 
     }
 

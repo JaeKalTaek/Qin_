@@ -133,7 +133,15 @@ public abstract class SC_Character : NetworkBehaviour {
 
         Health = baseStats.maxHealth;
 
-        weapons = new List<SC_Weapon> (loadedCharacter.weapons);
+        if (Hero) {
+
+            weapons = new List<SC_Weapon> ();
+
+            foreach (string s in Hero.deck.weapons)
+                weapons.Add (Resources.Load<SC_Weapon> ("Prefabs/Characters/Components/Weapons/P_" + s));
+
+        } else
+            weapons = new List<SC_Weapon> (loadedCharacter.weapons);
 
         Lifebar = Instantiate(Resources.Load<GameObject>("Prefabs/Characters/Components/P_Lifebar"), transform).GetComponent<SC_Lifebar>();
         Lifebar.transform.position += new Vector3(0, -.44f, 0);        

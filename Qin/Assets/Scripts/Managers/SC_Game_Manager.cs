@@ -196,7 +196,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
 
-    public void Load() {
+    public IEnumerator Load () {
+
+        foreach (SC_DeploymentHero h in FindObjectsOfType<SC_DeploymentHero> ())
+            Destroy (h.gameObject);
 
         foreach (SC_Castle castle in FindObjectsOfType<SC_Castle>())
             if (!Player.Qin)
@@ -205,9 +208,13 @@ public class SC_Game_Manager : NetworkBehaviour {
         foreach (SC_Tile t in tileManager.ChangingTiles)
             t.SetupTile();
 
+        yield return new WaitForSeconds (.5f);
+
         uiManager.loadingPanel.SetActive(false);
 
         prep = false;
+
+        SC_Cursor.SetLock (false);
 
     }
     #endregion

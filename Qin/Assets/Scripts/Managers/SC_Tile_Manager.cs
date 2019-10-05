@@ -68,7 +68,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
             if(t.Region != -1)
                 regions[t.Region].Add(t);
 
-            if (t.infos.heroDeploy && !gameManager.Player.Qin) {
+            print (SC_Player.localPlayer);
+
+            if (t.infos.heroDeploy && !SC_Player.localPlayer.Qin) {
 
                 t.ChangeDisplay (TDisplay.Deploy);
 
@@ -234,7 +236,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     public void RemoveAllFilters (bool async = false) {
 
-        print ("Remove all filters");
+        // print ("Remove all filters");
 
         if(SC_Player.localPlayer.Turn || async)
             foreach (SC_Tile tile in tiles)

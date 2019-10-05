@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using static SC_Character;
+using static SC_Global;
 
 public class SC_Player : NetworkBehaviour {
 
@@ -108,9 +109,31 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcBothPlayersReady () {
 
+        if (!localPlayer.Qin)
+            SC_Hero.SendHeroesInfos ();
+
         UIManager.Load();
 
-        localPlayer.GameManager.Load();        
+        StartCoroutine(localPlayer.GameManager.Load());        
+
+    }
+    #endregion
+
+    #region Sending Heroes infos
+    [Command]
+    public void CmdSendHeroesInfos (HeroDeck[] decks) {
+
+        foreach (HeroDeck d in decks) {
+
+            GameObject go = Instantiate (Resources.Load<GameObject> ("Prefabs/Characters/Heroes/P_BaseHero"), d.pos, Quaternion.identity);
+
+            go.GetComponent<SC_Character> ().characterPath = "Prefabs/Characters/Heroes/P_" + d.hero;
+
+            go.GetComponent<SC_Hero> ().deck = d;
+
+            NetworkServer.Spawn (go);
+
+        }
 
     }
     #endregion

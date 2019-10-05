@@ -247,6 +247,28 @@ public class SC_Global {
 
     }
 
+    public struct HeroDeck {
+
+        public Vector3 pos;
+
+        public string hero, trap;
+
+        public string[] weapons;
+
+        public HeroDeck (Vector3 p, string h, string t, string[] w) {
+
+            pos = p;
+
+            hero = h;
+
+            trap = t;
+
+            weapons = w;
+
+        }
+
+    }
+
     public static bool CanCreateConstruct(string c) {
 
         return (SC_Qin.GetConstruCost(c) < SC_Qin.Energy) && (SC_Tile_Manager.Instance.GetConstructableTiles(c).Count > 0);

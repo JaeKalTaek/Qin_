@@ -1,8 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
+using static SC_Global;
 
 public class SC_Hero : SC_Character {
+
+    [HideInInspector]
+    [SyncVar]
+    public HeroDeck deck;
 
 	//Relationships	
 	public Dictionary<string, int> Relationships { get; set; }
@@ -48,7 +54,7 @@ public class SC_Hero : SC_Character {
 
     public override void OnStartClient () {
 
-        base.OnStartClient();
+        base.OnStartClient();        
 
         male = loadedCharacter.Hero.male;
 
@@ -275,5 +281,51 @@ public class SC_Hero : SC_Character {
 
     }
     #endregion
+
+    public static void SendHeroesInfos () {
+
+        SC_UI_Manager UI = SC_UI_Manager.Instance;
+
+        HeroDeck[] decks = new HeroDeck[6];
+
+        int count = 0;
+        
+        foreach (SC_Tile t in tileManager.tiles) {
+
+            if (t.DeployedHero) {
+
+                SC_HeroDeck heroDeck = null;
+
+                foreach (SC_HeroDeck hD in UI.heroPreparationUI.heroDecks)
+                    if (hD.Hero.Sprite == t.DeployedHero.SpriteR.sprite)
+                        heroDeck = hD;
+
+                List<string> weapons = new List<string> ();
+
+                foreach (SC_HeroPreparationSlot weapon in heroDeck.Weapons)
+                    if (weapon.Sprite != weapon.DefaultSprite)
+                        weapons.Add (weapon.Sprite.name);
+
+                decks[count] = new HeroDeck (
+
+                    t.transform.position,
+
+                    heroDeck.Hero.Sprite.name,
+
+                    heroDeck.Trap.Sprite.name,
+
+                    weapons.ToArray ()
+
+                );
+
+                count++;
+
+            }
+
+        }
+
+        SC_Player.localPlayer.CmdSendHeroesInfos (decks);
+
+    }
 
 }

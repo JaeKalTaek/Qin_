@@ -58,6 +58,8 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         DeploymentTiles = new List<SC_Tile> ();
 
+        print (SC_Player.localPlayer);
+
         foreach (SC_Tile t in FindObjectsOfType<SC_Tile>()) {
 
             tiles[t.transform.position.x.I(), t.transform.position.y.I()] = t;
@@ -66,9 +68,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
                 ChangingTiles.Add(t);
 
             if(t.Region != -1)
-                regions[t.Region].Add(t);
-
-            print (SC_Player.localPlayer);
+                regions[t.Region].Add(t);            
 
             if (t.infos.heroDeploy && !SC_Player.localPlayer.Qin) {
 

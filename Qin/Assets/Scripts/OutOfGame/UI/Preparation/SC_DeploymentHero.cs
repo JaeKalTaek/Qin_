@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using static SC_Global;
 
 public class SC_DeploymentHero : MonoBehaviour {
@@ -29,7 +29,7 @@ public class SC_DeploymentHero : MonoBehaviour {
 
         SC_Tile tileAtPos = SC_Tile_Manager.Instance.GetTileAt (transform.position);
 
-        if (tileAtPos && tileAtPos.CurrentDisplay == TDisplay.Deploy) {            
+        if (tileAtPos && tileAtPos.CurrentDisplay == TDisplay.Deploy && tileAtPos.transform.position != oldPos) {            
 
             if (tileAtPos.DeployedHero)
                 tileAtPos.DeployedHero.transform.position = oldPos;

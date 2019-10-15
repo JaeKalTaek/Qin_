@@ -10,9 +10,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
     [Tooltip("Number of border sprites around the board")]
     public int borderSize;
 
-    /*[HideInInspector]
-	[SyncVar]
-	public int xSize, ySize;*/
+    [HideInInspector]
+    [SyncVar]
+    public bool qinIsServerForStart;
 
 	public SC_Tile[,] tiles;
 
@@ -58,8 +58,6 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         DeploymentTiles = new List<SC_Tile> ();
 
-        print (SC_Player.localPlayer);
-
         foreach (SC_Tile t in FindObjectsOfType<SC_Tile>()) {
 
             tiles[t.transform.position.x.I(), t.transform.position.y.I()] = t;
@@ -70,7 +68,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             if(t.Region != -1)
                 regions[t.Region].Add(t);            
 
-            if (t.infos.heroDeploy && !SC_Player.localPlayer.Qin) {
+            if (t.infos.heroDeploy && qinIsServerForStart != isServer) {
 
                 t.ChangeDisplay (TDisplay.Deploy);
 

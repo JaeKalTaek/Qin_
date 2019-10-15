@@ -126,6 +126,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 		GameObject tm = Instantiate (Resources.Load<GameObject>("Prefabs/P_Tile_Manager"));
 
+        tm.GetComponent<SC_Tile_Manager> ().qinIsServerForStart = Player.Qin;
+
 		NetworkServer.Spawn (tm);
 
 	}

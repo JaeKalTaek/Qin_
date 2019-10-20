@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Networking;
+using UnityEngine.EventSystems;
 
 public class SC_Castle : SC_Bastion {
 
@@ -17,6 +17,8 @@ public class SC_Castle : SC_Bastion {
 
     protected override void Start () {
 
+        CastleType = "";
+
         if (!SC_Game_Manager.Instance.prep)
             Setup();
 
@@ -32,7 +34,11 @@ public class SC_Castle : SC_Bastion {
 
     public void SetCastle (string type) {
 
-        SC_Player.localPlayer.CmdChangeCastleType(gameObject, type, Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Tiles/" + type).Length));
+        CastleType = type;
+
+        uiManager.TryRefreshInfos (gameObject, typeof (SC_Castle));
+
+        SC_Player.localPlayer.CmdChangeCastleType(gameObject, type, type == "" ? 0 : Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Tiles/" + type).Length));
 
     }
 
@@ -61,7 +67,7 @@ public class SC_Castle : SC_Bastion {
 
         Name = CastleType + " Castle";
 
-        Roof.sprite = Resources.Load<Sprite>("Sprites/Constructions/Castle/Roofs/" + CastleType);
+        Roof.sprite = CastleType == "" ? null : Resources.Load<Sprite>("Sprites/Constructions/Castle/Roofs/" + CastleType);
 
     }
 
@@ -88,9 +94,20 @@ public class SC_Castle : SC_Bastion {
                 victory = false;
 
         if (victory)
-            uiManager.ShowVictory(false);
-        
+            uiManager.ShowVictory(false);        
 
     }
+
+    void OnMouseOver () {
+
+        if (Input.GetMouseButtonDown (1) && uiManager.qinPreparationPhase == SC_Global.EQinPreparationElement.Castles && CastleType != "") {
+
+            SC_UI_Manager.Instance.QinPreparationSlotsCount--;
+
+            SetCastle ("");
+
+        }
+
+    }   
 
 }

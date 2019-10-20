@@ -8,7 +8,7 @@ public class SC_HeroPreparationSlot : MonoBehaviour, IPointerClickHandler {
 
     [Header ("Preparation slot variables")]
     [Tooltip ("Type of this prepration slot")]
-    public EPreparationElement elementType;
+    public EHeroPreparationElement elementType;
 
     public Sprite DefaultSprite { get; set; }
 
@@ -32,15 +32,15 @@ public class SC_HeroPreparationSlot : MonoBehaviour, IPointerClickHandler {
 
     void IPointerClickHandler.OnPointerClick (PointerEventData eventData) {
 
-        if (Sprite != DefaultSprite && eventData.button == PointerEventData.InputButton.Right && SC_UI_Manager.Instance.preparationPhase == elementType) {
+        if (Sprite != DefaultSprite && eventData.button == PointerEventData.InputButton.Right && SC_UI_Manager.Instance.heroPreparationPhase == elementType) {
 
             SC_HeroPreparationElement.GiveBackElement (elementType, Sprite);
 
             Sprite = DefaultSprite;            
 
-            SC_UI_Manager.Instance.PreparationSlotsCount--;
+            SC_UI_Manager.Instance.HeroesPreparationSlotsCount--;
 
-            if (elementType == EPreparationElement.Weapon) {
+            if (elementType == EHeroPreparationElement.Weapon) {
 
                 List<Sprite> sprites = new List<Sprite> ();
 

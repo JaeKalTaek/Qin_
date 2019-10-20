@@ -12,7 +12,7 @@ public class SC_Global {
 
     public enum ShiFuMi { Rock, Paper, Scissors, Special }
 
-    public static Vector3 WorldMousePos { get { return Camera.main.ScreenToWorldPoint(Input.mousePosition); } }
+    public static Vector3 WorldMousePos { get { return Camera.main.ScreenToWorldPoint (Input.mousePosition); } }
 
     public static int XSize { get { return SC_Game_Manager.Instance.CurrentMapPrefab.SizeMapX; } }
 
@@ -25,34 +25,34 @@ public class SC_Global {
     [Serializable]
     public struct SC_CombatModifiers {
 
-        [Header("Combat Modifiers")]
-        [Tooltip("Strength Modifier")]
+        [Header ("Combat Modifiers")]
+        [Tooltip ("Strength Modifier")]
         public int strength;
 
-        [Tooltip("Chi Modifier")]
+        [Tooltip ("Chi Modifier")]
         public int chi;
 
-        [Tooltip("Armor Modifier")]
+        [Tooltip ("Armor Modifier")]
         public int armor;
 
-        [Tooltip("resistance Modifier")]
+        [Tooltip ("resistance Modifier")]
         public int resistance;
 
-        [Tooltip("Preparation Modifier")]
+        [Tooltip ("Preparation Modifier")]
         public int preparation;
 
-        [Tooltip("Anticipation Modifier")]
+        [Tooltip ("Anticipation Modifier")]
         public int anticipation;
 
-        [Tooltip("Range Modifier")]
+        [Tooltip ("Range Modifier")]
         public int range;
 
-        [Tooltip("Movement Modifier")]
+        [Tooltip ("Movement Modifier")]
         public int movement;
 
     }
 
-    public static void DoNothing() { }
+    public static void DoNothing () { }
 
     public struct TileInfos {
 
@@ -68,7 +68,7 @@ public class SC_Global {
 
         public bool[] borders;
 
-        public TileInfos(string t, bool d, int s, int rS, int r, bool[] b) {
+        public TileInfos (string t, bool d, int s, int rS, int r, bool[] b) {
 
             type = t;
 
@@ -92,7 +92,7 @@ public class SC_Global {
 
         public SC_CombatModifiers aura;
 
-        public DemonAura(string d, SC_CombatModifiers a) {
+        public DemonAura (string d, SC_CombatModifiers a) {
 
             demon = d;
 
@@ -210,7 +210,7 @@ public class SC_Global {
 
         public GameObject panel;
 
-        public Button yes, no;        
+        public Button yes, no;
 
     }
 
@@ -269,22 +269,35 @@ public class SC_Global {
 
     }
 
-    public static bool CanCreateConstruct(string c) {
+    [Serializable]
+    public struct QinPreparationUI {
 
-        return (SC_Qin.GetConstruCost(c) < SC_Qin.Energy) && (SC_Tile_Manager.Instance.GetConstructableTiles(c).Count > 0);
+        public GameObject panel, decks, pool;
+
+        public GameObject castlesPool, trapsPool, cursesPool;
+
+        public TextMeshProUGUI preparationSlotsCount;
+
+        public Button continueButton, returnButton, returnButton2, confirmButton, cancelButton;
+
+    }
+
+    public static bool CanCreateConstruct (string c) {
+
+        return (SC_Qin.GetConstruCost (c) < SC_Qin.Energy) && (SC_Tile_Manager.Instance.GetConstructableTiles (c).Count > 0);
 
     }
 
     public static bool CanCreateSoldier (string s) {
 
-        return Resources.Load<SC_Soldier>("Prefabs/Characters/Soldiers/Basic/P_" + s).cost < SC_Qin.Energy;
+        return Resources.Load<SC_Soldier> ("Prefabs/Characters/Soldiers/Basic/P_" + s).cost < SC_Qin.Energy;
 
     }
 
-    public static void ForceSelect(GameObject g) {
+    public static void ForceSelect (GameObject g) {
 
-        EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(g);
+        EventSystem.current.SetSelectedGameObject (null);
+        EventSystem.current.SetSelectedGameObject (g);
 
     }
 
@@ -306,8 +319,8 @@ public class SC_Global {
 
         }
 
-    }   
-    
+    }
+
     [Serializable]
     public class ThresholdValues {
 
@@ -324,7 +337,7 @@ public class SC_Global {
 
         public float GetValue (int threshold) {
 
-            return GetValue(0, threshold);
+            return GetValue (0, threshold);
 
         }
 
@@ -340,8 +353,26 @@ public class SC_Global {
 
         }
 
-    }    
+    }
 
-    public enum EPreparationElement { Hero, Weapon, Trap, Deployment, Confirmation }
+    public static T GetObjectUnderMouse<T> () where T : MonoBehaviour {
+
+        T t = null;
+
+        Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+
+        RaycastHit2D[] hit = Physics2D.GetRayIntersectionAll (ray, Mathf.Infinity);
+
+        foreach (RaycastHit2D r in hit)
+            t = r.transform.gameObject.GetComponent<T> () ?? t;
+
+        return t;
+
+    }
+
+    public enum EHeroPreparationElement { Hero, Weapon, Trap, Deployment, Confirmation }
+
+    public enum EQinPreparationElement { Castles, Trap, Curse, Deployment, Confirmation }
 
 }
+

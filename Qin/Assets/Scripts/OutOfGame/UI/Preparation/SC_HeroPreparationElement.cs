@@ -9,7 +9,7 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
 
     [Header ("Preparation element variables")]
     [Tooltip ("Type of this prepration element")]
-    public EPreparationElement elementType;
+    public EHeroPreparationElement elementType;
 
     SpriteRenderer draggedElement;
 
@@ -17,12 +17,12 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
 
     public Sprite Sprite { get { return Renderer.sprite; } }
 
-    public static Dictionary<EPreparationElement, List<SC_HeroPreparationElement>> preparationElements = null;    
+    public static Dictionary<EHeroPreparationElement, List<SC_HeroPreparationElement>> preparationElements = null;    
 
     void Awake () {
 
         if (preparationElements == null)
-            preparationElements = new Dictionary<EPreparationElement, List<SC_HeroPreparationElement>> ();
+            preparationElements = new Dictionary<EHeroPreparationElement, List<SC_HeroPreparationElement>> ();
 
         if (!preparationElements.ContainsKey (elementType))
             preparationElements.Add (elementType, new List<SC_HeroPreparationElement> ());
@@ -73,7 +73,7 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
 
                 if (slot.Sprite == slot.DefaultSprite) {
 
-                    if (elementType == EPreparationElement.Weapon) {
+                    if (elementType == EHeroPreparationElement.Weapon) {
 
                         SC_HeroPreparationSlot correctSlot = null;
 
@@ -86,7 +86,7 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
                     } else
                         slot.Sprite = draggedElement.sprite;
 
-                    SC_UI_Manager.Instance.PreparationSlotsCount++;
+                    SC_UI_Manager.Instance.HeroesPreparationSlotsCount++;
 
                 } else {
 
@@ -106,7 +106,7 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
 
     }
 
-    static List<SC_HeroPreparationElement> GetElementsList (EPreparationElement type) {
+    static List<SC_HeroPreparationElement> GetElementsList (EHeroPreparationElement type) {
 
         List<SC_HeroPreparationElement> list;
 
@@ -116,7 +116,7 @@ public class SC_HeroPreparationElement : MonoBehaviour, IBeginDragHandler, IDrag
 
     }
 
-    public static void GiveBackElement (EPreparationElement type, Sprite element) {
+    public static void GiveBackElement (EHeroPreparationElement type, Sprite element) {
 
         foreach (SC_HeroPreparationElement e in GetElementsList (type))
             if (e.Sprite == element)

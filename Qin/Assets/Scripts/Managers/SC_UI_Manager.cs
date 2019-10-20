@@ -18,12 +18,10 @@ public class SC_UI_Manager : MonoBehaviour {
     #region UI Elements
     [Header("Preparation")]
     public GameObject connectingPanel, preparationPanel;    
-    public GameObject readyButton, otherPlayerReady;
+    public GameObject otherPlayerReady;
     public Color readyColor, notReadyColor;
     public HeroesPreparationUI heroPreparationUI;
-
-    [Header ("Qin Preparation")]
-    public GameObject qinPreparationPanel;    
+    public QinPreparationUI qinPreprationUI;
 
     [Header("Game")]
     public GameObject gamePanel;
@@ -136,13 +134,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (GameManager.prep) {
 
-            qinPreparationPanel.SetActive(qin);
+            qinPreprationUI.panel.SetActive(qin);
 
             heroPreparationUI.panel.SetActive(!qin);
 
             preparationPanel.SetActive(true);
-
-            readyButton.gameObject.SetActive (qin);
 
         } else
             gamePanel.SetActive(true);
@@ -170,19 +166,17 @@ public class SC_UI_Manager : MonoBehaviour {
 
             localPlayer.Ready ^= true;
 
-            SetReady(readyButton, localPlayer.Ready);
-
             localPlayer.CmdReady(localPlayer.Ready, localPlayer.Qin);
 
         }
 
     }
 
-    public void SetReady (GameObject g, bool r) {
+    public void SetReady (bool r) {
 
-        g.GetComponent<Image>().color = r ? readyColor : notReadyColor;
+        otherPlayerReady.GetComponent<Image>().color = r ? readyColor : notReadyColor;
 
-        g.GetComponentInChildren<Text> ().text = (g == readyButton) ? (r ? "Cancel" : "Confirm") : "Other Player is " + (r ? "" : "not ") + " ready";
+        otherPlayerReady.GetComponentInChildren<Text> ().text = "Other Player is " + (r ? "" : "not ") + " ready";
 
     }
 
@@ -197,23 +191,23 @@ public class SC_UI_Manager : MonoBehaviour {
     }
 
     #region Heroes
-    public EPreparationElement preparationPhase = EPreparationElement.Hero;
+    public EHeroPreparationElement heroPreparationPhase = EHeroPreparationElement.Hero;
 
-    int preparationSlotsCount;
+    int herosPreparationSlotsCount;
 
-    public int PreparationSlotsCount {
+    public int HeroesPreparationSlotsCount {
 
-        get { return preparationSlotsCount; }
+        get { return herosPreparationSlotsCount; }
 
         set {
 
-            preparationSlotsCount = value;
+            herosPreparationSlotsCount = value;
 
             heroPreparationUI.preparationSlotsCount.text = value + "/" + CurrentMaxSlotsCount;
 
             bool b = true;
 
-            if (preparationPhase != EPreparationElement.Weapon)
+            if (heroPreparationPhase != EHeroPreparationElement.Weapon)
                 b = value == CurrentMaxSlotsCount;
             else {
 
@@ -232,15 +226,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void PreparationContinue () {
 
-        switch (preparationPhase) {
+        switch (heroPreparationPhase) {
 
-            case EPreparationElement.Hero:
+            case EHeroPreparationElement.Hero:
 
-                preparationPhase = EPreparationElement.Weapon;                
+                heroPreparationPhase = EHeroPreparationElement.Weapon;                
 
                 CurrentMaxSlotsCount = GameManager.CommonCharactersVariables.maxTotalWeaponsCount;
 
-                preparationSlotsCount = 0;
+                herosPreparationSlotsCount = 0;
 
                 foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks) {
 
@@ -248,13 +242,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
                         s.gameObject.SetActive (true);
 
-                        preparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;                    
+                        herosPreparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;                    
 
                     }
 
                 }
 
-                PreparationSlotsCount = preparationSlotsCount;
+                HeroesPreparationSlotsCount = herosPreparationSlotsCount;
 
                 heroPreparationUI.heroesPool.SetActive (false);
                 heroPreparationUI.weaponsPool.SetActive (true);
@@ -263,32 +257,32 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 break;
 
-            case EPreparationElement.Weapon:
+            case EHeroPreparationElement.Weapon:
 
-                preparationPhase = EPreparationElement.Trap;
+                heroPreparationPhase = EHeroPreparationElement.Trap;
 
                 CurrentMaxSlotsCount = 6;
 
-                preparationSlotsCount = 0;                
+                herosPreparationSlotsCount = 0;                
 
                 foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks) {
 
                     heroDeck.Trap.gameObject.SetActive (true);
 
-                    preparationSlotsCount += heroDeck.Trap.Sprite != heroDeck.Trap.DefaultSprite ? 1 : 0;
+                    herosPreparationSlotsCount += heroDeck.Trap.Sprite != heroDeck.Trap.DefaultSprite ? 1 : 0;
 
                 }
 
-                PreparationSlotsCount = preparationSlotsCount;
+                HeroesPreparationSlotsCount = herosPreparationSlotsCount;
 
                 heroPreparationUI.weaponsPool.SetActive (false);
                 heroPreparationUI.trapsPool.SetActive (true);
 
                 break;
 
-            case EPreparationElement.Trap:
+            case EHeroPreparationElement.Trap:
 
-                preparationPhase = EPreparationElement.Deployment;
+                heroPreparationPhase = EHeroPreparationElement.Deployment;
 
                 heroPreparationUI.pool.SetActive (false);
                 heroPreparationUI.returnButton2.gameObject.SetActive (true);
@@ -300,9 +294,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 break;
 
-            case EPreparationElement.Deployment:
+            case EHeroPreparationElement.Deployment:
 
-                preparationPhase = EPreparationElement.Confirmation;
+                heroPreparationPhase = EHeroPreparationElement.Confirmation;
 
                 heroPreparationUI.returnButton2.gameObject.SetActive (false);
                 heroPreparationUI.confirmButton.gameObject.SetActive (false);
@@ -318,18 +312,18 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void PreparationReturn () {
 
-        switch (preparationPhase) {
+        switch (heroPreparationPhase) {
 
-            case EPreparationElement.Weapon:
+            case EHeroPreparationElement.Weapon:
 
-                preparationPhase = EPreparationElement.Hero;
+                heroPreparationPhase = EHeroPreparationElement.Hero;
 
                 CurrentMaxSlotsCount = 6;
 
-                PreparationSlotsCount = 0;
+                HeroesPreparationSlotsCount = 0;
 
                 foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks)
-                    PreparationSlotsCount += heroDeck.Hero.Sprite != heroDeck.Hero.DefaultSprite ? 1 : 0;
+                    HeroesPreparationSlotsCount += heroDeck.Hero.Sprite != heroDeck.Hero.DefaultSprite ? 1 : 0;
 
                 heroPreparationUI.heroesPool.SetActive (true);
                 heroPreparationUI.returnButton.gameObject.SetActive (false);
@@ -339,26 +333,26 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 break;
 
-            case EPreparationElement.Trap:
+            case EHeroPreparationElement.Trap:
 
-                preparationPhase = EPreparationElement.Weapon;
+                heroPreparationPhase = EHeroPreparationElement.Weapon;
 
                 CurrentMaxSlotsCount = GameManager.CommonCharactersVariables.maxTotalWeaponsCount;
 
-                PreparationSlotsCount = 0;
+                HeroesPreparationSlotsCount = 0;
 
                 foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks)
                     foreach (SC_HeroPreparationSlot s in heroDeck.Weapons)
-                        PreparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;
+                        HeroesPreparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;
 
                 heroPreparationUI.weaponsPool.SetActive (true);
                 heroPreparationUI.trapsPool.SetActive (false);
 
                 break;
 
-            case EPreparationElement.Deployment:
+            case EHeroPreparationElement.Deployment:
 
-                preparationPhase = EPreparationElement.Trap;
+                heroPreparationPhase = EHeroPreparationElement.Trap;
 
                 heroPreparationUI.pool.SetActive (true);
                 heroPreparationUI.returnButton2.gameObject.SetActive (false);
@@ -368,9 +362,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 break;
 
-            case EPreparationElement.Confirmation:
+            case EHeroPreparationElement.Confirmation:
 
-                preparationPhase = EPreparationElement.Deployment;
+                heroPreparationPhase = EHeroPreparationElement.Deployment;
 
                 heroPreparationUI.returnButton2.gameObject.SetActive (true);
                 heroPreparationUI.confirmButton.gameObject.SetActive (true);
@@ -379,6 +373,28 @@ public class SC_UI_Manager : MonoBehaviour {
                 SetReady ();                
 
                 break;
+
+        }
+
+    }
+    #endregion
+
+    #region Qin
+    public EQinPreparationElement qinPreparationPhase = EQinPreparationElement.Castles;
+
+    int qinPreparationSlotsCount;
+
+    public int QinPreparationSlotsCount {
+
+        get { return qinPreparationSlotsCount; }
+
+        set {
+
+            qinPreparationSlotsCount = value;
+
+            qinPreprationUI.preparationSlotsCount.text = value + "/" + CurrentMaxSlotsCount;            
+
+            qinPreprationUI.continueButton.interactable = value == CurrentMaxSlotsCount;
 
         }
 
@@ -1381,7 +1397,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void SetMenuTransparencyAt (Vector3 pos, bool transparent) {
 
-        PointerEventData pED = new PointerEventData (EventSystem.current) { position = Camera.main.WorldToScreenPoint (pos) };
+        PointerEventData pED = new PointerEventData (EventSystem.current) { position = WorldMousePos };
 
         List<RaycastResult> results = new List<RaycastResult> ();
 

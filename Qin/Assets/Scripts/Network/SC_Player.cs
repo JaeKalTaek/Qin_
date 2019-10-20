@@ -90,7 +90,7 @@ public class SC_Player : NetworkBehaviour {
 
         if (localPlayer.Qin != qin) {
 
-            UIManager.SetReady(UIManager.otherPlayerReady, ready);
+            UIManager.SetReady (ready);
 
             if (ready && localPlayer.Ready)
                 localPlayer.CmdBothPlayersReady();

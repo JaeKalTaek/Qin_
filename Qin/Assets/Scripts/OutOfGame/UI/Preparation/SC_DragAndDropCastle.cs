@@ -1,10 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using static SC_Global;
+using DG.Tweening;
 
 public class SC_DragAndDropCastle : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
     GameObject draggedCastle;
+
+    SpriteRenderer spriteRenderer;
+
+    void Awake () {
+
+        spriteRenderer = GetComponent<SpriteRenderer> ();
+
+    }
 
     void IBeginDragHandler.OnBeginDrag (PointerEventData eventData) {
 
@@ -25,7 +34,18 @@ public class SC_DragAndDropCastle : MonoBehaviour, IBeginDragHandler, IDragHandl
 
     void IEndDragHandler.OnEndDrag (PointerEventData eventData) {
 
-        SC_Tile_Manager.Instance.GetTileAt (WorldMousePos)?.Castle?.SetCastle (draggedCastle.name);
+        SC_Castle c = GetObjectUnderMouse<SC_Castle> ();
+
+        if (c) {
+
+            if (c.CastleType == "")
+                SC_UI_Manager.Instance.QinPreparationSlotsCount++;
+
+            c.SetCastle (draggedCastle.name);       
+            
+            spriteRenderer.DOFade (.5f, 0);
+
+        }
 
         Destroy (draggedCastle);
 

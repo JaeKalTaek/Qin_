@@ -274,11 +274,33 @@ public class SC_Global {
 
         public GameObject panel, decks, pool;
 
-        public GameObject castlesPool, trapsPool, cursesPool;
+        public List<SC_CastleDeck> castleDecks;
+
+        public SC_QinPreparationSlot curseSlot;
+
+        public GameObject castlesPool, trapsPool, cursesPool, soldiersPool;
 
         public TextMeshProUGUI preparationSlotsCount;
 
-        public Button continueButton, returnButton, returnButton2, confirmButton, cancelButton;
+        public Button continueButton, returnButton, cancelButton;
+
+    }
+
+    public struct CastleDeck {
+
+        
+
+    }
+
+    public static SC_QinPreparationSlot GetPrepCastle (SC_Castle c) {
+
+        return SC_UI_Manager.Instance.qinPreprationUI.castleDecks[c.Tile.Region].Castle;
+
+    }
+
+    public static bool IsPrepCastle (int e) {
+
+        return e == (int) EQinPreparationElement.Castles && SC_Player.localPlayer.Qin;
 
     }
 
@@ -372,7 +394,7 @@ public class SC_Global {
 
     public enum EHeroPreparationElement { Hero, Weapon, Trap, Deployment, Confirmation }
 
-    public enum EQinPreparationElement { Castles, Trap, Curse, Deployment, Confirmation }
+    public enum EQinPreparationElement { Castles, Trap, Curse, Soldiers, Confirmation }
 
 }
 

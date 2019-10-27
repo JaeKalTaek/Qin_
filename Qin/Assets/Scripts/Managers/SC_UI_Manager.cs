@@ -154,7 +154,9 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Preparation Phase
-    public void SetReady () {
+    public int PreparationPhase { get; set; }
+
+    public void ToggleReady () {
 
         bool canSetReady = true;
 
@@ -172,7 +174,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    public void SetReady (bool r) {
+    public void ToggleReady (bool r) {
 
         otherPlayerReady.GetComponent<Image>().color = r ? readyColor : notReadyColor;
 
@@ -191,8 +193,6 @@ public class SC_UI_Manager : MonoBehaviour {
     }
 
     #region Heroes
-    public EHeroPreparationElement heroPreparationPhase = EHeroPreparationElement.Hero;
-
     int herosPreparationSlotsCount;
 
     public int HeroesPreparationSlotsCount {
@@ -207,12 +207,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
             bool b = true;
 
-            if (heroPreparationPhase != EHeroPreparationElement.Weapon)
+            if (PreparationPhase != (int)EHeroPreparationElement.Weapon)
                 b = value == CurrentMaxSlotsCount;
             else {
 
                 foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks)
-                    b &= heroDeck.Weapons[0].Sprite != heroDeck.Weapons[0].DefaultSprite;
+                    b &= !heroDeck.Weapons[0].IsDefault;
 
                 b &= value <= CurrentMaxSlotsCount;
 
@@ -224,13 +224,13 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }    
 
-    public void PreparationContinue () {
+    public void HeroPreparationContinue () {
 
-        switch (heroPreparationPhase) {
+        PreparationPhase++;
 
-            case EHeroPreparationElement.Hero:
+        switch (PreparationPhase - 1) {
 
-                heroPreparationPhase = EHeroPreparationElement.Weapon;                
+            case 0:           
 
                 CurrentMaxSlotsCount = GameManager.CommonCharactersVariables.maxTotalWeaponsCount;
 
@@ -238,11 +238,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks) {
 
-                    foreach (SC_HeroPreparationSlot s in heroDeck.Weapons) {
+                    foreach (SC_PreparationSlot s in heroDeck.Weapons) {
 
                         s.gameObject.SetActive (true);
 
-                        herosPreparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;                    
+                        herosPreparationSlotsCount += s.IsDefault ? 0 : 1;                    
 
                     }
 
@@ -257,9 +257,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 break;
 
-            case EHeroPreparationElement.Weapon:
-
-                heroPreparationPhase = EHeroPreparationElement.Trap;
+            case 1:
 
                 CurrentMaxSlotsCount = 6;
 
@@ -269,7 +267,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                     heroDeck.Trap.gameObject.SetActive (true);
 
-                    herosPreparationSlotsCount += heroDeck.Trap.Sprite != heroDeck.Trap.DefaultSprite ? 1 : 0;
+                    herosPreparationSlotsCount += heroDeck.Trap.IsDefault ? 0 : 1;
 
                 }
 
@@ -280,9 +278,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 break;
 
-            case EHeroPreparationElement.Trap:
-
-                heroPreparationPhase = EHeroPreparationElement.Deployment;
+            case 2:
 
                 heroPreparationUI.pool.SetActive (false);
                 heroPreparationUI.returnButton2.gameObject.SetActive (true);
@@ -290,40 +286,38 @@ public class SC_UI_Manager : MonoBehaviour {
                 
                 if (!FindObjectOfType <SC_DeploymentHero> ())
                     for (int i = 0; i < heroPreparationUI.heroDecks.Count; i++)
-                        Instantiate (Resources.Load<SC_DeploymentHero> ("Prefabs/Characters/Heroes/P_DeploymentHero"), TileManager.DeploymentTiles [i].transform.position, Quaternion.identity).SpriteR.sprite = heroPreparationUI.heroDecks [i].Hero.Sprite;
+                        Instantiate (Resources.Load<SC_DeploymentHero> ("Prefabs/Characters/Heroes/P_DeploymentHero"), TileManager.DeploymentTiles [i].transform.position, Quaternion.identity).SpriteR.sprite = heroPreparationUI.heroDecks [i].Hero.Renderer.sprite;
 
                 break;
 
-            case EHeroPreparationElement.Deployment:
-
-                heroPreparationPhase = EHeroPreparationElement.Confirmation;
+            case 3:
 
                 heroPreparationUI.returnButton2.gameObject.SetActive (false);
                 heroPreparationUI.confirmButton.gameObject.SetActive (false);
                 heroPreparationUI.cancelButton.gameObject.SetActive (true);
 
-                SetReady ();
+                ToggleReady ();
 
                 break;
 
-        }
+        }        
 
     }
 
-    public void PreparationReturn () {
+    public void HeroPreparationReturn () {
 
-        switch (heroPreparationPhase) {
+        PreparationPhase--;
 
-            case EHeroPreparationElement.Weapon:
+        switch (PreparationPhase + 1) {
 
-                heroPreparationPhase = EHeroPreparationElement.Hero;
+            case 1:
 
                 CurrentMaxSlotsCount = 6;
 
                 HeroesPreparationSlotsCount = 0;
 
                 foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks)
-                    HeroesPreparationSlotsCount += heroDeck.Hero.Sprite != heroDeck.Hero.DefaultSprite ? 1 : 0;
+                    HeroesPreparationSlotsCount += heroDeck.Hero.IsDefault ? 0 : 1;
 
                 heroPreparationUI.heroesPool.SetActive (true);
                 heroPreparationUI.returnButton.gameObject.SetActive (false);
@@ -333,26 +327,22 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 break;
 
-            case EHeroPreparationElement.Trap:
-
-                heroPreparationPhase = EHeroPreparationElement.Weapon;
+            case 2:
 
                 CurrentMaxSlotsCount = GameManager.CommonCharactersVariables.maxTotalWeaponsCount;
 
                 HeroesPreparationSlotsCount = 0;
 
                 foreach (SC_HeroDeck heroDeck in heroPreparationUI.heroDecks)
-                    foreach (SC_HeroPreparationSlot s in heroDeck.Weapons)
-                        HeroesPreparationSlotsCount += s.Sprite != s.DefaultSprite ? 1 : 0;
+                    foreach (SC_PreparationSlot s in heroDeck.Weapons)
+                        HeroesPreparationSlotsCount += s.IsDefault ? 0 : 1;
 
                 heroPreparationUI.weaponsPool.SetActive (true);
                 heroPreparationUI.trapsPool.SetActive (false);
 
                 break;
 
-            case EHeroPreparationElement.Deployment:
-
-                heroPreparationPhase = EHeroPreparationElement.Trap;
+            case 3:
 
                 heroPreparationUI.pool.SetActive (true);
                 heroPreparationUI.returnButton2.gameObject.SetActive (false);
@@ -362,26 +352,22 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 break;
 
-            case EHeroPreparationElement.Confirmation:
-
-                heroPreparationPhase = EHeroPreparationElement.Deployment;
+            case 4:
 
                 heroPreparationUI.returnButton2.gameObject.SetActive (true);
                 heroPreparationUI.confirmButton.gameObject.SetActive (true);
                 heroPreparationUI.cancelButton.gameObject.SetActive (false);
 
-                SetReady ();                
+                ToggleReady ();                
 
                 break;
 
-        }
+        }        
 
     }
     #endregion
 
     #region Qin
-    public EQinPreparationElement qinPreparationPhase = EQinPreparationElement.Castles;
-
     int qinPreparationSlotsCount;
 
     public int QinPreparationSlotsCount {
@@ -395,6 +381,134 @@ public class SC_UI_Manager : MonoBehaviour {
             qinPreprationUI.preparationSlotsCount.text = value + "/" + CurrentMaxSlotsCount;            
 
             qinPreprationUI.continueButton.interactable = value == CurrentMaxSlotsCount;
+
+        }
+
+    }
+
+    public void QinPreparationContinue () {
+
+        PreparationPhase++;
+
+        switch (PreparationPhase - 1) {
+
+            case 0:
+
+                qinPreparationSlotsCount = 0;
+
+                foreach (SC_CastleDeck castleDeck in qinPreprationUI.castleDecks) {
+
+                    castleDeck.Trap.gameObject.SetActive (true);
+
+                    qinPreparationSlotsCount += castleDeck.Trap.IsDefault ? 0 : 1;                    
+
+                }
+
+                QinPreparationSlotsCount = qinPreparationSlotsCount;
+
+                qinPreprationUI.castlesPool.SetActive (false);
+                qinPreprationUI.trapsPool.SetActive (true);
+
+                qinPreprationUI.returnButton.gameObject.SetActive (true);
+
+                break;
+
+            case 1:
+
+                CurrentMaxSlotsCount = 1;
+
+                qinPreprationUI.curseSlot.gameObject.SetActive (true);
+
+                qinPreparationSlotsCount = qinPreprationUI.curseSlot.IsDefault ? 0 : 1;
+
+                QinPreparationSlotsCount = qinPreparationSlotsCount;
+
+                qinPreprationUI.trapsPool.SetActive (false);
+                qinPreprationUI.cursesPool.SetActive (true);
+
+                break;
+
+            case 2:
+
+                qinPreprationUI.cursesPool.SetActive (false);
+                qinPreprationUI.soldiersPool.SetActive (true);
+                qinPreprationUI.preparationSlotsCount.gameObject.SetActive (false);
+                qinPreprationUI.continueButton.GetComponentInChildren<Text> ().text = "Confirm";
+
+                break;
+
+            case 3:
+
+                qinPreprationUI.continueButton.gameObject.SetActive (false);
+                qinPreprationUI.returnButton.gameObject.SetActive (false);
+                qinPreprationUI.cancelButton.gameObject.SetActive (true);
+
+                ToggleReady ();
+
+                break;
+
+        }
+
+    }
+
+    public void QinPreparationReturn () {
+
+        PreparationPhase--;
+
+        switch (PreparationPhase + 1) {
+
+            case 1:
+
+                qinPreparationSlotsCount = 0;
+
+                foreach (SC_CastleDeck castleDeck in qinPreprationUI.castleDecks)
+                    qinPreparationSlotsCount += castleDeck.Castle.IsDefault ? 0 : 1;
+
+                QinPreparationSlotsCount = qinPreparationSlotsCount;
+
+                qinPreprationUI.castlesPool.SetActive (true);
+                qinPreprationUI.trapsPool.SetActive (false);
+
+                qinPreprationUI.returnButton.gameObject.SetActive (false);
+
+                break;
+
+            case 2:
+
+                CurrentMaxSlotsCount = 6;
+
+                foreach (SC_CastleDeck castleDeck in qinPreprationUI.castleDecks)
+                    qinPreparationSlotsCount += castleDeck.Trap.IsDefault ? 0 : 1;                
+
+                QinPreparationSlotsCount = qinPreparationSlotsCount;
+
+                qinPreprationUI.trapsPool.SetActive (true);
+                qinPreprationUI.cursesPool.SetActive (false);
+
+                break;
+
+            case 3:
+
+                CurrentMaxSlotsCount = 1;
+
+                qinPreparationSlotsCount = qinPreprationUI.curseSlot.IsDefault ? 0 : 1;
+
+                qinPreprationUI.cursesPool.SetActive (true);
+                qinPreprationUI.soldiersPool.SetActive (false);
+                qinPreprationUI.preparationSlotsCount.gameObject.SetActive (true);
+                qinPreprationUI.continueButton.GetComponentInChildren<Text> ().text = "Continue";
+
+                break;
+
+            case 4:
+
+                qinPreprationUI.continueButton.gameObject.SetActive (true);
+                qinPreprationUI.returnButton.gameObject.SetActive (true);
+                qinPreprationUI.cancelButton.gameObject.SetActive (false);
+
+                ToggleReady ();
+
+                break;
 
         }
 

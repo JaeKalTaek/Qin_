@@ -297,22 +297,22 @@ public class SC_Hero : SC_Character {
                 SC_HeroDeck heroDeck = null;
 
                 foreach (SC_HeroDeck hD in UI.heroPreparationUI.heroDecks)
-                    if (hD.Hero.Sprite == t.DeployedHero.SpriteR.sprite)
+                    if (hD.Hero.Renderer.sprite == t.DeployedHero.SpriteR.sprite)
                         heroDeck = hD;
 
                 List<string> weapons = new List<string> ();
 
-                foreach (SC_HeroPreparationSlot weapon in heroDeck.Weapons)
-                    if (weapon.Sprite != weapon.DefaultSprite)
-                        weapons.Add (weapon.Sprite.name);
+                foreach (SC_PreparationSlot weapon in heroDeck.Weapons)
+                    if (!weapon.IsDefault)
+                        weapons.Add (weapon.Renderer.sprite.name);
 
                 decks[count] = new HeroDeck (
 
                     t.transform.position,
 
-                    heroDeck.Hero.Sprite.name,
+                    heroDeck.Hero.Renderer.sprite.name,
 
-                    heroDeck.Trap.Sprite.name,
+                    heroDeck.Trap.Renderer.sprite.name,
 
                     weapons.ToArray ()
 

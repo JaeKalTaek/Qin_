@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
+using static SC_Global;
 
 public class SC_Castle : SC_Bastion {
 
@@ -100,9 +100,13 @@ public class SC_Castle : SC_Bastion {
 
     void OnMouseOver () {
 
-        if (Input.GetMouseButtonDown (1) && uiManager.qinPreparationPhase == SC_Global.EQinPreparationElement.Castles && CastleType != "") {
+        if (Input.GetMouseButtonDown (1) && uiManager.PreparationPhase == (int)EQinPreparationElement.Castles && CastleType != "") {
 
-            SC_UI_Manager.Instance.QinPreparationSlotsCount--;
+            SC_UI_Manager.Instance.QinPreparationSlotsCount--;            
+
+            SC_PreparationElement.GiveBackElement ((int) EQinPreparationElement.Castles, CastleType + "Castle");
+
+            GetPrepCastle (this).Renderer.sprite = GetPrepCastle (this).DefaultSprite;
 
             SetCastle ("");
 

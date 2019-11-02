@@ -246,7 +246,7 @@ public class SC_Hero : SC_Character {
 
     public void IncreaseRelationships (int amount) {        
 
-        List<SC_Hero> heroesInRange = tileManager.HeroesInRange(this);
+        List<SC_Hero> heroesInRange = TileManager.HeroesInRange(this);
 
         if(heroesInRange.Count > 0)
             Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
@@ -290,7 +290,7 @@ public class SC_Hero : SC_Character {
 
         int count = 0;
         
-        foreach (SC_Tile t in tileManager.tiles) {
+        foreach (SC_Tile t in TileManager.tiles) {
 
             if (t.DeployedHero) {
 

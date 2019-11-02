@@ -109,17 +109,19 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcBothPlayersReady () {
 
-        if (!localPlayer.Qin)
+        if (localPlayer.Qin)
+            SC_Qin.SendQinInfos ();
+        else
             SC_Hero.SendHeroesInfos ();
 
-        UIManager.Load();
+        UIManager.Load ();
 
-        StartCoroutine(localPlayer.GameManager.Load());        
+        StartCoroutine (localPlayer.GameManager.Load ());        
 
     }
     #endregion
 
-    #region Sending Heroes infos
+    #region Sending preparation infos
     [Command]
     public void CmdSendHeroesInfos (HeroDeck[] decks) {
 
@@ -136,9 +138,35 @@ public class SC_Player : NetworkBehaviour {
         }
 
     }
+
+    [Command]
+    public void CmdSendQinInfos (CastleDeck[] decks, string curse, SoldierInfos[] soldiers) {
+
+        RpcSetCastles (decks);
+
+        foreach (SoldierInfos s in soldiers) {
+
+            GameObject go = Instantiate (Resources.Load<GameObject> ("Prefabs/Characters/Soldiers/P_BaseSoldier"), s.pos, Quaternion.identity);
+
+            go.GetComponent<SC_Character> ().characterPath = "Prefabs/Characters/Soldiers/Basic/P_" + s.name;
+
+            NetworkServer.Spawn (go);
+
+        }
+
+    }
+
+    [ClientRpc]
+    void RpcSetCastles (CastleDeck[] decks) {
+
+        if (!localPlayer.Qin)
+            foreach (SC_Castle c in FindObjectsOfType<SC_Castle> ())
+                c.SetCastle (decks[c.Tile.Region].castle);
+
+    }
     #endregion
 
-    #region Castle changes tile type
+    /*#region Castle changes tile type
     [Command]
     public void CmdChangeCastleType(GameObject castle, string newType, int newSprite) {
 
@@ -152,7 +180,7 @@ public class SC_Player : NetworkBehaviour {
         castle.GetComponent<SC_Castle>().SetCastle(newType, newSprite);
 
     }
-    #endregion
+    #endregion*/
 
     #region Characters movements
     [Command]

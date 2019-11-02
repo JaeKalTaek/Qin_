@@ -110,7 +110,6 @@ public class SC_Game_Manager : NetworkBehaviour {
             go.GetComponent<SC_Tile>().infos = new TileInfos(
                 eTile.tileType.ToString(),
                 eTile.heroDeployTile,
-                Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Tiles/" + eTile.tileType).Length),
                 (int)eTile.riverSprite,
                 (int)eTile.region,
                 borders
@@ -202,13 +201,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         foreach (SC_DeploymentHero h in FindObjectsOfType<SC_DeploymentHero> ())
             Destroy (h.gameObject);
-
-        foreach (SC_Castle castle in FindObjectsOfType<SC_Castle>())
-            if (!Player.Qin)
-                castle.Setup();
-
-        foreach (SC_Tile t in tileManager.ChangingTiles)
-            t.SetupTile();
 
         yield return new WaitForSeconds (.5f);
 

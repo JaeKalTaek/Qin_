@@ -30,6 +30,8 @@ public class SC_Tile : NetworkBehaviour {
 
     public SC_DeploymentHero DeployedHero { get; set; }
 
+    public SC_DeploymentSoldier DeployedSoldier { get; set; }
+
     public int Region { get { return infos.region; } }    
 
     public bool CanAttack { get { return CurrentDisplay == TDisplay.Attack && !Empty; } }
@@ -104,7 +106,7 @@ public class SC_Tile : NetworkBehaviour {
 
     SpriteRenderer filter;
 
-    public static bool CanChangeFilters { get { return (!activeCharacter || (activeCharacter.Qin != SC_Player.localPlayer.Qin)) && !SC_Player.localPlayer.Busy; } }
+    public static bool CanChangeFilters { get { return !GameManager.prep && (!activeCharacter || (activeCharacter.Qin != SC_Player.localPlayer.Qin)) && !SC_Player.localPlayer.Busy; } }
 
     public List<DemonAura> DemonAuras { get; set; }
 
@@ -142,7 +144,7 @@ public class SC_Tile : NetworkBehaviour {
 
         combatModifers = t.combatModifers;
 
-        string s = infos.type == "Changing" ? "Changing" : infos.type + "/" + (infos.type == "River" ? (RiverSprite)infos.riverSprite + "" : infos.sprite + "");
+        string s = infos.type == "Changing" ? "Changing" : infos.type + "/" + (infos.type == "River" ? (RiverSprite)infos.riverSprite + "" : UnityEngine.Random.Range (0, Resources.LoadAll<Sprite> ("Sprites/Tiles/" + infos.type).Length) + "");
 
         transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Tiles/" + s);
 
@@ -154,16 +156,8 @@ public class SC_Tile : NetworkBehaviour {
 
     void Start() {
 
-        if (GameManager) {
-
-            if (transform.position.x.I() == (GameManager.CurrentMapPrefab.SizeMapX - 1) && transform.position.y.I() == (GameManager.CurrentMapPrefab.SizeMapY - 1)) {
-
-                if (!isServer)
-                    GameManager.StartCoroutine("FinishConnecting");
-
-            }
-
-        }
+        if (!isServer && transform.position.x.I() == (GameManager.CurrentMapPrefab.SizeMapX - 1) && transform.position.y.I() == (GameManager.CurrentMapPrefab.SizeMapY - 1))
+            GameManager?.StartCoroutine("FinishConnecting");
 
         filter = transform.GetChild(1).GetComponent<SpriteRenderer>();
 

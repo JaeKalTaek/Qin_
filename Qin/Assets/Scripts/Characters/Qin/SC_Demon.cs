@@ -80,7 +80,7 @@ public class SC_Demon : SC_BaseQinChara {
 
     void PerformAction (Action action, SC_Tile center = null) {
 
-        foreach (SC_Tile tile in tileManager.GetRange(center?.transform.position ?? transform.position, auraRange))
+        foreach (SC_Tile tile in TileManager.GetRange(center?.transform.position ?? transform.position, auraRange))
             action(tile);
 
     }
@@ -117,7 +117,7 @@ public class SC_Demon : SC_BaseQinChara {
 
         if (Alive > respawnTime) {
 
-            SC_Tile respawnTile = CanCharacterSetOn(spawnTile) ? spawnTile : tileManager.GetUnoccupiedNeighbor(this);
+            SC_Tile respawnTile = CanCharacterSetOn(spawnTile) ? spawnTile : TileManager.GetUnoccupiedNeighbor(this);
 
             if (respawnTile) {
 

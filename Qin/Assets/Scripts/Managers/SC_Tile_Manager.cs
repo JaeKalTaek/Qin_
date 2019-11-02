@@ -68,7 +68,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             if(t.Region != -1)
                 regions[t.Region].Add(t);            
 
-            if (t.infos.heroDeploy && qinIsServerForStart != isServer) {
+            if (t.infos.heroDeploy /*&& qinIsServerForStart != isServer*/) {
 
                 t.ChangeDisplay (TDisplay.Deploy);
 

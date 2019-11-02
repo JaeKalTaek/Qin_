@@ -17,10 +17,10 @@ public class SC_Castle : SC_Bastion {
 
     protected override void Start () {
 
-        CastleType = "";
-
         if (!SC_Game_Manager.Instance.prep)
-            Setup();
+            Setup ();
+        else
+            CastleType = "";
 
         base.Start();
 
@@ -36,26 +36,17 @@ public class SC_Castle : SC_Bastion {
 
         CastleType = type;
 
+        Setup ();
+
         uiManager.TryRefreshInfos (gameObject, typeof (SC_Castle));
-
-        SC_Player.localPlayer.CmdChangeCastleType(gameObject, type, type == "" ? 0 : Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Tiles/" + type).Length));
-
-    }
-
-    public void SetCastle (string type, int sprite) {
-
-        CastleType = type;
-
-        if(SC_Player.localPlayer.Qin)
-            Setup();
 
         foreach (SC_Tile t in tileManager.ChangingTiles) {
 
             if (t.Region == Tile.Region) {
 
-                t.GetComponent<SC_Tile>().infos.type = CastleType;
+                t.infos.type = CastleType == "" ? "Changing" : CastleType;
 
-                t.GetComponent<SC_Tile>().infos.sprite = sprite;
+                t.SetupTile ();
 
             }
 

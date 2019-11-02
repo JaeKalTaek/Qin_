@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
+using static SC_Global;
 
 public class SC_Qin : NetworkBehaviour {
 
@@ -102,6 +104,45 @@ public class SC_Qin : NetworkBehaviour {
         s = s.Replace(" ", "");
 
         return Resources.Load<SC_Construction>("Prefabs/Constructions/P_" + s)?.cost ?? Resources.Load<SC_Construction>("Prefabs/Constructions/Production/P_" + s).cost;
+
+    }
+
+    public static void SendQinInfos () {
+
+        CastleDeck[] castleDecks = new CastleDeck[6];
+
+        for (int i = 0; i < 6; i++) {
+
+            castleDecks[i] = new CastleDeck (
+
+                SC_UI_Manager.Instance.qinPreprationUI.castleDecks[i].Castle.Renderer.sprite.name.Replace("Castle", ""),
+
+                SC_UI_Manager.Instance.qinPreprationUI.castleDecks[i].Trap.Renderer.sprite.name
+
+            );
+
+        }
+
+        SC_DeploymentSoldier[] deploymentSoldiers = FindObjectsOfType<SC_DeploymentSoldier> ();
+
+        SoldierInfos[] soldierInfos = new SoldierInfos[deploymentSoldiers.Length];
+
+        for (int i = 0; i < soldierInfos.Length; i++) {
+
+            soldierInfos[i] = new SoldierInfos (
+
+                deploymentSoldiers[i].transform.position,
+
+                deploymentSoldiers[i].SpriteR.sprite.name
+                
+            );
+
+        }
+
+        foreach (SC_DeploymentSoldier s in deploymentSoldiers)
+            Destroy (s.gameObject);
+
+        SC_Player.localPlayer.CmdSendQinInfos (castleDecks, SC_UI_Manager.Instance.qinPreprationUI.curseSlot.Renderer.sprite.name, soldierInfos);
 
     }
 

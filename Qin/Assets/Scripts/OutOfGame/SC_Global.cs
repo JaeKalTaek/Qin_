@@ -60,21 +60,17 @@ public class SC_Global {
 
         public bool heroDeploy;
 
-        public int sprite;
-
         public int riverSprite;
 
         public int region;
 
         public bool[] borders;
 
-        public TileInfos (string t, bool d, int s, int rS, int r, bool[] b) {
+        public TileInfos (string t, bool d, int rS, int r, bool[] b) {
 
             type = t;
 
             heroDeploy = d;
-
-            sprite = s;
 
             riverSprite = rS;
 
@@ -288,7 +284,29 @@ public class SC_Global {
 
     public struct CastleDeck {
 
-        
+        public string castle, trap;
+
+        public CastleDeck (string c, string t) {
+
+            castle = c;
+
+            trap = t;
+        }
+
+    }
+
+    public struct SoldierInfos {
+
+        public Vector3 pos;
+
+        public string name;
+
+        public SoldierInfos (Vector3 p, string n) {
+
+            pos = p;
+
+            name = n;
+        }
 
     }
 

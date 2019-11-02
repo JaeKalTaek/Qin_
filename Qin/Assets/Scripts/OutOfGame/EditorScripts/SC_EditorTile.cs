@@ -124,8 +124,9 @@ public class SC_EditorTile : MonoBehaviour {
     }
 
     public void SetSprite (int index, string s) {
-
-        transform.GetChild(index).GetComponent<SpriteRenderer>().sprite = (s == "") ? null : Resources.Load<Sprite>("Sprites/" + s);
+        
+        if (transform.GetChild (index).GetComponent<SpriteRenderer> ())
+            transform.GetChild(index).GetComponent<SpriteRenderer>().sprite = (s == "") ? null : Resources.Load<Sprite>("Sprites/" + s);
 
     }
 

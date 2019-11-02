@@ -32,7 +32,7 @@ public class SC_Cursor : NetworkBehaviour {
 
     void Start() {
 
-        Locked = !SC_Player.localPlayer.Qin;
+        Locked = false;
 
         GetComponent<SpriteRenderer> ().enabled = false;
 

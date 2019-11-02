@@ -79,7 +79,7 @@ public abstract class SC_Character : NetworkBehaviour {
     public SC_Tile LastPos { get; set; }
 
     #region Managers
-    protected static SC_Tile_Manager tileManager;
+    protected static SC_Tile_Manager TileManager { get { return SC_Tile_Manager.Instance; } }
 
 	protected static SC_Game_Manager gameManager;
 
@@ -96,7 +96,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public static bool MovingCharacter { get { return activeCharacter?.Moving ?? false; } }
 
-    public SC_Tile Tile { get { return tileManager.GetTileAt(gameObject); } }
+    public SC_Tile Tile { get { return TileManager.GetTileAt(gameObject); } }
 
     [HideInInspector]
     [SyncVar]
@@ -155,9 +155,6 @@ public abstract class SC_Character : NetworkBehaviour {
 
     protected virtual void Start() {
 
-        if(!tileManager)
-            tileManager = SC_Tile_Manager.Instance;
-
         if(!uiManager)
             uiManager = SC_UI_Manager.Instance;
 
@@ -185,7 +182,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         Moving = true;
 
-        tileManager.CheckMovements(this);
+        TileManager.CheckMovements(this);
 
         uiManager.backAction = gameManager.UnselectCharacter;
 
@@ -203,7 +200,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         SC_Player.localPlayer.Busy = true;
 
-        tileManager.RemoveAllFilters();
+        TileManager.RemoveAllFilters();
 
         SC_Player.localPlayer.CmdMoveCharacterTo(activeCharacter.gameObject, target);
 
@@ -215,7 +212,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         LastPos = Tile;
 
-        path = tileManager.PathFinder(LastPos, target);
+        path = TileManager.PathFinder(LastPos, target);
 
         if(path == null)
             FinishMovement(false);
@@ -290,7 +287,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         bool canAttack = false;
 
-        foreach (SC_Tile tile in tileManager.GetAttackTiles())
+        foreach (SC_Tile tile in TileManager.GetAttackTiles())
             if (!tile.Empty && tile.CanCharacterAttack(this))
                 canAttack = true;
 
@@ -367,7 +364,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 } else {
 
-                    tileManager.PreviewAttack();
+                    TileManager.PreviewAttack();
 
                     uiManager.ActivateMenu(uiManager.characterActionsPanel);
 
@@ -392,7 +389,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         uiManager.characterActionsPanel.SetActive(false);
 
-        tileManager.RemoveAllFilters();
+        TileManager.RemoveAllFilters();
 
         if (Hero && Tile != LastPos) {            
 
@@ -446,7 +443,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
             uiManager.backAction = gameManager.UnselectCharacter;
 
-            tileManager.CheckMovements(this);
+            TileManager.CheckMovements(this);
 
             SC_Player.localPlayer.Busy = false;
 

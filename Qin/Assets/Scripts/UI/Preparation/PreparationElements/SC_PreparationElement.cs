@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using static SC_Global;
 using DG.Tweening;
 using System.Collections.Generic;
-using System;
 
 public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
@@ -27,10 +26,6 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
             preparationElements.Add (ElementType, new List<SC_PreparationElement> ());
 
         GetElementsList (ElementType).Add (this);
-        
-    }
-
-    void Start () {
 
         Renderer = GetComponent<Image> ();
 
@@ -63,12 +58,12 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
         if (draggedElement) {
 
-            SC_PreparationSlot slot = null;
+            if (ElementType == (int) EQinPreparationElement.Soldiers && SC_Player.localPlayer.Qin) {
 
-            foreach (GameObject g in eventData.hovered)
-                slot = g.GetComponent<SC_PreparationSlot> () ?? slot;
+                if ((!SC_Cursor.Tile.infos.heroDeploy) && SC_Cursor.Tile.baseCost < 100 && !SC_Cursor.Tile.Qin)
+                    Instantiate (Resources.Load<SC_DeploymentSoldier> ("Prefabs/Characters/Soldiers/P_DeploymentSoldier"), SC_Cursor.Tile.transform.position, Quaternion.identity).SpriteR.sprite = Sprite;
 
-            if (IsPrepCastle (ElementType)) {
+            } else if (IsPrepCastle (ElementType)) {
 
                 SC_Castle c = GetObjectUnderMouse<SC_Castle> ();
 
@@ -91,37 +86,46 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
                 }
 
-            } else if ((slot?.ElementType ?? -1) == ElementType) {
+            } else {
 
-                if (slot.IsDefault) {
+                SC_PreparationSlot slot = null;
 
-                    if (ElementType == (int) EHeroPreparationElement.Weapon && GetType () == typeof (SC_HeroPreparationElement)) {
+                foreach (GameObject g in eventData.hovered)
+                    slot = g.GetComponent<SC_PreparationSlot> () ?? slot;
 
-                        SC_PreparationSlot correctSlot = null;
+                if ((slot?.ElementType ?? -1) == ElementType) {
 
-                        foreach (SC_PreparationSlot w in slot.GetComponentInParent<SC_HeroDeck> ().Weapons)
-                            if (!correctSlot && w.IsDefault)
-                                correctSlot = w;
+                    if (slot.IsDefault) {
 
-                        correctSlot.Renderer.sprite = draggedElement.sprite;
+                        if (ElementType == (int) EHeroPreparationElement.Weapon && GetType () == typeof (SC_HeroPreparationElement)) {
 
-                    } else
+                            SC_PreparationSlot correctSlot = null;
+
+                            foreach (SC_PreparationSlot w in slot.GetComponentInParent<SC_HeroDeck> ().Weapons)
+                                if (!correctSlot && w.IsDefault)
+                                    correctSlot = w;
+
+                            correctSlot.Renderer.sprite = draggedElement.sprite;
+
+                        } else
+                            slot.Renderer.sprite = draggedElement.sprite;
+
+                        if (SC_Player.localPlayer.Qin)
+                            SC_UI_Manager.Instance.QinPreparationSlotsCount++;
+                        else
+                            SC_UI_Manager.Instance.HeroesPreparationSlotsCount++;
+
+                    } else {
+
+                        GiveBackElement (ElementType, slot.Renderer.sprite.name);
+
                         slot.Renderer.sprite = draggedElement.sprite;
 
-                    if (SC_Player.localPlayer.Qin)
-                        SC_UI_Manager.Instance.QinPreparationSlotsCount++;
-                    else
-                        SC_UI_Manager.Instance.HeroesPreparationSlotsCount++;
+                    }
 
-                } else {
-
-                    GiveBackElement (ElementType, slot.Renderer.sprite.name);
-
-                    slot.Renderer.sprite = draggedElement.sprite;
+                    Renderer.DOFade (.5f, 0);
 
                 }
-
-                Renderer.DOFade (.5f, 0);
 
             }
 

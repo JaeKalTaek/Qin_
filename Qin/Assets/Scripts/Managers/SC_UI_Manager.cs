@@ -430,8 +430,20 @@ public class SC_UI_Manager : MonoBehaviour {
 
             case 2:
 
+                foreach (SC_CastleDeck castleDeck in qinPreprationUI.castleDecks) {
+
+                    castleDeck.SoldiersPoints.text = GameManager.CommonQinVariables.maxRegionSoldierPoints.ToString ();
+
+                    castleDeck.SoldiersPoints.gameObject.SetActive (true);
+
+                }
+
                 qinPreprationUI.cursesPool.SetActive (false);
                 qinPreprationUI.soldiersPool.SetActive (true);
+
+                foreach (SC_QinPreparationElement soldier in qinPreprationUI.soldiersPool.GetComponentsInChildren<SC_QinPreparationElement> ())
+                    soldier.GetComponentInChildren<TextMeshProUGUI> ().text = Resources.Load<SC_Soldier> ("Prefabs/Characters/Soldiers/Basic/P_" + soldier.Sprite.name).cost.ToString ();
+                                
                 qinPreprationUI.preparationSlotsCount.gameObject.SetActive (false);
                 qinPreprationUI.continueButton.GetComponentInChildren<Text> ().text = "Confirm";
 
@@ -439,8 +451,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             case 3:
 
-                qinPreprationUI.continueButton.gameObject.SetActive (false);
-                qinPreprationUI.returnButton.gameObject.SetActive (false);
+                qinPreprationUI.pool.SetActive (false);
                 qinPreprationUI.cancelButton.gameObject.SetActive (true);
 
                 ToggleReady ();
@@ -477,6 +488,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 CurrentMaxSlotsCount = 6;
 
+                qinPreparationSlotsCount = 0;
+
                 foreach (SC_CastleDeck castleDeck in qinPreprationUI.castleDecks)
                     qinPreparationSlotsCount += castleDeck.Trap.IsDefault ? 0 : 1;                
 
@@ -502,8 +515,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             case 4:
 
-                qinPreprationUI.continueButton.gameObject.SetActive (true);
-                qinPreprationUI.returnButton.gameObject.SetActive (true);
+                qinPreprationUI.pool.SetActive (true);
                 qinPreprationUI.cancelButton.gameObject.SetActive (false);
 
                 ToggleReady ();

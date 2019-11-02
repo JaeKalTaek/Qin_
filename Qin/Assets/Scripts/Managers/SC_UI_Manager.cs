@@ -22,6 +22,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public Color readyColor, notReadyColor;
     public HeroesPreparationUI heroPreparationUI;
     public QinPreparationUI qinPreprationUI;
+    public RectTransform tooltip;
 
     [Header("Game")]
     public GameObject gamePanel;

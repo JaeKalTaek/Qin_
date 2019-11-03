@@ -5,7 +5,7 @@ using static SC_Global;
 using DG.Tweening;
 using System.Collections.Generic;
 
-public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
+public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler {
 
     public abstract int ElementType { get; }
 
@@ -41,7 +41,7 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
            
             draggedElement.sortingOrder = 11;
 
-            draggedElement.sprite = GetComponent<Image> ().sprite;
+            draggedElement.sprite = Sprite;
 
         }
 
@@ -153,4 +153,15 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
     }
 
+    void IPointerEnterHandler.OnPointerEnter (PointerEventData eventData) {
+
+        SC_UI_Manager.Instance.ShowTooltip (true, Sprite.name);
+
+    }
+
+    void IPointerExitHandler.OnPointerExit (PointerEventData eventData) {
+
+        SC_UI_Manager.Instance.ShowTooltip (false);
+
+    }
 }

@@ -22,7 +22,10 @@ public class SC_UI_Manager : MonoBehaviour {
     public Color readyColor, notReadyColor;
     public HeroesPreparationUI heroPreparationUI;
     public QinPreparationUI qinPreprationUI;
+
+    [Header("Tooltip")]
     public RectTransform tooltip;
+    public List<Tooltip> tooltips;
 
     [Header("Game")]
     public GameObject gamePanel;
@@ -1324,6 +1327,9 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Both Players  
     void Update () {
 
+        if (tooltip.gameObject.activeSelf)
+            SetTooltipPos ();
+
         foreach (KeyValuePair<GameObject, Vector3> entry in staticUIs)
             entry.Key.transform.position = entry.Value;
 
@@ -1556,6 +1562,34 @@ public class SC_UI_Manager : MonoBehaviour {
         EventTrigger.Entry entry = new EventTrigger.Entry { eventID = type };
         entry.callback.AddListener (action);
         return entry;
+
+    }
+
+    public void ShowTooltip (bool show, string id = "") {
+
+        if (show) {
+
+            string text = "";
+
+            foreach (Tooltip t in tooltips)
+                text = t.id == id ? t.text : text;
+
+            tooltip.GetComponentInChildren<TextMeshProUGUI> ().text = text;
+
+        }
+
+        tooltip.gameObject.SetActive (show);
+
+        SetTooltipPos ();
+
+    }
+
+    void SetTooltipPos () {
+
+        float x = Camera.main.WorldToViewportPoint (WorldMousePos).x * UISize.x;
+        float y = Camera.main.WorldToViewportPoint (WorldMousePos).y * UISize.y;
+
+        tooltip.anchoredPosition = new Vector3 (Mathf.Clamp (x, 0, UISize.x - tooltip.sizeDelta.x), Mathf.Clamp (y, 0, UISize.y - tooltip.sizeDelta.y), 0);
 
     }
     #endregion

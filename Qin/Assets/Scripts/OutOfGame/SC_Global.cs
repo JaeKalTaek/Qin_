@@ -410,6 +410,13 @@ public class SC_Global {
 
     }
 
+    [Serializable]
+    public struct Tooltip {
+
+        public string id, text;
+
+    }
+
     public enum EHeroPreparationElement { Hero, Weapon, Trap, Deployment, Confirmation }
 
     public enum EQinPreparationElement { Castles, Trap, Curse, Soldiers, Confirmation }

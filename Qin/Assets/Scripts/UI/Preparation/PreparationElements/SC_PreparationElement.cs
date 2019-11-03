@@ -164,4 +164,5 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
         SC_UI_Manager.Instance.ShowTooltip (false);
 
     }
+
 }

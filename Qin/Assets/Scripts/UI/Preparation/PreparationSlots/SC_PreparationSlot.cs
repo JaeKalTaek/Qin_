@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using static SC_Global;
 using System.Collections.Generic;
 
-public abstract class SC_PreparationSlot : MonoBehaviour, IPointerClickHandler {
+public abstract class SC_PreparationSlot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
 
     public abstract int ElementType { get; }
 
@@ -57,6 +57,29 @@ public abstract class SC_PreparationSlot : MonoBehaviour, IPointerClickHandler {
             }
 
         }
+
+    }
+
+    bool hovering;
+
+    void IPointerEnterHandler.OnPointerEnter (PointerEventData eventData) {
+
+        hovering = true;        
+
+    }
+
+    void LateUpdate () {
+
+        if (hovering)
+            SC_UI_Manager.Instance.ShowTooltip (!IsDefault, Renderer.sprite.name);
+
+    }
+
+    void IPointerExitHandler.OnPointerExit (PointerEventData eventData) {
+
+        hovering = false;
+
+        SC_UI_Manager.Instance.ShowTooltip (false);
 
     }
 

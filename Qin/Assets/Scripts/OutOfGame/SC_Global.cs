@@ -237,9 +237,9 @@ public class SC_Global {
 
         public GameObject heroesPool, weaponsPool, trapsPool;
 
-        public TextMeshProUGUI preparationSlotsCount;
+        public TextMeshProUGUI poolLabel, preparationSlotsCount;
 
-        public Button continueButton, returnButton, returnButton2, confirmButton, cancelButton;
+        public Button continueButton, returnButton, cancelButton;
 
     }
 
@@ -276,7 +276,7 @@ public class SC_Global {
 
         public GameObject castlesPool, trapsPool, cursesPool, soldiersPool;
 
-        public TextMeshProUGUI preparationSlotsCount;
+        public TextMeshProUGUI poolLabel, preparationSlotsCount;
 
         public Button continueButton, returnButton, cancelButton;
 

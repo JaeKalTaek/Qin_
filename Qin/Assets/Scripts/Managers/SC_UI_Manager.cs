@@ -284,9 +284,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
             case 2:
 
-                heroPreparationUI.pool.SetActive (false);
-                heroPreparationUI.returnButton2.gameObject.SetActive (true);
-                heroPreparationUI.confirmButton.gameObject.SetActive (true);
+                heroPreparationUI.trapsPool.SetActive (false);
+                heroPreparationUI.preparationSlotsCount.gameObject.SetActive (false);
+                heroPreparationUI.poolLabel.text = "Deploy your heroes";
+
+                heroPreparationUI.continueButton.GetComponentInChildren<Text> ().text = "Confirm";
                 
                 if (!FindObjectOfType <SC_DeploymentHero> ())
                     for (int i = 0; i < heroPreparationUI.heroDecks.Count; i++)
@@ -296,8 +298,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
             case 3:
 
-                heroPreparationUI.returnButton2.gameObject.SetActive (false);
-                heroPreparationUI.confirmButton.gameObject.SetActive (false);
+                heroPreparationUI.poolLabel.text = "Waiting for opponent";
+                heroPreparationUI.returnButton.gameObject.SetActive (false);
+                heroPreparationUI.continueButton.gameObject.SetActive (false);
                 heroPreparationUI.cancelButton.gameObject.SetActive (true);
 
                 ToggleReady ();
@@ -348,18 +351,18 @@ public class SC_UI_Manager : MonoBehaviour {
 
             case 3:
 
-                heroPreparationUI.pool.SetActive (true);
-                heroPreparationUI.returnButton2.gameObject.SetActive (false);
-                heroPreparationUI.confirmButton.gameObject.SetActive (false);
-
-                //SC_Cursor.SetLock (true);
+                heroPreparationUI.trapsPool.SetActive (true);
+                heroPreparationUI.preparationSlotsCount.gameObject.SetActive (true);
+                heroPreparationUI.poolLabel.text = "Pool";
+                heroPreparationUI.continueButton.GetComponentInChildren<Text> ().text = "Continue";
 
                 break;
 
             case 4:
 
-                heroPreparationUI.returnButton2.gameObject.SetActive (true);
-                heroPreparationUI.confirmButton.gameObject.SetActive (true);
+                heroPreparationUI.poolLabel.text = "Deploy your heroes";
+                heroPreparationUI.returnButton.gameObject.SetActive (true);
+                heroPreparationUI.continueButton.gameObject.SetActive (true);
                 heroPreparationUI.cancelButton.gameObject.SetActive (false);
 
                 ToggleReady ();                
@@ -455,7 +458,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
             case 3:
 
-                qinPreprationUI.pool.SetActive (false);
+                qinPreprationUI.soldiersPool.SetActive (false);
+                qinPreprationUI.preparationSlotsCount.gameObject.SetActive (false);
+                qinPreprationUI.poolLabel.text = "Waiting for opponent";
+
+                qinPreprationUI.returnButton.gameObject.SetActive (false);
+                qinPreprationUI.continueButton.gameObject.SetActive (false);
                 qinPreprationUI.cancelButton.gameObject.SetActive (true);
 
                 ToggleReady ();
@@ -519,7 +527,12 @@ public class SC_UI_Manager : MonoBehaviour {
 
             case 4:
 
-                qinPreprationUI.pool.SetActive (true);
+                qinPreprationUI.soldiersPool.SetActive (true);
+                qinPreprationUI.preparationSlotsCount.gameObject.SetActive (true);
+                qinPreprationUI.poolLabel.text = "Pool";
+
+                qinPreprationUI.returnButton.gameObject.SetActive (true);
+                qinPreprationUI.continueButton.gameObject.SetActive (true);
                 qinPreprationUI.cancelButton.gameObject.SetActive (false);
 
                 ToggleReady ();

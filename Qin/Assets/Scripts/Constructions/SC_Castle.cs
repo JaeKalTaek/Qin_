@@ -46,6 +46,8 @@ public class SC_Castle : SC_Bastion {
 
                 t.infos.type = CastleType == "" ? "Changing" : CastleType;
 
+                t.infos.riverSprite = (int) SC_EditorTile.RiverSprite.Small_Alone;
+
                 t.SetupTile ();
 
             }

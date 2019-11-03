@@ -162,19 +162,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void ToggleReady () {
 
-        bool canSetReady = true;
+        localPlayer.Ready ^= true;
 
-        if (localPlayer.Qin)
-            foreach (SC_Castle castle in FindObjectsOfType<SC_Castle> ())
-                canSetReady &= castle.CastleType != null;
-
-        if (canSetReady) {
-
-            localPlayer.Ready ^= true;
-
-            localPlayer.CmdReady(localPlayer.Ready, localPlayer.Qin);
-
-        }
+        localPlayer.CmdReady(localPlayer.Ready, localPlayer.Qin);
 
     }
 

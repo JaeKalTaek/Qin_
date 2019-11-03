@@ -5,7 +5,7 @@ using static SC_Global;
 using DG.Tweening;
 using System.Collections.Generic;
 
-public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler {
+public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler {
 
     public abstract int ElementType { get; }
 
@@ -16,6 +16,8 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
     public Sprite Sprite { get { return Renderer.sprite; } }
 
     public static Dictionary<int, List<SC_PreparationElement>> preparationElements = null;    
+
+    protected SC_UI_Manager UIManager { get { return SC_UI_Manager.Instance; } }
 
     void Awake () {
 
@@ -33,17 +35,7 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
     void IBeginDragHandler.OnBeginDrag (PointerEventData eventData) {
 
-        if (Renderer.color.a == 1) {
-
-            draggedElement = new GameObject ("Dragged Element").AddComponent<SpriteRenderer> ();
-
-            draggedElement.transform.position = new Vector3 (WorldMousePos.x, WorldMousePos.y, 0);
-           
-            draggedElement.sortingOrder = 11;
-
-            draggedElement.sprite = Sprite;
-
-        }
+        SpawnDraggedElement ();
 
     }
 
@@ -54,7 +46,34 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
     }
 
+    void SpawnDraggedElement () {
+
+        if (Renderer.color.a == 1 && !draggedElement) {
+
+            draggedElement = new GameObject ("Dragged Element").AddComponent<SpriteRenderer> ();
+
+            draggedElement.transform.position = new Vector3 (WorldMousePos.x, WorldMousePos.y, 0);
+
+            draggedElement.sortingOrder = 11;
+
+            draggedElement.sprite = Sprite;
+
+        }
+
+    }
+
     void IEndDragHandler.OnEndDrag (PointerEventData eventData) {
+
+        SC_PreparationSlot slot = null;
+
+        foreach (GameObject g in eventData.hovered)
+            slot = g.GetComponent<SC_PreparationSlot> () ?? slot;
+
+        TryPlaceElement (slot, GetObjectUnderMouse<SC_Castle> ());
+
+    }
+
+    void TryPlaceElement (SC_PreparationSlot slot, SC_Castle c) {
 
         if (draggedElement) {
 
@@ -63,71 +82,56 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
                 if ((!SC_Cursor.Tile.infos.heroDeploy) && SC_Cursor.Tile.baseCost < 100 && !SC_Cursor.Tile.Qin)
                     Instantiate (Resources.Load<SC_DeploymentSoldier> ("Prefabs/Characters/Soldiers/P_DeploymentSoldier"), SC_Cursor.Tile.transform.position, Quaternion.identity).SpriteR.sprite = Sprite;
 
-            } else if (IsPrepCastle (ElementType)) {
+            } else if (IsPrepCastle (ElementType) && c) {
 
-                SC_Castle c = GetObjectUnderMouse<SC_Castle> ();
+                if (c.CastleType != "") {
 
-                if (c) {
-
-                    if (c.CastleType != "") {
-
-                        GiveBackElement (ElementType, c.CastleType + "Castle");
-
-                        GetPrepCastle (c).Renderer.sprite = draggedElement.sprite;
-
-                    } else
-                        SC_UI_Manager.Instance.QinPreparationSlotsCount++;
-
-                    c.SetCastle (name);
-
-                    Renderer.DOFade (.5f, 0);
+                    GiveBackElement (ElementType, c.CastleType + "Castle");
 
                     GetPrepCastle (c).Renderer.sprite = draggedElement.sprite;
 
-                }
+                } else
+                    UIManager.QinPreparationSlotsCount++;
 
-            } else {
+                c.SetCastle (name);
 
-                SC_PreparationSlot slot = null;
+                Renderer.DOFade (.5f, 0);
 
-                foreach (GameObject g in eventData.hovered)
-                    slot = g.GetComponent<SC_PreparationSlot> () ?? slot;
+                GetPrepCastle (c).Renderer.sprite = draggedElement.sprite;                
 
-                if ((slot?.ElementType ?? -1) == ElementType) {
+            } else if ((slot?.ElementType ?? -1) == ElementType) {
 
-                    if (slot.IsDefault) {
+                if (slot.IsDefault) {
 
-                        if (ElementType == (int) EHeroPreparationElement.Weapon && GetType () == typeof (SC_HeroPreparationElement)) {
+                    if (ElementType == (int) EHeroPreparationElement.Weapon && GetType () == typeof (SC_HeroPreparationElement)) {
 
-                            SC_PreparationSlot correctSlot = null;
+                        SC_PreparationSlot correctSlot = null;
 
-                            foreach (SC_PreparationSlot w in slot.GetComponentInParent<SC_HeroDeck> ().Weapons)
-                                if (!correctSlot && w.IsDefault)
-                                    correctSlot = w;
+                        foreach (SC_PreparationSlot w in slot.GetComponentInParent<SC_HeroDeck> ().Weapons)
+                            if (!correctSlot && w.IsDefault)
+                                correctSlot = w;
 
-                            correctSlot.Renderer.sprite = draggedElement.sprite;
+                        correctSlot.Renderer.sprite = draggedElement.sprite;
 
-                        } else
-                            slot.Renderer.sprite = draggedElement.sprite;
-
-                        if (SC_Player.localPlayer.Qin)
-                            SC_UI_Manager.Instance.QinPreparationSlotsCount++;
-                        else
-                            SC_UI_Manager.Instance.HeroesPreparationSlotsCount++;
-
-                    } else {
-
-                        GiveBackElement (ElementType, slot.Renderer.sprite.name);
-
+                    } else
                         slot.Renderer.sprite = draggedElement.sprite;
 
-                    }
+                    if (SC_Player.localPlayer.Qin)
+                        UIManager.QinPreparationSlotsCount++;
+                    else
+                        UIManager.HeroesPreparationSlotsCount++;
 
-                    Renderer.DOFade (.5f, 0);
+                } else {
+
+                    GiveBackElement (ElementType, slot.Renderer.sprite.name);
+
+                    slot.Renderer.sprite = draggedElement.sprite;
 
                 }
 
-            }
+                Renderer.DOFade (.5f, 0);
+
+            }            
 
             Destroy (draggedElement.gameObject);
 
@@ -162,6 +166,58 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
     void IPointerExitHandler.OnPointerExit (PointerEventData eventData) {
 
         SC_UI_Manager.Instance.ShowTooltip (false);
+
+    }
+
+    float doubleClickTime = .17f;
+    float lastClickTime;
+
+    void IPointerClickHandler.OnPointerClick (PointerEventData eventData) {        
+
+        if (Time.time - lastClickTime <= doubleClickTime && Renderer.color.a == 1) {
+
+            SpawnDraggedElement ();
+
+            SC_PreparationSlot slot = null;
+
+            if (SC_Player.localPlayer.Qin) {
+
+                if (ElementType == (int) EQinPreparationElement.Curse && UIManager.qinPreprationUI.curseSlot.IsDefault)
+                    slot = UIManager.qinPreprationUI.curseSlot;
+
+                foreach (SC_CastleDeck cd in UIManager.qinPreprationUI.castleDecks)
+                    foreach (SC_PreparationSlot s in cd.GetComponentsInChildren<SC_PreparationSlot> ())
+                        slot = slot ?? (s.ElementType == ElementType && s.IsDefault ? s : null);
+
+            } else if (ElementType == (int) EHeroPreparationElement.Weapon) {
+
+                List<SC_PreparationSlot> weaponSlots = new List<SC_PreparationSlot> ();
+
+                for (int i = 0; i < 3; i++)
+                    foreach (SC_HeroDeck hd in UIManager.heroPreparationUI.heroDecks)
+                        weaponSlots.Add (hd.Weapons[i]);
+
+                foreach (SC_PreparationSlot s in weaponSlots)
+                    slot = slot ?? (s.ElementType == ElementType && s.IsDefault ? s : null);
+
+            } else {
+
+                foreach (SC_HeroDeck hd in UIManager.heroPreparationUI.heroDecks)
+                    foreach (SC_PreparationSlot s in hd.GetComponentsInChildren<SC_PreparationSlot> ())
+                        slot = slot ?? (s.ElementType == ElementType && s.IsDefault ? s : null);
+
+            }            
+
+            SC_Castle castle = null;
+
+            foreach (SC_Castle c in FindObjectsOfType<SC_Castle> ())
+                castle = castle ?? (c.CastleType == "" ? c : null);
+
+            TryPlaceElement (slot, castle); 
+
+        }
+
+        lastClickTime = Time.time;
 
     }
 

@@ -32,9 +32,7 @@ public class SC_Cursor : NetworkBehaviour {
 
     void Start() {
 
-        Locked = false;
-
-        GetComponent<SpriteRenderer> ().enabled = false;
+        SetLock (true);
 
         cam = FindObjectOfType<SC_Camera>();
 

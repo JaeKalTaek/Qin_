@@ -15,6 +15,8 @@ public class SC_Castle : SC_Bastion {
 
     public SpriteRenderer Roof { get { return transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>(); } }
 
+    public string Trap { get; set; }
+
     protected override void Start () {
 
         if (!SC_Game_Manager.Instance.prep)
@@ -65,6 +67,8 @@ public class SC_Castle : SC_Bastion {
     }
 
     public override void DestroyConstruction (bool playSound) {
+
+        FindObjectOfType<SC_CastleTraps> ().Invoke (Trap, 0);
 
         base.DestroyConstruction(playSound);
 

@@ -159,9 +159,14 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcSetCastles (CastleDeck[] decks) {
 
-        if (!localPlayer.Qin)
-            foreach (SC_Castle c in FindObjectsOfType<SC_Castle> ())
+        foreach (SC_Castle c in FindObjectsOfType<SC_Castle> ()) {
+
+            c.Trap = decks[c.Tile.Region].trap;
+
+            if (!localPlayer.Qin)
                 c.SetCastle (decks[c.Tile.Region].castle);
+
+        }
 
     }
     #endregion

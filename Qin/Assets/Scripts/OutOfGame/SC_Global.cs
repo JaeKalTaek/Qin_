@@ -14,6 +14,8 @@ public class SC_Global {
 
     public static Vector3 WorldMousePos { get { return Camera.main.ScreenToWorldPoint (Input.mousePosition); } }
 
+    public static SC_Tile TileUnderMouse { get { return SC_Tile_Manager.Instance.GetTileAt (WorldMousePos, true); } }
+
     public static int XSize { get { return SC_Game_Manager.Instance.CurrentMapPrefab.SizeMapX; } }
 
     public static int YSize { get { return SC_Game_Manager.Instance.CurrentMapPrefab.SizeMapY; } }

@@ -79,25 +79,29 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
             if (ElementType == (int) EQinPreparationElement.Soldiers && SC_Player.localPlayer.Qin) {
 
-                if ((!SC_Cursor.Tile.infos.heroDeploy) && SC_Cursor.Tile.baseCost < 100 && !SC_Cursor.Tile.Qin)
-                    Instantiate (Resources.Load<SC_DeploymentSoldier> ("Prefabs/Characters/Soldiers/P_DeploymentSoldier"), SC_Cursor.Tile.transform.position, Quaternion.identity).SpriteR.sprite = Sprite;
+                if ((!TileUnderMouse.infos.heroDeploy) && TileUnderMouse.baseCost < 100 && !TileUnderMouse.Qin)
+                    Instantiate (Resources.Load<SC_DeploymentSoldier> ("Prefabs/Characters/Soldiers/P_DeploymentSoldier"), TileUnderMouse.transform.position, Quaternion.identity).SpriteR.sprite = Sprite;
 
-            } else if (IsPrepCastle (ElementType) && c) {
+            } else if (IsPrepCastle (ElementType)) {
 
-                if (c.CastleType != "") {
+                if (c) {
 
-                    GiveBackElement (ElementType, c.CastleType + "Castle");
+                    if (c.CastleType != "") {
+
+                        GiveBackElement (ElementType, c.CastleType + "Castle");
+
+                        GetPrepCastle (c).Renderer.sprite = draggedElement.sprite;
+
+                    } else
+                        UIManager.QinPreparationSlotsCount++;
+
+                    c.SetCastle (name);
+
+                    Renderer.DOFade (.5f, 0);
 
                     GetPrepCastle (c).Renderer.sprite = draggedElement.sprite;
 
-                } else
-                    UIManager.QinPreparationSlotsCount++;
-
-                c.SetCastle (name);
-
-                Renderer.DOFade (.5f, 0);
-
-                GetPrepCastle (c).Renderer.sprite = draggedElement.sprite;                
+                }
 
             } else if ((slot?.ElementType ?? -1) == ElementType) {
 

@@ -35,7 +35,7 @@ public class SC_Camera : MonoBehaviour {
     [Tooltip ("If the camera centers on the tile to focus or if it just moves enough for it to be included in the in-focus zone")]
     public bool centeredFocus;
 
-    Vector3 CursorPos { get { return SC_Game_Manager.Instance.prep ? SC_Tile_Manager.Instance.GetTileAt (WorldMousePos, true).transform.position : SC_Cursor.Instance.transform.position; } }
+    Vector3 CursorPos { get { return (SC_Game_Manager.Instance.prep ? TileUnderMouse.transform : SC_Cursor.Instance.transform).position; } }
 
     Vector3 targetPos;
 

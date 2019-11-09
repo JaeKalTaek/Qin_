@@ -44,13 +44,13 @@ public class SC_DeploymentSoldier : MonoBehaviour {
 
     }
 
-    bool SameRegion { get { return SC_Cursor.Tile.Region == (prevTile?.Region ?? -1); } }
+    bool SameRegion { get { return TileUnderMouse.Region == (prevTile?.Region ?? -1); } }
 
     void TryPlace () {
 
-        if (SC_Cursor.Tile && SC_Cursor.Tile != prevTile && (SameRegion || regionPoints[SC_Cursor.Tile.Region] + (SC_Cursor.Tile.DeployedSoldier?.Cost ?? 0) >= Cost)) {
+        if (TileUnderMouse && TileUnderMouse != prevTile && (SameRegion || regionPoints[TileUnderMouse.Region] + (TileUnderMouse.DeployedSoldier?.Cost ?? 0) >= Cost)) {
 
-            regionPoints[SC_Cursor.Tile.Region] -= Cost;
+            regionPoints[TileUnderMouse.Region] -= Cost;
 
             if (prevTile) {
 
@@ -60,29 +60,29 @@ public class SC_DeploymentSoldier : MonoBehaviour {
 
             }
 
-            if (SC_Cursor.Tile.DeployedSoldier) {
+            if (TileUnderMouse.DeployedSoldier) {
                 
-                regionPoints[SC_Cursor.Tile.Region] += SC_Cursor.Tile.DeployedSoldier.Cost;
+                regionPoints[TileUnderMouse.Region] += TileUnderMouse.DeployedSoldier.Cost;
 
-                if (SameRegion || prevTile && regionPoints[prevTile.Region] >= SC_Cursor.Tile.DeployedSoldier.Cost) {
+                if (SameRegion || prevTile && regionPoints[prevTile.Region] >= TileUnderMouse.DeployedSoldier.Cost) {
 
-                    SC_Cursor.Tile.DeployedSoldier.transform.position = prevTile.transform.position;
+                    TileUnderMouse.DeployedSoldier.transform.position = prevTile.transform.position;
 
-                    prevTile.DeployedSoldier = SC_Cursor.Tile.DeployedSoldier;
+                    prevTile.DeployedSoldier = TileUnderMouse.DeployedSoldier;
 
                     prevTile.DeployedSoldier.prevTile = prevTile;
 
                     regionPoints[prevTile.Region] -= prevTile.DeployedSoldier.Cost;
 
                 } else
-                    Destroy (SC_Cursor.Tile.DeployedSoldier.gameObject);
+                    Destroy (TileUnderMouse.DeployedSoldier.gameObject);
 
             }                 
 
             if (prevTile)
                 UIManager.qinPreprationUI.castleDecks[prevTile.Region].SoldiersPoints.text = regionPoints[prevTile.Region].ToString ();
                        
-            prevTile = SC_Cursor.Tile;
+            prevTile = TileUnderMouse;
 
             UIManager.qinPreprationUI.castleDecks[prevTile.Region].SoldiersPoints.text = regionPoints[prevTile.Region].ToString ();
 

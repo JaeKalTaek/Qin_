@@ -79,8 +79,7 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
             if (ElementType == (int) EQinPreparationElement.Soldiers && SC_Player.localPlayer.Qin) {
 
-                if ((!TileUnderMouse.infos.heroDeploy) && TileUnderMouse.baseCost < 100 && !TileUnderMouse.Qin)
-                    Instantiate (Resources.Load<SC_DeploymentSoldier> ("Prefabs/Characters/Soldiers/P_DeploymentSoldier"), TileUnderMouse.transform.position, Quaternion.identity).SpriteR.sprite = Sprite;
+                Instantiate (Resources.Load<SC_DeploymentSoldier> ("Prefabs/Characters/Soldiers/P_DeploymentSoldier"), TileUnderMouse.transform.position, Quaternion.identity).SpriteR.sprite = Sprite;
 
             } else if (IsPrepCastle (ElementType)) {
 

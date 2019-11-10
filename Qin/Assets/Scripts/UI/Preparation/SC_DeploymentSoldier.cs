@@ -48,7 +48,7 @@ public class SC_DeploymentSoldier : MonoBehaviour {
 
     void TryPlace () {
 
-        if (TileUnderMouse && TileUnderMouse != prevTile && (SameRegion || regionPoints[TileUnderMouse.Region] + (TileUnderMouse.DeployedSoldier?.Cost ?? 0) >= Cost)) {
+        if (TileUnderMouse && (!TileUnderMouse.infos.heroDeploy) && TileUnderMouse.baseCost < 100 && !TileUnderMouse.Qin && TileUnderMouse != prevTile && (SameRegion || regionPoints[TileUnderMouse.Region] + (TileUnderMouse.DeployedSoldier?.Cost ?? 0) >= Cost)) {
 
             regionPoints[TileUnderMouse.Region] -= Cost;
 

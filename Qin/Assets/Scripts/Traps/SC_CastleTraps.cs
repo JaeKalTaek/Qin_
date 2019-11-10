@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 using static SC_Character;
 
@@ -87,13 +88,59 @@ public class SC_CastleTraps : MonoBehaviour {
     #endregion
 
     #region Disillusion
-    [Header ("Disillusion")]
+    /*[Header ("Disillusion")]
     [Tooltip ("Disillusion push distance")]
-    public int disillusionPushDistance;
+    public int disillusionPushDistance;*/
 
     public void Disillusion () {
 
-        
+        if (activeCharacter) {
+
+            List<SC_Hero> bestFriends = new List<SC_Hero> ();
+
+            foreach (SC_Hero hero in TileManager.HeroesInRange (activeCharacter.Hero)) {
+
+                if (bestFriends.Count == 0)
+                    bestFriends.Add (hero);
+                else {
+
+                    int currentValue;
+                    activeCharacter.Hero.Relationships.TryGetValue (bestFriends[0].characterName, out currentValue);
+
+                    int value;
+                    activeCharacter.Hero.Relationships.TryGetValue (hero.characterName, out value);
+
+                    if (value >= currentValue) {
+
+                        if (value > currentValue)
+                            bestFriends.Clear ();
+
+                        bestFriends.Add (hero);
+
+                    }
+
+                }                
+
+            }
+
+            if (bestFriends.Count > 1) {
+
+                SC_Hero closest = bestFriends[0];
+
+                foreach (SC_Hero h in bestFriends)
+                    if (SC_Tile_Manager.TileDistance (activeCharacter.Tile, h.Tile) < SC_Tile_Manager.TileDistance (activeCharacter.Tile, closest.Tile))
+                        closest = h;
+
+                bestFriends[0] = closest;
+
+            }
+
+            activeCharacter.Hero.RelationGainBlocked = bestFriends[0].characterName;
+
+            activeCharacter.Hero.Relationships[bestFriends[0].characterName] = 0;
+            bestFriends[0].Relationships[activeCharacter.characterName] = 0;
+
+        }
 
     }
     #endregion

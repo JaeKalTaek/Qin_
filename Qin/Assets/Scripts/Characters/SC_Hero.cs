@@ -16,6 +16,8 @@ public class SC_Hero : SC_Character {
     public Dictionary<string, int> Relationships { get; set; }
 	public List<string> RelationshipKeys { get; set; }
 
+    public string RelationGainBlocked { get; set; }
+
 	//bool saved;
 
 	//Berserk	
@@ -252,17 +254,23 @@ public class SC_Hero : SC_Character {
 
         List<SC_Hero> heroesInRange = TileManager.HeroesInRange(this);
 
-        if(heroesInRange.Count > 0)
+        if(heroesInRange.Count > 1 || (heroesInRange.Count == 1 && heroesInRange[0].characterName != RelationGainBlocked))
             Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
 
         foreach (SC_Hero hero in heroesInRange) {
 
-            Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+            if (hero.characterName != RelationGainBlocked) {
 
-            Relationships[hero.characterName] += (int)(amount / heroesInRange.Count + .5f);
-            hero.Relationships[characterName] += (int)(amount / heroesInRange.Count + .5f);
+                Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+
+                Relationships[hero.characterName] += (int) (amount / heroesInRange.Count + .5f);
+                hero.Relationships[characterName] += (int) (amount / heroesInRange.Count + .5f);
+
+            }
 
         }
+
+        RelationGainBlocked = "";
 
     }
 

@@ -58,7 +58,12 @@ public class SC_Hero : SC_Character {
 
     public override void OnStartClient () {
 
-        base.OnStartClient();        
+        base.OnStartClient();
+
+        weapons = new List<SC_Weapon> ();
+
+        foreach (string s in Hero.deck.weapons)
+            weapons.Add (Resources.Load<SC_Weapon> ("Prefabs/Characters/Components/Weapons/P_" + s));
 
         male = loadedCharacter.Hero.male;
 

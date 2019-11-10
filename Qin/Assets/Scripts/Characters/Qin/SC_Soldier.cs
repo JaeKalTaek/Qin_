@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class SC_Soldier : SC_BaseQinChara {    
@@ -14,6 +15,8 @@ public class SC_Soldier : SC_BaseQinChara {
     public override void OnStartClient () {
 
         base.OnStartClient();
+
+        weapons = new List<SC_Weapon> (loadedCharacter.weapons);
 
         cost = loadedCharacter.Soldier.cost;
 

@@ -10,8 +10,10 @@ public class SC_Hero : SC_Character {
     [SyncVar]
     public HeroDeck deck;
 
-	//Relationships	
-	public Dictionary<string, int> Relationships { get; set; }
+    public SC_Tile StartingTile { get; set; }
+
+    //Relationships	
+    public Dictionary<string, int> Relationships { get; set; }
 	public List<string> RelationshipKeys { get; set; }
 
 	//bool saved;
@@ -76,6 +78,8 @@ public class SC_Hero : SC_Character {
 
         base.Start();
 
+        StartingTile = Tile;
+
         transform.parent = uiManager.heroesT;
 
         ActionCount = -1;
@@ -123,7 +127,7 @@ public class SC_Hero : SC_Character {
 
 	public void Regen() {
 
-        Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.staminaRegen, MaxHealth);
+        // Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.staminaRegen, MaxHealth);
 
         if (Tile.Village || Tile.Pit) {
 

@@ -78,6 +78,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public SC_Tile LastPos { get; set; }
 
+    public bool Stunned { get; set; }
+
     #region Managers
     protected static SC_Tile_Manager TileManager { get { return SC_Tile_Manager.Instance; } }
 
@@ -161,9 +163,7 @@ public abstract class SC_Character : NetworkBehaviour {
         if (!fightManager)
             fightManager = SC_Fight_Manager.Instance;               	
 
-		LastPos = Tile;
-
-        LastPos.Character = this;
+		Tile.Character = this;
 
         transform.SetPos(transform.position, 0);        
 
@@ -385,11 +385,24 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }
 
+    public void RollbackCharacterPos (SC_Tile newPos) {
+
+        TileManager.RemoveAllFilters ();
+
+        activeCharacter.Tile.Character = null;
+
+        activeCharacter.transform.SetPos (newPos.transform.position);
+
+        if (activeCharacter.Hero)
+            SC_DrainingStele.UpdateHeroSlow (activeCharacter.Hero);
+
+        newPos.Character = activeCharacter;
+
+    }
+
     public void ResetMovementFunction () {
 
         uiManager.characterActionsPanel.SetActive(false);
-
-        TileManager.RemoveAllFilters();
 
         if (Hero && Tile != LastPos) {            
 
@@ -415,19 +428,11 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }
 
-        Tile.Character = null;
-
-        transform.SetPos(LastPos.transform.position);
-
-        LastPos.Character = this;
+        RollbackCharacterPos (LastPos);
 
         CanBeSelected = true;
 
-        if (Hero) {
-
-            SC_DrainingStele.UpdateHeroSlow(Hero);            
-
-        }  else if (Demon) {
+        if (Demon) {
 
             Demon.RemoveAura(LastPos);
 

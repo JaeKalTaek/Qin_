@@ -137,8 +137,6 @@ public class SC_Demon : SC_BaseQinChara {
 
                 respawnTile.Character = this;
 
-                LastPos = respawnTile;
-
                 AddAura();
 
                 gameObject.SetActive(true);

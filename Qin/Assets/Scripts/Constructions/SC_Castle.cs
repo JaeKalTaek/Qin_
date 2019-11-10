@@ -68,7 +68,9 @@ public class SC_Castle : SC_Bastion {
 
     public override void DestroyConstruction (bool playSound) {
 
-        FindObjectOfType<SC_CastleTraps> ().Invoke (Trap, 0);
+        gameManager.CurrentCastle = this;
+
+        typeof (SC_CastleTraps).GetMethod (Trap).Invoke (SC_CastleTraps.Instance, null);
 
         base.DestroyConstruction(playSound);
 

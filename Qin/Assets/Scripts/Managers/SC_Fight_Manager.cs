@@ -181,6 +181,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
                     attackedShields.GetChild(attackedShields.childCount - 1).GetComponent<Image>().color = Color.Lerp(Color.white, new Color(1, 1, 1, 0), Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);
 
+                    if (timer >= healthBarAnimTime * .9f)
+                        (counter ? uiManager.fightPanel.attackerHealth : uiManager.fightPanel.attackedHealth).text = endValue.ToString ();
+
                 } else {
 
                     float HealthValue = Mathf.Lerp(baseValue, endValue, Mathf.Min(timer, healthBarAnimTime) / healthBarAnimTime);

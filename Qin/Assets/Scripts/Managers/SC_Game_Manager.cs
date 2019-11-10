@@ -47,8 +47,14 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public bool FocusOn { get; set; }
 
+    public int ScorchedRegion { get; set; }
+
+    public static bool otherGM;
+
     #region Setup
     private void Awake () {
+
+        ScorchedRegion = -1;
 
         FocusOn = true;
 
@@ -86,7 +92,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     IEnumerator WaitForPlayer () {
 
-        while (!Player)
+        while (!Player || !otherGM)
             yield return null;
 
         GenerateMap();
@@ -94,7 +100,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
 
-	void GenerateMap() {
+    void GenerateMap() {
 
         foreach (Transform child in CurrentMapPrefab.transform) {
 
@@ -261,7 +267,6 @@ public class SC_Game_Manager : NetworkBehaviour {
             }*/
 
 		}
-
         foreach (SC_Character character in FindObjectsOfType<SC_Character>()) {
 
             if (!character.Tile.Character) {
@@ -280,10 +285,16 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 character.Hero.ActionCount = -1;
 
-                if (!QinTurn)
-                    character.Hero.Regen();
-                else
-                    character.Hero.IncreaseRelationships(CommonCharactersVariables.relationGains.finishTurn);
+                if (!QinTurn) {
+
+                    character.Hero.Regen ();
+
+                    if (character.Tile.Region == ScorchedRegion && !character.Qin)
+                        character.Hit (SC_CastleTraps.Instance.scorchedDamage);
+
+                } else
+                    character.Hero.IncreaseRelationships (CommonCharactersVariables.relationGains.finishTurn);
+                
 
                 /*if (Qin) {
 

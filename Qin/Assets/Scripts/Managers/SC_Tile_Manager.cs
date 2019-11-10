@@ -365,20 +365,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         List<SC_Hero> heroesInRange = new List<SC_Hero>();
 
-        foreach (SC_Tile tile in GetRange(target.transform.position, 3)) {
-
-            if (tile.Character) {
-
-                if (tile.Character.Hero && !tile.Character.Qin) {
-
-                    if (!tile.Character.characterName.Equals(target.characterName) && !heroesInRange.Contains(tile.Character.Hero))
-                        heroesInRange.Add(tile.Character.Hero);
-
-                }
-
-            }
-
-        }
+        foreach (SC_Tile tile in GetRange(target.transform.position, new Vector2 (1, gameManager.CommonCharactersVariables.relationshipDistance)))
+            if (tile.Character?.Hero)
+                    heroesInRange.Add(tile.Character.Hero);                
 
         return heroesInRange;
 

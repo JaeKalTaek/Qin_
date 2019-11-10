@@ -44,8 +44,24 @@ public class SC_Player : NetworkBehaviour {
 
         GameManager.Player = this;
 
+        localPlayer.CmdSetGM (localPlayer.Qin);
+
     }
 
+    [Command]
+    void CmdSetGM (bool qin) {
+
+        RpcSetGM (qin);
+
+    }
+
+    [ClientRpc]
+    void RpcSetGM (bool qin) {
+
+        if (qin != localPlayer.Qin)
+            SC_Game_Manager.otherGM = true;
+
+    }
     #region Commands
 
     #region Connecting

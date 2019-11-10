@@ -118,7 +118,7 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
                         correctSlot.Renderer.sprite = draggedElement.sprite;
 
                     } else
-                        slot.Renderer.sprite = draggedElement.sprite;
+                        PlaceElement (slot);
 
                     if (SC_Player.localPlayer.Qin)
                         UIManager.QinPreparationSlotsCount++;
@@ -129,7 +129,7 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
                     GiveBackElement (ElementType, slot.Renderer.sprite.name);
 
-                    slot.Renderer.sprite = draggedElement.sprite;
+                    PlaceElement (slot);
 
                 }
 
@@ -140,6 +140,27 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
             Destroy (draggedElement.gameObject);
 
         }
+
+    }
+
+    void PlaceElement (SC_PreparationSlot slot) {
+
+        if (ElementType == (int) EHeroPreparationElement.Hero && GetType () == typeof (SC_HeroPreparationElement)) {
+
+            foreach (SC_Tile t in SC_Tile_Manager.Instance.DeploymentTiles) {
+
+                if (!t.DeployedHero) {
+
+                    Instantiate (Resources.Load<SC_DeploymentHero> ("Prefabs/Characters/Heroes/P_DeploymentHero"), t.transform.position, Quaternion.identity).SpriteR.sprite = draggedElement.sprite;
+
+                    break;
+
+                }
+
+            }
+        }
+
+        slot.Renderer.sprite = draggedElement.sprite;
 
     }
 
@@ -154,6 +175,22 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
     }
 
     public static void GiveBackElement (int type, string element) {
+
+        if (type == (int) EHeroPreparationElement.Hero && !SC_Player.localPlayer.Qin) {
+
+            foreach (SC_Tile t in SC_Tile_Manager.Instance.DeploymentTiles) {
+
+                if (t.DeployedHero?.SpriteR.sprite.name == element) {
+
+                    Destroy (t.DeployedHero.gameObject);
+
+                    t.DeployedHero = null;
+
+                }
+
+            }
+
+        }
 
         foreach (SC_PreparationElement e in GetElementsList (type))
             if (e.Sprite.name == element)

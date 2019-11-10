@@ -277,13 +277,8 @@ public class SC_UI_Manager : MonoBehaviour {
                 heroPreparationUI.trapsPool.SetActive (false);
                 heroPreparationUI.preparationSlotsCount.gameObject.SetActive (false);
                 heroPreparationUI.poolLabel.text = "Deploy your heroes";
-
-                heroPreparationUI.continueButton.GetComponentInChildren<Text> ().text = "Confirm";
+                heroPreparationUI.continueButton.GetComponentInChildren<Text> ().text = "Confirm";               
                 
-                if (!FindObjectOfType <SC_DeploymentHero> ())
-                    for (int i = 0; i < heroPreparationUI.heroDecks.Count; i++)
-                        Instantiate (Resources.Load<SC_DeploymentHero> ("Prefabs/Characters/Heroes/P_DeploymentHero"), TileManager.DeploymentTiles [i].transform.position, Quaternion.identity).SpriteR.sprite = heroPreparationUI.heroDecks [i].Hero.Renderer.sprite;
-
                 break;
 
             case 3:

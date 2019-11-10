@@ -86,13 +86,13 @@ public class SC_Camera : MonoBehaviour {
 
     Vector3 CursorCornerCamPos (bool sign) {
 
-        float f = SC_Game_Manager.Instance.prep ? 0 : cursorMargins[zoomIndex] * (sign ? 1 : -1);
+        float f = cursorMargins[zoomIndex] * (sign ? 1 : -1);
 
         Vector3 oldPos = transform.position;
 
         transform.position = targetPos;
 
-        Vector3 returnValue = cam.WorldToViewportPoint(CursorPos + new Vector3(f, f, 0));
+        Vector3 returnValue = cam.WorldToViewportPoint(SC_Game_Manager.Instance.prep ? WorldMousePos : CursorPos + new Vector3(f, f, 0));
 
         transform.position = oldPos;
 

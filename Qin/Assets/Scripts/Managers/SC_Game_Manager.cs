@@ -21,9 +21,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public static SC_Game_Manager Instance { get; set; }  
 
-    public int Turn { get; set; }
-
-    public bool QinTurn { get { return Turn % 2 == 0; } }
+    public bool QinTurn { get; set; }
 
     public bool QinTurnStarting { get; set; }
 
@@ -48,6 +46,8 @@ public class SC_Game_Manager : NetworkBehaviour {
     public bool FocusOn { get; set; }
 
     public int ScorchedRegion { get; set; }
+
+    public bool? AdditionalTurn { get; set; }
 
     public static bool otherGM;
 
@@ -78,7 +78,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         CommonQinVariables = Resources.Load<SC_CommonQinVariables>("Prefabs/P_CommonQinVariables");
 
-        Turn = 1;
+        QinTurn = false;
 
     }
 
@@ -229,7 +229,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void NextTurnFunction() {
 
-        Turn++;
+        if (AdditionalTurn != null && AdditionalTurn == QinTurn)
+            AdditionalTurn = null;
+        else
+            QinTurn ^= true;
 
         SC_Cursor.SetLock(true);
 

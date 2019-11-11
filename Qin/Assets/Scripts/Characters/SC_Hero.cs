@@ -132,6 +132,12 @@ public class SC_Hero : SC_Character {
 
     }*/ 
 
+    public void Heal (int amount) {
+
+        Health = Mathf.Min (Health + amount, MaxHealth);
+
+    }
+
 	public void Regen() {
 
         // Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.staminaRegen, MaxHealth);
@@ -139,7 +145,7 @@ public class SC_Hero : SC_Character {
         if (Tile.Village || Tile.Pit) {
 
             if (ReadyToRegen)
-                Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.prodConstructionRegen, MaxHealth);
+                Heal (gameManager.CommonCharactersVariables.prodConstructionRegen);
             else
                 ReadyToRegen = true;
 
@@ -221,7 +227,11 @@ public class SC_Hero : SC_Character {
 
 	public override void DestroyCharacter() {
 
-		base.DestroyCharacter();
+        SC_HeroTraps.hero = this;
+
+        typeof (SC_HeroTraps).GetMethod (deck.trap).Invoke (SC_HeroTraps.Instance, null);
+
+        base.DestroyCharacter();
 
 		SC_Qin.ChangeEnergy (SC_Qin.Qin.energyWhenHeroDies);
 

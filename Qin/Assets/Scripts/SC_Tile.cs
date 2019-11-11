@@ -152,6 +152,8 @@ public class SC_Tile : NetworkBehaviour {
 
         transform.GetChild(0).transform.localPosition = new Vector3(t.spriteOffset.x, t.spriteOffset.y);
 
+        SC_UI_Manager.Instance?.TryRefreshInfos (gameObject, GetType ());
+
     }
 
     void Start() {

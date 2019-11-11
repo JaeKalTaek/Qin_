@@ -13,6 +13,8 @@ public class SC_CastleTraps : MonoBehaviour {
 
     int Region { get { return GameManager.CurrentCastle.Tile.Region; } }
 
+    SC_Hero Destroyer { get { return (activeCharacter?.gameObject.activeSelf ?? false) ? activeCharacter.Hero : null; } }
+
     void Awake () {
 
         Instance = this;
@@ -54,15 +56,15 @@ public class SC_CastleTraps : MonoBehaviour {
 
     public void Reinforcements () {
 
-        if (GameManager.isServer && activeCharacter) {
+        if (GameManager.isServer && Destroyer) {
 
             foreach (SC_Tile t in TileManager.tiles) {
 
                 if (!t.Character && !t.DrainingStele && !t.Qin) {
 
-                    int dist = SC_Tile_Manager.TileDistance (t, activeCharacter.Tile);
+                    int dist = SC_Tile_Manager.TileDistance (t, Destroyer.Tile);
 
-                    if (dist == 1 || (dist == 2 && t.transform.position.x != activeCharacter.transform.position.x && t.transform.position.y != activeCharacter.transform.position.y)) {
+                    if (dist == 1 || (dist == 2 && t.transform.position.x != Destroyer.transform.position.x && t.transform.position.y != Destroyer.transform.position.y)) {
 
                         GameObject go = Instantiate (Resources.Load<GameObject> ("Prefabs/Characters/Soldiers/P_BaseSoldier"), t.transform.position, Quaternion.identity);
 
@@ -84,7 +86,7 @@ public class SC_CastleTraps : MonoBehaviour {
     #region Time Walk
     public void TimeWalk () {
 
-        activeCharacter?.RollbackCharacterPos (activeCharacter.Hero.StartingTile);
+        Destroyer?.RollbackCharacterPos (Destroyer.StartingTile);
 
     }
     #endregion
@@ -92,21 +94,21 @@ public class SC_CastleTraps : MonoBehaviour {
     #region Disillusion
     public void Disillusion () {
 
-        if (activeCharacter) {
+        if (Destroyer) {
 
             List<SC_Hero> bestFriends = new List<SC_Hero> ();
 
-            foreach (SC_Hero hero in TileManager.HeroesInRange (activeCharacter.Hero)) {
+            foreach (SC_Hero hero in TileManager.HeroesInRange (Destroyer)) {
 
                 if (bestFriends.Count == 0)
                     bestFriends.Add (hero);
                 else {
 
                     int currentValue;
-                    activeCharacter.Hero.Relationships.TryGetValue (bestFriends[0].characterName, out currentValue);
+                    Destroyer.Relationships.TryGetValue (bestFriends[0].characterName, out currentValue);
 
                     int value;
-                    activeCharacter.Hero.Relationships.TryGetValue (hero.characterName, out value);
+                    Destroyer.Relationships.TryGetValue (hero.characterName, out value);
 
                     if (value >= currentValue) {
 
@@ -126,17 +128,17 @@ public class SC_CastleTraps : MonoBehaviour {
                 SC_Hero closest = bestFriends[0];
 
                 foreach (SC_Hero h in bestFriends)
-                    if (SC_Tile_Manager.TileDistance (activeCharacter.Tile, h.Tile) < SC_Tile_Manager.TileDistance (activeCharacter.Tile, closest.Tile))
+                    if (SC_Tile_Manager.TileDistance (Destroyer.Tile, h.Tile) < SC_Tile_Manager.TileDistance (Destroyer.Tile, closest.Tile))
                         closest = h;
 
                 bestFriends[0] = closest;
 
             }
 
-            activeCharacter.Hero.RelationGainBlocked = bestFriends[0].characterName;
+            Destroyer.RelationGainBlocked = bestFriends[0].characterName;
 
-            activeCharacter.Hero.Relationships[bestFriends[0].characterName] = 0;
-            bestFriends[0].Relationships[activeCharacter.characterName] = 0;
+            Destroyer.Relationships[bestFriends[0].characterName] = 0;
+            bestFriends[0].Relationships[Destroyer.characterName] = 0;
 
         }
 
@@ -150,7 +152,7 @@ public class SC_CastleTraps : MonoBehaviour {
 
     public void Retribution () {
 
-        activeCharacter?.Hit (retributionDamage);
+        Destroyer?.Hit (retributionDamage);
 
     }
     #endregion

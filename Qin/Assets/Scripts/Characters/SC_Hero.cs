@@ -227,41 +227,49 @@ public class SC_Hero : SC_Character {
 
 	public override void DestroyCharacter() {
 
-        SC_HeroTraps.hero = this;
-
-        typeof (SC_HeroTraps).GetMethod (deck.trap).Invoke (SC_HeroTraps.Instance, null);
-
-        base.DestroyCharacter();
-
-		SC_Qin.ChangeEnergy (SC_Qin.Qin.energyWhenHeroDies);
-
-        SC_Sound_Manager.Instance.AugmentPart();
-
-        // gameManager.LastHeroDead = this;        
-
-        /*foreach (SC_Hero hero in heroes) {
-
-			int value = 0;
-			Relationships.TryGetValue (hero.characterName, out value);
-
-			if (value >= gameManager.CommonCharactersVariables.berserkTriggerRelation) {
-
-				hero.Berserk = true;
-				hero.BerserkTurn = true;
-				hero.CanMove = !gameManager.Qin;
-
-				hero.GetComponent<Renderer> ().material.color = Color.cyan;
-
-			}
-
-		}*/
-
         gameObject.SetActive (false);
 
-        heroes.Remove(this);
+        base.DestroyCharacter ();
 
-        if (heroes.Count <= 0)
-			uiManager.ShowVictory (true);
+        if (!Qin) {
+
+            SC_HeroTraps.hero = this;
+
+            typeof (SC_HeroTraps).GetMethod (deck.trap).Invoke (SC_HeroTraps.Instance, null);
+
+            SC_Qin.ChangeEnergy (SC_Qin.Qin.energyWhenHeroDies);
+
+            SC_Sound_Manager.Instance.AugmentPart ();
+
+            // gameManager.LastHeroDead = this;        
+
+            /*foreach (SC_Hero hero in heroes) {
+
+                int value = 0;
+                Relationships.TryGetValue (hero.characterName, out value);
+
+                if (value >= gameManager.CommonCharactersVariables.berserkTriggerRelation) {
+
+                    hero.Berserk = true;
+                    hero.BerserkTurn = true;
+                    hero.CanMove = !gameManager.Qin;
+
+                    hero.GetComponent<Renderer> ().material.color = Color.cyan;
+
+                }
+
+            }*/            
+
+            heroes.Remove (this);
+
+            if (heroes.Count <= 0)
+                uiManager.ShowVictory (true);
+
+        } else {
+
+            Destroy (gameObject);
+
+        }
 
 	}
 

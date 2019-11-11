@@ -12,6 +12,41 @@ public class SC_HeroTraps : MonoBehaviour {
 
     }
 
+    void Raze (SC_Tile tile) {
+
+        if (tile.Character?.Qin ?? false)
+            tile.Character.DestroyCharacter ();
+
+        tile.Construction?.DestroyConstruction (true);
+
+        tile.infos.type = "Plain";
+        tile.SetupTile ();
+
+    }
+
+    #region Heavenly Beams 
+    public void HeavenlyBeams () {
+
+        foreach (SC_Tile t in SC_Tile_Manager.Instance.tiles)
+            if (t.transform.position.x == hero.Tile.transform.position.x || t.transform.position.y == hero.Tile.transform.position.y)
+                Raze (t);
+
+    }
+    #endregion
+
+    #region Earth's Wrath
+    [Header ("Earth's Wrath")]
+    [Tooltip ("Earth's Wraths radius")]
+    public int earthsWrathRadius;
+
+    public void EarthsWrath () {
+
+        foreach (SC_Tile t in SC_Tile_Manager.Instance.GetRange (hero.Tile.transform.position, earthsWrathRadius))
+            Raze (t);
+
+    }
+    #endregion
+
     #region Heaven's Light
     [Header ("Heaven's Light")]
     [Tooltip ("Heaven's Light's radius")]

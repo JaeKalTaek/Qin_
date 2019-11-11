@@ -208,7 +208,7 @@ public class SC_Fight_Manager : MonoBehaviour {
                 SC_Player.localPlayer.CmdApplyDamage(counter);
 
             #region Counter attack
-            if (attacked && !counter && attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
+            if (attacked && !counter && attacked.CanCounterAttack (killed, AttackRange)) {//attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
 
                 StartCoroutine(FightAnim(attacked, travel, true));
 

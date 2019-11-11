@@ -24,11 +24,13 @@ public class SC_CastleTraps : MonoBehaviour {
     [Tooltip ("Stasis radius")]
     public int stasisRadius;
 
+    [Tooltip ("Stasis stun duration")]
+    public int stasisStunDuration;
+
     public void Stasis () {
 
         foreach (SC_Tile t in TileManager.GetRange (GameManager.CurrentCastle.transform.position, stasisRadius))
-            if (t.Hero)
-                t.Hero.Stunned = true;
+            t.Hero?.Stun (stasisStunDuration);
 
     }
     #endregion
@@ -88,10 +90,6 @@ public class SC_CastleTraps : MonoBehaviour {
     #endregion
 
     #region Disillusion
-    /*[Header ("Disillusion")]
-    [Tooltip ("Disillusion push distance")]
-    public int disillusionPushDistance;*/
-
     public void Disillusion () {
 
         if (activeCharacter) {

@@ -307,11 +307,11 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         if (SC_Cursor.Tile.CanAttack && attacked) {
 
-            SC_Construction attackedConstru = SC_Cursor.Tile.Construction;
+            return !attacked.CanCounterAttack (!SC_Cursor.Tile.Construction && (attacked.Health - SC_Fight_Manager.Instance.CalcDamage (SC_Character.activeCharacter, attacked)) <= 0, TileDistance (SC_Cursor.Tile, tile));
 
-            bool killed = !attackedConstru && (attacked.Health - SC_Fight_Manager.Instance.CalcDamage(SC_Character.activeCharacter, attacked)) <= 0;
+            /*bool killed = !attackedConstru && (attacked.Health - SC_Fight_Manager.Instance.CalcDamage(SC_Character.activeCharacter, attacked)) <= 0;
 
-            return killed || !attacked.GetRange().In(TileDistance(SC_Cursor.Tile, tile));
+            return killed || !attacked.GetRange().In(TileDistance(SC_Cursor.Tile, tile));*/
 
         } else {
 

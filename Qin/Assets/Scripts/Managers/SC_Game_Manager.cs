@@ -312,9 +312,12 @@ public class SC_Game_Manager : NetworkBehaviour {
 
             }
 
-            character.UnTired();
+            character.CanBeSelected = character.Stunned <= 0 ? character.Qin == QinTurn : false;
 
-            character.CanBeSelected = character.Qin == QinTurn;
+            if (character.Stunned <= 0)
+                character.SetTired (false);
+            else
+                character.Stunned--;                               
 
         }
 

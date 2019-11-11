@@ -40,9 +40,7 @@ public class SC_Soldier : SC_BaseQinChara {
 
         gameManager.TryFocusOn (transform.position);
 
-        CanBeSelected = false;
-
-        Tire();
+        SetTired (true);
 
         SC_Qin.ChangeEnergy(-cost);
 

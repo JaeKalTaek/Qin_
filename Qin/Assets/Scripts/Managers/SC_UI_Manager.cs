@@ -877,7 +877,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 attackedPreviewFight.name.text = attacked.characterName + (attackedConstru ? " on " + (attackedConstru as SC_Castle ? "Castle" : attackedConstru.Name) : "");
 
-                PreviewCharacterAttack(attacked, activeCharacter, PreviewCharacterAttack(activeCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange));
+                PreviewCharacterAttack (attacked, activeCharacter, !attacked.CanCounterAttack (PreviewCharacterAttack (activeCharacter, attacked), SC_Fight_Manager.AttackRange));//PreviewCharacterAttack(activeCharacter, attacked) || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange));
 
             } else {
 

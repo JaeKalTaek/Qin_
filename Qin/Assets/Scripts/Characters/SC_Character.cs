@@ -78,7 +78,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public SC_Tile LastPos { get; set; }
 
-    public bool Stunned { get; set; }
+    public int Stunned { get; set; }
 
     #region Managers
     protected static SC_Tile_Manager TileManager { get { return SC_Tile_Manager.Instance; } }
@@ -119,7 +119,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         BaseColor = Sprite.color;
 
-        CanBeSelected = Qin == gameManager.QinTurn;        
+        CanBeSelected = Qin == gameManager.QinTurn;
 
     }
 
@@ -449,6 +449,12 @@ public abstract class SC_Character : NetworkBehaviour {
     }
     #endregion
 
+    public bool CanCounterAttack (bool killed, int range) {
+
+        return GetRange ().In (range) && !killed && !Tired;
+
+    }
+
     public void StartAttack () {
 
         if (CanAttackWithWeapons (Tile).Count == 1)
@@ -480,19 +486,22 @@ public abstract class SC_Character : NetworkBehaviour {
 
             }
 
-        } else if (activeCharacter.BaseQinChara) {
-
-            activeCharacter.CanBeSelected = false;
-
-            activeCharacter.Tire();
-
-        }
+        } else if (activeCharacter.BaseQinChara)
+            activeCharacter.SetTired (true);
 
         activeCharacter.AttackTarget = null;
 
         activeCharacter = null;
 
     }   
+
+    public virtual void Stun (int duration) {
+
+        SetTired (true);
+
+        Stunned += duration + (Qin == gameManager.QinTurn ? 1 : 0);
+
+    }
 
 	public virtual void DestroyCharacter() {
 
@@ -528,17 +537,18 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }	
 
-	public virtual void Tire() {
+    public bool Tired { get; set; }
 
-		Sprite.color = tiredColor;
+    public virtual void SetTired (bool tired) {
 
-	}
+        if (tired)
+            CanBeSelected = false;
 
-	public virtual void UnTired() {
+        Tired = tired;        
 
-        Sprite.color = BaseColor;
+        Sprite.color = Tired ? tiredColor : BaseColor;
 
-	}
+    }
 
     public void UpdateStats () {
 

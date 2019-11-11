@@ -65,6 +65,8 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         uiManager.fightPanel.attackerShield.Set(activeCharacter.Tile.GreatWall?.Health ?? 0);
         uiManager.fightPanel.attackedShield.Set(targetConstruction?.GreatWall?.Health ?? 0);
+
+        uiManager.fightPanel.attackedSlider.gameObject.SetActive (attacked || (targetConstruction && !targetConstruction.GreatWall));
         #endregion
 
         #region Setup pos
@@ -173,9 +175,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             while (timer < healthBarAnimTime) {
 
-                timer += Time.deltaTime;
-
-                attackedHealth.gameObject.SetActive (attacked || (attackedConstru && !attackedConstru.GreatWall));
+                timer += Time.deltaTime;                
 
                 if (attackedConstru?.GreatWall) {
 

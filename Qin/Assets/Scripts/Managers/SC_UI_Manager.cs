@@ -30,7 +30,8 @@ public class SC_UI_Manager : MonoBehaviour {
     [Header("Game")]
     public GameObject gamePanel;
     public GameObject loadingPanel, victoryPanel;
-    public Text turnIndicator;    
+    public Text turnIndicator;
+    public TextMeshProUGUI infoText;
     public GameObject playerActionsPanel, optionsPanel, soundPanel, concedePanel;
     public GameObject endTurnButton;
     public Toggle healthBarsToggle;
@@ -683,9 +684,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             for (int i = 0; i < c.Hero.RelationshipKeys.Count; i++) {
 
-                int v;
-
-                c.Hero.Relationships.TryGetValue(c.Hero.RelationshipKeys[i], out v);
+                int v = c.Hero.Relationships[c.Hero.RelationshipKeys[i]];
 
                 relationshipsDetails[i].icon.sprite = Resources.Load<SC_Hero>("Prefabs/Characters/Heroes/P_" + c.Hero.RelationshipKeys[i].Replace(" ", "_")).GetComponentInChildren<SpriteRenderer>().sprite;
 
@@ -1013,13 +1012,13 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Stamina system
     public void DisplayStaminaActionCost (bool show) {
 
-        activeCharacter.Hero?.SetStaminaCost(show ? activeCharacter.Hero.ActionCost : 0);        
+        SetStaminaCost (new int[] { show ? activeCharacter.Hero.ActionCost : 0 });
 
     }
 
     public void DisplayStaminaCost (int cost) {
 
-        if (CurrentChara == activeCharacter.gameObject)
+        //if (CurrentChara == activeCharacter.gameObject)
             staminaUsage[0].SetStaminaCost(cost);
 
         staminaUsage[1].SetStaminaCost(cost);
@@ -1588,6 +1587,14 @@ public class SC_UI_Manager : MonoBehaviour {
         float y = Camera.main.WorldToViewportPoint (WorldMousePos).y * UISize.y;
 
         tooltip.anchoredPosition = new Vector3 (Mathf.Clamp (x, 0, UISize.x - tooltip.sizeDelta.x), Mathf.Clamp (y, 0, UISize.y - tooltip.sizeDelta.y), 0);
+
+    }
+
+    public void DisplayInfo (string t = "") {
+
+        infoText.text = t;
+
+        infoText.transform.parent.gameObject.SetActive (t != "");
 
     }
     #endregion

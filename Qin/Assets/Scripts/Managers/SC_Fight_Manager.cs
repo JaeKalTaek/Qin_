@@ -207,7 +207,6 @@ public class SC_Fight_Manager : MonoBehaviour {
             if (SC_Player.localPlayer.isServer)
                 SC_Player.localPlayer.CmdApplyDamage(counter);
 
-            #region Counter attack
             if (attacked && !counter && attacked.CanCounterAttack (killed, AttackRange)) {//attacked.GetActiveWeapon().Range(attacked).In(AttackRange) && !killed) {
 
                 StartCoroutine(FightAnim(attacked, travel, true));
@@ -221,7 +220,6 @@ public class SC_Fight_Manager : MonoBehaviour {
                 SC_Player.localPlayer.CmdSynchroFinishAction();
 
             }
-            #endregion
 
         }
         #endregion
@@ -332,14 +330,8 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         float boost = 0;
 
-        foreach (SC_Hero hero in TileManager.HeroesInRange(target)) {
-
-            int value;
-            target.Relationships.TryGetValue(hero.characterName, out value);
-
-            boost += CharactersVariables.relationValues.GetValue("boost", value);
-
-        }
+        foreach (SC_Hero hero in TileManager.HeroesInRange(target))       
+            boost += CharactersVariables.relationValues.GetValue("boost", target.Relationships[hero.characterName]);
 
         return boost / 100f;
 

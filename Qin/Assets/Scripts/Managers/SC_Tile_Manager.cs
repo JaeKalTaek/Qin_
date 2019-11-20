@@ -234,8 +234,6 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     public void RemoveAllFilters (bool async = false) {
 
-        // print ("Remove all filters");
-
         if(SC_Player.localPlayer.Turn || async)
             foreach (SC_Tile tile in tiles)
                 tile.RemoveDisplay();
@@ -519,18 +517,12 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         if (c == "Wall") {
 
-            foreach (SC_Construction construction in FindObjectsOfType<SC_Construction>()) {
-
-                if (construction.GreatWall) {
-
-                    foreach (SC_Tile neighbor in GetTilesAtDistance<SC_Tile>(tiles, construction.transform.position, 1))
-                        if (neighbor.Constructable/*(false)*/ && !constructableTiles.Contains(neighbor))
-                            constructableTiles.Add(neighbor);
-
-                }
-
-            }
-
+            foreach (SC_Construction construction in FindObjectsOfType<SC_Construction>())
+                if (construction.GreatWall)
+                    foreach (SC_Tile neighbor in GetRange (construction.transform.position, 1))
+                        if (neighbor.Constructable && !constructableTiles.Contains (neighbor))
+                            constructableTiles.Add (neighbor);     
+            
         } else {
 
             for (int i = 0; i < regions.Length; i++)
@@ -548,7 +540,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
     public void DisplayConstructableTiles (string c) {
 
         foreach (SC_Tile tile in GetConstructableTiles(c))
-            tile.GetComponent<SC_Tile>().ChangeDisplay(TDisplay.Construct);
+            tile.ChangeDisplay(TDisplay.Construct);
 
     }
 

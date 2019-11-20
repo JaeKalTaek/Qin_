@@ -10,6 +10,12 @@ public class SC_Hero : SC_Character {
     [SyncVar]
     public HeroDeck deck;
 
+    [HideInInspector]
+    [SyncVar]
+    public bool clone;
+
+    SC_Hero original;
+
     public SC_Tile StartingTile { get; set; }
 
     //Relationships	
@@ -56,6 +62,10 @@ public class SC_Hero : SC_Character {
 
     public static List<SC_Hero> heroes;
 
+    public bool TrapUsed { get; set; }
+
+    public bool Dead { get; set; }
+
     public override void OnStartClient () {
 
         base.OnStartClient();
@@ -69,15 +79,23 @@ public class SC_Hero : SC_Character {
 
         // berserkColor = loadedCharacter.Hero.berserkColor;
 
-        if (heroes == null || (heroes.Count >= 6))
+        if (heroes == null || (heroes.Count >= 6 && !clone))
             heroes = new List<SC_Hero>();
-
+        
         heroes.Add(this);
 
         if (heroes.Count == 6)
             SetupHeroesRelationships();
 
-        MovementPoints = loadedCharacter.baseStats.movement;
+        if (clone) {
+
+            foreach (SC_Hero h in heroes)
+                if (characterName == h.characterName && !h.clone)
+                    original = h;
+
+        }
+
+        MovementPoints = clone ? original.MovementPoints : loadedCharacter.baseStats.movement;
 
     }
 
@@ -85,7 +103,16 @@ public class SC_Hero : SC_Character {
 
         base.Start();
 
-        StartingTile = Tile;
+        if (!clone)
+            StartingTile = Tile;
+        else {
+
+            StartingTile = original.StartingTile;
+
+            if (SC_Cursor.Tile == Tile)
+                Tile.OnCursorEnter ();
+
+        }
 
         transform.parent = uiManager.heroesT;
 
@@ -227,67 +254,107 @@ public class SC_Hero : SC_Character {
 
 	public override void DestroyCharacter() {
 
-        gameObject.SetActive (false);
+        if (!Dead) {
 
-        base.DestroyCharacter ();
+            Dead = true;
 
-        if (!Qin) {
+            base.DestroyCharacter ();
 
-            SC_HeroTraps.hero = this;
+            if (!Qin) {
 
-            typeof (SC_HeroTraps).GetMethod (deck.trap).Invoke (SC_HeroTraps.Instance, null);
+                gameObject.SetActive (false);
 
-            SC_Qin.ChangeEnergy (SC_Qin.Qin.energyWhenHeroDies);
+                if (!TrapUsed && !clone) {
 
-            SC_Sound_Manager.Instance.AugmentPart ();
+                    TrapUsed = true;
 
-            // gameManager.LastHeroDead = this;        
+                    SC_HeroTraps.hero = this;
 
-            /*foreach (SC_Hero hero in heroes) {
-
-                int value = 0;
-                Relationships.TryGetValue (hero.characterName, out value);
-
-                if (value >= gameManager.CommonCharactersVariables.berserkTriggerRelation) {
-
-                    hero.Berserk = true;
-                    hero.BerserkTurn = true;
-                    hero.CanMove = !gameManager.Qin;
-
-                    hero.GetComponent<Renderer> ().material.color = Color.cyan;
+                    typeof (SC_HeroTraps).GetMethod (deck.trap).Invoke (SC_HeroTraps.Instance, null);
 
                 }
 
-            }*/            
+                if (Health <= 0) {
 
-            heroes.Remove (this);
+                    if (!clone) {
 
-            if (heroes.Count <= 0)
-                uiManager.ShowVictory (true);
+                        List<SC_Hero> heroesCopy = new List<SC_Hero> (heroes);
 
-        } else {
+                        foreach (SC_Hero h in heroesCopy) {
 
-            Destroy (gameObject);
+                            if (h != this && h.characterName == characterName) {
+
+                                heroes.Remove (h);
+
+                                h.DestroyCharacter ();
+
+                            }
+
+                        }
+
+                        SC_Qin.ChangeEnergy (SC_Qin.Qin.energyWhenHeroDies);
+
+                        SC_Sound_Manager.Instance.AugmentPart ();
+
+                    }
+
+                    heroes.Remove (this);
+
+                    if (heroes.Count <= 0)
+                        uiManager.ShowVictory (true);
+
+                    // gameManager.LastHeroDead = this;        
+
+                    /*foreach (SC_Hero hero in heroes) {
+
+                        int value = 0;
+                        Relationships.TryGetValue (hero.characterName, out value);
+
+                        if (value >= gameManager.CommonCharactersVariables.berserkTriggerRelation) {
+
+                            hero.Berserk = true;
+                            hero.BerserkTurn = true;
+                            hero.CanMove = !gameManager.Qin;
+
+                            hero.GetComponent<Renderer> ().material.color = Color.cyan;
+
+                        }
+
+                    }*/
+
+                }
+
+            } else {
+
+                Destroy (gameObject);
+
+            }
 
         }
 
 	}
 
-    public void IncreaseRelationships (int amount) {        
+    public void IncreaseRelationships (int amount) {
 
-        List<SC_Hero> heroesInRange = TileManager.HeroesInRange(this);
+        List<string> differentHeroesInRange = new List<string> ();
 
-        if(heroesInRange.Count > 1 || (heroesInRange.Count == 1 && heroesInRange[0].characterName != RelationGainBlocked))
-            Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+        foreach (SC_Hero hero in TileManager.HeroesInRange (this))
+            if (hero.characterName != characterName && !differentHeroesInRange.Contains (hero.characterName))
+                differentHeroesInRange.Add (hero.characterName);
 
-        foreach (SC_Hero hero in heroesInRange) {
+        List<string> alreadyGained = new List<string> ();
 
-            if (hero.characterName != RelationGainBlocked) {
+        foreach (SC_Hero hero in TileManager.HeroesInRange (this)) {
+
+            if (hero.characterName != characterName && hero.characterName != RelationGainBlocked && !alreadyGained.Contains (hero.characterName)) {
+
+                alreadyGained.Add (hero.characterName);
+
+                Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
 
                 Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
 
-                Relationships[hero.characterName] += (int) (amount / heroesInRange.Count + .5f);
-                hero.Relationships[characterName] += (int) (amount / heroesInRange.Count + .5f);
+                Relationships[hero.characterName] += (int) (((float) amount / differentHeroesInRange.Count) + .5f);
 
             }
 
@@ -301,12 +368,6 @@ public class SC_Hero : SC_Character {
     public enum EStaminaCost { NotNeeded, TooHigh, WillDie, Enough }
 
     public static EStaminaCost StaminaCost { get; set; }
-
-    public void SetStaminaCost (int cost) {
-
-        SetStaminaCost(new int[] { cost });
-
-    }
 
     public static void SetStaminaCost (int[] cost) {
 

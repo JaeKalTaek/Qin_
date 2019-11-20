@@ -5,6 +5,7 @@ using static SC_Global;
 using static SC_Character;
 using static SC_EditorTile;
 using System.Collections.Generic;
+using static SC_HeroTraps;
 
 [Serializable]
 public class SC_Tile : NetworkBehaviour {
@@ -172,78 +173,82 @@ public class SC_Tile : NetworkBehaviour {
 
         SC_Sound_Manager.Instance.OnButtonClick();
 
-        if (SC_UI_Manager.CanInteract && SC_Player.localPlayer.Turn) {
+        if (SC_UI_Manager.CanInteract) {
 
-            if (CurrentDisplay == TDisplay.Construct) {
+            if (CurrentDisplay == TDisplay.Deploy && afterImagesPlacedHeroes.Count < 3) {
 
-                SC_Player.localPlayer.CmdConstructAt(transform.position.x.I(), transform.position.y.I(), false);
+                RemoveDisplay ();
 
-            } else if (CurrentDisplay == TDisplay.Movement) {
-
-                UIManager.TryDoAction(() => { StartMovement(gameObject); });                
-
-            } else if (CanAttack && (SC_Hero.StaminaCost != SC_Hero.EStaminaCost.TooHigh)) {
-
-                SC_UI_Manager.Instance.TryDoAction(() => {
-
-                    activeCharacter.AttackTarget = this;
-
-                    if (MovingCharacter) {
-
-                        if (UIManager.previewFightPanel.activeSelf)
-                            SC_Player.localPlayer.CmdSetChainAttack(true);
-
-                        StartMovement((SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? activeCharacter.Tile).gameObject);
-
-                    } else {
-
-                        SC_Cursor.SetLock(true);
-
-                        TileManager.RemoveAllFilters();
-
-                        activeCharacter.StartAttack();
-
-                    }
-
-                });                                
-
-            } else if (CurrentDisplay == TDisplay.Sacrifice) {
-
-                SC_Player.localPlayer.CmdSacrificedSoldier(Soldier.sacrificeValue, transform.position);
-
-                RemoveDisplay();
-
-                Character.CanBeSelected = false;
-
-                SC_Player.localPlayer.CmdDestroyCharacter(Character.gameObject);
-
-            } /*else if (CurrentDisplay == TDisplay.Resurrection) {
-
-                uiManager.EndQinAction("qinPower");
-
-                SC_Qin.UsePower(transform.position);
-
-            }*/
-
-            else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy && !activeCharacter) {
-
-                if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
-                    Character.TrySelecting();
-                else if (Pit && SC_Player.localPlayer.Qin)
-                    Pit.SelectPit();
-                else if (Castle && !Character && SC_Player.localPlayer.Qin) {
-                    if (!SC_Demon.demons[Region])
-                        UIManager.CreateDemon(Castle);
-                    else if (SC_Demon.demons[Region].Alive == -1)
-                        UIManager.DisplaySacrificeCastlePanel(Castle);
-                } else
-                    UIManager.ActivateMenu(UIManager.playerActionsPanel);
+                AfterImagesCreateSprite (transform.position);
 
             }
 
-        } else if (SC_UI_Manager.CanInteract && CurrentDisplay == TDisplay.None) {
+            if (SC_Player.localPlayer.Turn) {
 
-            UIManager.ActivateMenu(UIManager.playerActionsPanel);
+                if (CurrentDisplay == TDisplay.Construct) {
+
+                    SC_Player.localPlayer.CmdConstructAt (transform.position.x.I (), transform.position.y.I (), false);
+
+                } else if (CurrentDisplay == TDisplay.Movement) {
+
+                    UIManager.TryDoAction (() => { StartMovement (gameObject); });
+
+                } else if (CanAttack && (SC_Hero.StaminaCost != SC_Hero.EStaminaCost.TooHigh)) {
+
+                    SC_UI_Manager.Instance.TryDoAction (() => {
+
+                        activeCharacter.AttackTarget = this;
+
+                        if (MovingCharacter) {
+
+                            if (UIManager.previewFightPanel.activeSelf)
+                                SC_Player.localPlayer.CmdSetChainAttack (true);
+
+                            StartMovement ((SC_Arrow.path?[SC_Arrow.path.Count - 1] ?? activeCharacter.Tile).gameObject);
+
+                        } else {
+
+                            SC_Cursor.SetLock (true);
+
+                            TileManager.RemoveAllFilters ();
+
+                            activeCharacter.StartAttack ();
+
+                        }
+
+                    });
+
+                } else if (CurrentDisplay == TDisplay.Sacrifice) {
+
+                    SC_Player.localPlayer.CmdSacrificedSoldier (Soldier.sacrificeValue, transform.position);
+
+                    RemoveDisplay ();
+
+                    Character.CanBeSelected = false;
+
+                    SC_Player.localPlayer.CmdDestroyCharacter (Character.gameObject);
+
+                } else if (CurrentDisplay == TDisplay.None && !activeCharacter && !SC_Player.localPlayer.Busy) {
+
+                    if (Character && (Character.Qin == SC_Player.localPlayer.Qin))
+                        Character.TrySelecting ();
+                    else if (Pit && SC_Player.localPlayer.Qin)
+                        Pit.SelectPit ();
+                    else if (Castle && !Character && SC_Player.localPlayer.Qin) {
+                        if (!SC_Demon.demons[Region])
+                            UIManager.CreateDemon (Castle);
+                        else if (SC_Demon.demons[Region].Alive == -1)
+                            UIManager.DisplaySacrificeCastlePanel (Castle);
+                    } else
+                        UIManager.ActivateMenu (UIManager.playerActionsPanel);
+
+                }
+
+            } else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy) {
+
+                UIManager.ActivateMenu (UIManager.playerActionsPanel);
+
+            }
 
         }
 
@@ -258,16 +263,13 @@ public class SC_Tile : NetworkBehaviour {
         else if (CurrentDisplay == TDisplay.Sacrifice)
             Soldier.ToggleDisplaySacrificeValue();        
 
-        if (!UIManager.previewFightPanel.activeSelf) { 
+        if (!UIManager.previewFightPanel.activeSelf) {
 
             Character?.ShowInfos();
             Qin?.ShowInfos();
 
-        } else {
-
+        } else
             UIManager.HideInfosIfActive(activeCharacter.gameObject);
-
-        }
 
         if (!Character && SC_Player.localPlayer.Turn)
             activeCharacter?.ShowInfos();
@@ -317,7 +319,7 @@ public class SC_Tile : NetworkBehaviour {
 
 	}
 
-    public void ChangeDisplay(TDisplay d) {
+    public void ChangeDisplay(TDisplay d) {        
 
         CurrentDisplay = d;
 

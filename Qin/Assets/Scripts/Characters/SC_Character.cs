@@ -180,7 +180,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public static void StartMovement (GameObject target) {
 
-        activeCharacter.Hero?.SetStaminaCost(-1);
+        SC_Hero.SetStaminaCost (new int[] { -1 });
 
         SC_Cursor.SetLock(true);
 
@@ -197,6 +197,9 @@ public abstract class SC_Character : NetworkBehaviour {
     }
 
     public void MoveTo(SC_Tile target) {
+
+        if (gameObject == uiManager.CurrentChara)
+            TileManager.RemoveAllFilters (true);
 
         activeCharacter = this;
 
@@ -318,16 +321,16 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }
 
-        if (activeCharacter.gameObject.activeSelf) {
+        if (activeCharacter) {
 
             if (moved) {
 
-                uiManager.TryRefreshInfos(gameObject, GetType());
+                uiManager.TryRefreshInfos (gameObject, GetType ());
 
-                SC_Tile t = uiManager.CurrentTile.GetComponent<SC_Tile>();
+                SC_Tile t = uiManager.CurrentTile.GetComponent<SC_Tile> ();
 
                 if (t && t.CursorOn)
-                    uiManager.TryRefreshInfos(t.gameObject, t.GetType());
+                    uiManager.TryRefreshInfos (t.gameObject, t.GetType ());
 
             }
 
@@ -336,27 +339,27 @@ public abstract class SC_Character : NetworkBehaviour {
                 ChainAttack = false;
 
                 if (SC_Player.localPlayer.Turn)
-                    StartAttack();
+                    StartAttack ();
 
             } else if (SC_Player.localPlayer.Turn) {
 
-                if (SC_Cursor.Tile.CanCharacterAttack(this)) {
+                if (SC_Cursor.Tile.CanCharacterAttack (this)) {
 
-                    uiManager.ChooseWeapon();
+                    uiManager.ChooseWeapon ();
 
                     uiManager.backAction = () => {
 
-                        ResetMovementFunction();
+                        ResetMovementFunction ();
 
-                        uiManager.HideWeapons();
+                        uiManager.HideWeapons ();
 
                     };
 
                 } else {
 
-                    TileManager.PreviewAttack();
+                    TileManager.PreviewAttack ();
 
-                    uiManager.ActivateMenu(uiManager.characterActionsPanel);
+                    uiManager.ActivateMenu (uiManager.characterActionsPanel);
 
                     uiManager.backAction = gameManager.ResetMovement;
 
@@ -366,27 +369,25 @@ public abstract class SC_Character : NetworkBehaviour {
 
         } else {
 
-            activeCharacter = null;
-
             if (SC_Player.localPlayer.Turn)
-                gameManager.FinishAction();
+                gameManager.FinishAction ();
+            else
+                gameManager.CheckHeroTrapActivated ();
 
         }
 
     }
 
-    public void RollbackCharacterPos (SC_Tile newPos) {
+    public void SetCharacterPos (SC_Tile newPos) {        
 
-        TileManager.RemoveAllFilters ();
+        Tile.Character = null;
 
-        activeCharacter.Tile.Character = null;
+        transform.SetPos (newPos.transform.position);
 
-        activeCharacter.transform.SetPos (newPos.transform.position);
+        if (Hero)
+            SC_DrainingStele.UpdateHeroSlow (Hero);
 
-        if (activeCharacter.Hero)
-            SC_DrainingStele.UpdateHeroSlow (activeCharacter.Hero);
-
-        newPos.Character = activeCharacter;
+        newPos.Character = this;
 
     }
 
@@ -418,7 +419,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
         }
 
-        RollbackCharacterPos (LastPos);
+        TileManager.RemoveAllFilters ();
+
+        SetCharacterPos (LastPos);
 
         CanBeSelected = true;
 
@@ -464,32 +467,42 @@ public abstract class SC_Character : NetworkBehaviour {
 
     }
 
-    public static void FinishCharacterAction(bool wait = false) {
+    public static void FinishCharacterAction (bool wait = false) {
 
         if (activeCharacter.Hero) {
 
-            if (activeCharacter.AttackTarget /*&& activeCharacter.Hero.BaseActionDone*/)
-                activeCharacter.Hit(activeCharacter.Hero.ActionCost);
+            activeCharacter.Hero.ActionCount += wait ? 0 : 1;
 
-            if (activeCharacter.gameObject.activeSelf) {
+            if (activeCharacter.AttackTarget /*&& activeCharacter.Hero.BaseActionDone*/) {
 
-                if (!wait)
-                    activeCharacter.Hero.IncreaseRelationships(gameManager.CommonCharactersVariables.relationGains.action);
+                activeCharacter.AttackTarget = null;
 
-                SC_Sound_Manager.Instance.SetTempo();
-
-                // activeCharacter.Hero.BerserkTurn = activeCharacter.Hero.Berserk;
-
-                activeCharacter.Hero.SetStaminaCost(-1);
-
-                activeCharacter.Hero.ActionCount += wait ? 0 : 1;
+                activeCharacter.Hit (activeCharacter.Hero.ActionCost);
 
             }
 
-        } else if (activeCharacter.BaseQinChara)
+            if (activeCharacter) {
+
+                activeCharacter.AttackTarget = null;
+
+                if (!wait)
+                    activeCharacter.Hero.IncreaseRelationships (gameManager.CommonCharactersVariables.relationGains.action);
+
+                SC_Sound_Manager.Instance.SetTempo ();
+
+                // activeCharacter.Hero.BerserkTurn = activeCharacter.Hero.Berserk;                
+
+            }
+
+            SC_Hero.SetStaminaCost (new int[] { -1 });
+
+        } else {
+
+            activeCharacter.AttackTarget = null;
+
             activeCharacter.SetTired (true);
 
-        activeCharacter.AttackTarget = null;
+        }
 
         activeCharacter = null;
 
@@ -505,6 +518,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	public virtual void DestroyCharacter() {
 
+        if (activeCharacter == this)
+            activeCharacter = null;
+
         uiManager.HideInfosIfActive(gameObject);
 
         Tile.Character = null;
@@ -519,12 +535,16 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	public virtual bool Hit(int damages) {
 
-		Health -= damages;
+        if (Health >= 0) {
 
-        if (Health <= 0)
-            DestroyCharacter();
-        else
-            UpdateHealth();
+            Health -= damages;
+
+            if (Health <= 0)
+                DestroyCharacter ();
+            else
+                UpdateHealth ();
+
+        }
 
         return (Health <= 0);
 

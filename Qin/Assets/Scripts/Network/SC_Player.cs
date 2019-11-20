@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using static SC_Character;
 using static SC_Global;
+using static SC_HeroTraps;
 
 public class SC_Player : NetworkBehaviour {
 
@@ -27,6 +29,7 @@ public class SC_Player : NetworkBehaviour {
 
     public bool Ready { get; set; }
 
+    #region Setup
     public override void OnStartLocalPlayer () {
 
         base.OnStartLocalPlayer();
@@ -58,11 +61,20 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcSetGM (bool qin) {
 
+        StartCoroutine (SetupOtherGM (qin));
+
+    }
+
+    IEnumerator SetupOtherGM (bool qin) {
+
+        while (!localPlayer)
+            yield return new WaitForEndOfFrame ();
+
         if (qin != localPlayer.Qin)
             SC_Game_Manager.otherGM = true;
 
     }
-    #region Commands
+    #endregion
 
     #region Connecting
     [Command]
@@ -141,17 +153,22 @@ public class SC_Player : NetworkBehaviour {
     [Command]
     public void CmdSendHeroesInfos (HeroDeck[] decks) {
 
-        foreach (HeroDeck d in decks) {
+        foreach (HeroDeck d in decks)
+            SpawnHero (d);
 
-            GameObject go = Instantiate (Resources.Load<GameObject> ("Prefabs/Characters/Heroes/P_BaseHero"), d.pos, Quaternion.identity);
+    }
 
-            go.GetComponent<SC_Character> ().characterPath = "Prefabs/Characters/Heroes/P_" + d.hero;
+    void SpawnHero (HeroDeck d, bool clone = false) {
 
-            go.GetComponent<SC_Hero> ().deck = d;
+        GameObject go = Instantiate (Resources.Load<GameObject> ("Prefabs/Characters/Heroes/P_BaseHero"), d.pos, Quaternion.identity);
 
-            NetworkServer.Spawn (go);
+        go.GetComponent<SC_Character> ().characterPath = "Prefabs/Characters/Heroes/P_" + d.hero;
 
-        }
+        go.GetComponent<SC_Hero> ().deck = d;
+
+        go.GetComponent<SC_Hero> ().clone = clone;
+
+        NetworkServer.Spawn (go);
 
     }
 
@@ -612,6 +629,73 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
+    #region After Images Trap
+    [Command]
+    public void CmdSpawnAfterImages (Vector3[] pos) {
+
+        for (int i = 0; i < pos.Length - 1; i++) {
+
+            HeroDeck d = hero.deck;
+
+            d.pos = pos[i];
+
+            SpawnHero (d, true);
+
+        }
+
+        RpcSpawnAfterImages (pos);
+
+    }
+
+    [ClientRpc]
+    void RpcSpawnAfterImages (Vector3[] pos) {
+
+        UIManager.DisplayInfo ();
+
+        hero.Dead = false;
+
+        hero.SetCharacterPos (TileManager.GetTileAt (pos[pos.Length - 1]));
+
+        hero.gameObject.SetActive (true);
+
+        foreach (SC_Hero h in SC_Hero.heroes) {
+
+            if (h.characterName == hero.characterName && h != hero) {
+
+                if (SC_Cursor.Tile == h.Tile)
+                    SC_Cursor.Tile.OnCursorEnter ();
+
+                h.RelationshipKeys = hero.RelationshipKeys;
+
+                h.Relationships = hero.Relationships;
+
+                h.Health = hero.Health;
+
+                foreach (string s in new string[] { "Strength", "Chi", "Armor", "Resistance", "Preparation", "Anticipation", "Movement", "Range" })
+                    h.GetType ().GetProperty (s + "Modifiers").SetValue (h, hero.GetType ().GetProperty (s + "Modifiers").GetValue (hero));
+
+                h.PreparationCharge = hero.PreparationCharge;
+
+                h.AnticipationCharge = hero.AnticipationCharge;
+
+                h.DrainingSteleSlow = hero.DrainingSteleSlow;
+
+                h.ActionCount = hero.ActionCount;
+
+                h.MovementCount = hero.MovementCount;
+
+            }
+
+        }
+
+        if (localPlayer.Qin && GameManager.QinTurnStarting)
+            TileManager.DisplayConstructableTiles (GameManager.CurrentConstru);
+        else
+            localPlayer.Busy = false;
+
+    }
+    #endregion
+
     #region Victory
     [Command]
     public void CmdShowVictory(bool qinWon) {
@@ -627,7 +711,5 @@ public class SC_Player : NetworkBehaviour {
 
     }
     #endregion
-
-	#endregion
 
 }

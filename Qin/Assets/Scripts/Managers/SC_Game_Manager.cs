@@ -243,33 +243,8 @@ public class SC_Game_Manager : NetworkBehaviour {
         /*foreach (SC_Convoy convoy in FindObjectsOfType<SC_Convoy>())
 			convoy.MoveConvoy ();*/
 
-        CurrentConstru = "Bastion";
+        CurrentConstru = "Bastion";        
 
-        if (QinTurn) {
-
-            if(SC_DrainingStele.drainingSteles != null)
-                foreach (SC_DrainingStele p in SC_DrainingStele.drainingSteles)
-                    p.Drain();
-
-            foreach(SC_Demon d in SC_Demon.demons)
-                if(d && d.Alive != -1)
-                    d.TryRespawn();
-
-            SC_Qin.ChangeEnergy(SC_Qin.Qin.regenPerVillage * SC_Village.number);
-
-            QinTurnStarting = true;
-
-            /*if (Player.Qin) {
-
-                tileManager.RemoveAllFilters();
-
-                Player.Busy = true;                
-
-                tileManager.DisplayConstructableTiles(CurrentConstru);
-
-            }*/
-
-		}
         foreach (SC_Character character in FindObjectsOfType<SC_Character>()) {
 
             if (!character.Tile.Character) {
@@ -296,8 +271,7 @@ public class SC_Game_Manager : NetworkBehaviour {
                         character.Hit (SC_CastleTraps.Instance.scorchedDamage);
 
                 } else
-                    character.Hero.IncreaseRelationships (CommonCharactersVariables.relationGains.finishTurn);
-                
+                    character.Hero.IncreaseRelationships (CommonCharactersVariables.relationGains.finishTurn);                
 
                 /*if (Qin) {
 
@@ -313,7 +287,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 }*/
 
-            }
+            }            
 
             character.CanBeSelected = character.Stunned <= 0 ? character.Qin == QinTurn : false;
 
@@ -324,17 +298,33 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         }
 
+        if (QinTurn) {
+
+            if (SC_DrainingStele.drainingSteles != null)
+                foreach (SC_DrainingStele p in SC_DrainingStele.drainingSteles)
+                    p.Drain ();
+
+            foreach (SC_Demon d in SC_Demon.demons)
+                if (d && d.Alive != -1)
+                    d.TryRespawn ();
+
+            SC_Qin.ChangeEnergy (SC_Qin.Qin.regenPerVillage * SC_Village.number);
+
+            QinTurnStarting = true;
+
+        }
+
         uiManager.NextTurn();
 
     }
 
     public void StartNextTurn() {
 
-        uiManager.SwapTurnIndicators(true);
+        uiManager.SwapTurnIndicators (true);
 
-        SC_Cursor.SetLock(false);
+        SC_Cursor.SetLock (false);
 
-        if (Player.Qin && Player.Turn) {
+        if ((!CheckHeroTrapActivated ()) && Player.Qin && Player.Turn) {
 
             Player.Busy = true;
 
@@ -370,8 +360,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         GameObject.Find("PowerHero").SetActive(false);
 
-        print("Implement Power");
-
     }*/
 
     public void DestroyProductionBuilding () {           
@@ -392,7 +380,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Character.activeCharacter.Moving = false;
 
-        SC_Character.activeCharacter.Hero?.SetStaminaCost(-1);
+        SC_Hero.SetStaminaCost (new int[] { -1 });
 
         SC_Character.activeCharacter = null;
 
@@ -508,6 +496,10 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void FinishConstruction (bool qinConstru) {
 
+        SC_Construction.lastConstru.Tile.Construction = SC_Construction.lastConstru;
+
+        SC_Construction.lastConstru.Tile.RemoveDisplay ();
+
         if (!QinTurnStarting) {
 
             if (qinConstru) {
@@ -618,7 +610,7 @@ public class SC_Game_Manager : NetworkBehaviour {
     }
 
     public void SacrificeCastle (SC_Castle castle) {
-
+        
         TryFocusOn (castle.transform.position);
 
         CurrentCastle = castle;
@@ -639,6 +631,8 @@ public class SC_Game_Manager : NetworkBehaviour {
         demon.Linked = false;
 
         castle.DestroyConstruction(true);
+
+        CheckHeroTrapActivated ();
 
     }
     #endregion
@@ -690,6 +684,21 @@ public class SC_Game_Manager : NetworkBehaviour {
             Player.Busy = false;
 
         }
+
+        CheckHeroTrapActivated ();
+
+    }
+
+    public bool CheckHeroTrapActivated () {
+
+        if (SC_HeroTraps.actions.Count > 0) {
+
+            SC_HeroTraps.actions[0].Invoke ();
+
+            return true;
+
+        } else
+            return false;
 
     }
 

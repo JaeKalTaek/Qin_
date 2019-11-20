@@ -86,7 +86,7 @@ public class SC_CastleTraps : MonoBehaviour {
     #region Time Walk
     public void TimeWalk () {
 
-        Destroyer?.RollbackCharacterPos (Destroyer.StartingTile);
+        Destroyer?.SetCharacterPos (Destroyer.StartingTile);
 
     }
     #endregion
@@ -104,11 +104,9 @@ public class SC_CastleTraps : MonoBehaviour {
                     bestFriends.Add (hero);
                 else {
 
-                    int currentValue;
-                    Destroyer.Relationships.TryGetValue (bestFriends[0].characterName, out currentValue);
+                    int currentValue = Destroyer.Relationships[bestFriends[0].characterName];
 
-                    int value;
-                    Destroyer.Relationships.TryGetValue (hero.characterName, out value);
+                    int value = Destroyer.Relationships[hero.characterName];
 
                     if (value >= currentValue) {
 

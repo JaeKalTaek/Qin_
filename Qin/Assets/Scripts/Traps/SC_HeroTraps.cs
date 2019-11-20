@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using static SC_Global;
 
 public class SC_HeroTraps : MonoBehaviour {
 
@@ -6,11 +9,23 @@ public class SC_HeroTraps : MonoBehaviour {
 
     public static SC_Hero hero;
 
+    public static List<Action> actions;
+
     void Awake () {
+
+        actions = new List<Action> ();
 
         Instance = this;
 
     }
+
+    /*void Update () {
+
+        if (SC_Hero.heroes != null)
+            foreach (SC_Hero h in SC_Hero.heroes)
+                print (h.characterName + " is a " + h.clone + " on position : " + (h.Tile?.transform.position ?? new Vector3 (-1, -1, -1)) + ", and tile has a character : " + h.Tile.Character);
+
+    }*/
 
     void Raze (SC_Tile tile) {
 
@@ -47,6 +62,111 @@ public class SC_HeroTraps : MonoBehaviour {
     }
     #endregion
 
+    #region After Images
+    [Header ("After Images")]
+    [Tooltip ("Percent of health the killed hero resuscitates with")]
+    [Range(1, 100)]
+    public int afterImagesResurrectionHealthPercent;
+
+    [Tooltip ("Number of after images")]
+    public int afterImagesCount;
+
+    [Tooltip ("After Images radius")]
+    public int afterImagesRadius;
+
+    public static Stack<SpriteRenderer> afterImagesPlacedHeroes;
+
+    public void AfterImages () {
+
+        hero.Health = Mathf.CeilToInt (hero.MaxHealth * (afterImagesResurrectionHealthPercent / 100f));
+
+        actions.Add (AfterImagesActivation);
+
+    }
+
+    void AfterImagesActivation () {
+
+        actions.Remove (AfterImagesActivation);        
+
+        SC_Player.localPlayer.Busy = true;
+
+        if (!SC_Player.localPlayer.Qin) {
+
+            afterImagesPlacedHeroes = new Stack<SpriteRenderer> ();
+
+            SC_Tile_Manager.Instance.RemoveAllFilters ();
+
+            SC_Cursor.SetLock (false);
+
+            foreach (SC_Tile t in SC_Tile_Manager.Instance.GetRange (hero.transform.position, afterImagesRadius))
+                if (hero.CanCharacterSetOn (t) && t.baseCost < 100)
+                    t.ChangeDisplay (TDisplay.Deploy);
+
+            SC_UI_Manager.Instance.DisplayInfo ("Place your hero");
+
+        } else
+            SC_UI_Manager.Instance.DisplayInfo ("Waiting for your opponent");     
+
+    }
+
+    public static void AfterImagesCreateSprite (Vector3 pos) {
+
+        SC_UI_Manager.Instance.DisplayInfo ("Place a clone");
+
+        afterImagesPlacedHeroes.Push (new GameObject ("After Images Sprite").AddComponent<SpriteRenderer> ());
+
+        afterImagesPlacedHeroes.Peek ().transform.position = pos;
+
+        afterImagesPlacedHeroes.Peek ().sprite = hero.Sprite.sprite;
+
+        bool canDeploy = false;
+
+        foreach (SC_Tile t in SC_Tile_Manager.Instance.GetRange (hero.transform.position, Instance.afterImagesRadius))
+            canDeploy |= t.CurrentDisplay == TDisplay.Deploy;
+
+        SC_UI_Manager.Instance.backAction = (canDeploy && afterImagesPlacedHeroes.Count < 3) ? (Action) AfterImagesReturn : DoNothing;
+
+        if (afterImagesPlacedHeroes.Count == 3 || !canDeploy) {
+
+            SC_UI_Manager.Instance.DisplayInfo ("");
+
+            SC_Tile_Manager.Instance.RemoveAllFilters (true);
+
+            List<Vector3> positions = new List<Vector3> ();
+
+            foreach (SpriteRenderer s in afterImagesPlacedHeroes) {
+
+                positions.Add (s.transform.position);
+
+                Destroy (s.gameObject);
+
+            }
+
+            SC_Player.localPlayer.CmdSpawnAfterImages (positions.ToArray());
+
+        }
+
+    }
+
+    public static void AfterImagesReturn () {
+
+        SC_Tile_Manager.Instance.GetTileAt (afterImagesPlacedHeroes.Peek ().gameObject).ChangeDisplay (TDisplay.Deploy);
+
+        Destroy (afterImagesPlacedHeroes.Peek ().gameObject);
+
+        afterImagesPlacedHeroes.Pop ();
+
+        if (afterImagesPlacedHeroes.Count <= 0) {
+
+            SC_UI_Manager.Instance.DisplayInfo ("Place your hero");
+
+            SC_UI_Manager.Instance.backAction = DoNothing;
+
+        }
+
+    }
+    #endregion
+
     #region Heaven's Light
     [Header ("Heaven's Light")]
     [Tooltip ("Heaven's Light's radius")]
@@ -75,7 +195,7 @@ public class SC_HeroTraps : MonoBehaviour {
     #region Legacy
     [Header ("Legacy")]
     [Tooltip ("Legacy values")]
-    public SC_Global.ThresholdValues legacyValues;
+    public ThresholdValues legacyValues;
 
     public void Legacy () {
 
@@ -83,11 +203,8 @@ public class SC_HeroTraps : MonoBehaviour {
 
             if (h != hero) {
 
-                int relationship;
-                hero.Relationships.TryGetValue (h.characterName, out relationship);
-
-                h.StrengthModifiers += (int)legacyValues.GetValue (relationship);
-                h.ChiModifiers += (int) legacyValues.GetValue (relationship);
+                h.StrengthModifiers += (int)legacyValues.GetValue (hero.Relationships[h.characterName]);
+                h.ChiModifiers += (int) legacyValues.GetValue (hero.Relationships[h.characterName]);
 
             }
 

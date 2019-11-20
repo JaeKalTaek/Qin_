@@ -19,7 +19,7 @@ public class SC_Arrow : MonoBehaviour {
         if (MovingCharacter && localPlayer.Turn && !localPlayer.Busy) {
 
             if (!arrow)
-                arrow = Instantiate(new GameObject("Arrow"));
+                arrow = new GameObject("Arrow");
             else
                 foreach (Transform t in arrow.transform)
                     Destroy(t.gameObject);

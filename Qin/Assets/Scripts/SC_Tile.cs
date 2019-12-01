@@ -53,7 +53,7 @@ public class SC_Tile : NetworkBehaviour {
     public bool Constructable {
         get /*(bool ignoreChara)*/ {
 
-            return /*(!Character || ignoreChara) &&*/ !Hero && !Construction && RegionValid;
+            return /*(!Character || ignoreChara) &&*/ !Hero && !Construction && RegionValid && !Grave;
 
         }
     }
@@ -85,6 +85,8 @@ public class SC_Tile : NetworkBehaviour {
     public SC_Demon Demon { get { return Character as SC_Demon; } }
 
     public SC_Soldier Soldier { get { return Character as SC_Soldier; } }
+
+    public GameObject Grave { get; set; }
 
     public SC_Qin Qin { get; set; }
 

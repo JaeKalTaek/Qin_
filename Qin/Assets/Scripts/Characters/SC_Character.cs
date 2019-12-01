@@ -629,7 +629,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public virtual bool CanCharacterSetOn (SC_Tile t) {
 
-        if ((t.Character && (t.Character != this)) || t.Qin)
+        if (t.Grave)
+            return false;
+        else if ((t.Character && (t.Character != this)) || t.Qin)
             return false;
         else if (t.Construction)
             return (Qin || !t.Construction.GreatWall) && !t.DrainingStele;

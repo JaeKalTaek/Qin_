@@ -91,7 +91,9 @@ public class SC_Arrow : MonoBehaviour {
 
                     }
 
-                    Instantiate(Resources.Load<GameObject>("Prefabs/P_Arrow"), pos[i], Quaternion.AngleAxis(rot, Vector3.forward), arrow.transform).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Arrow/" + s);
+                    GameObject arrowPart = Instantiate(Resources.Load<GameObject>("Prefabs/P_Arrow"), pos[i], Quaternion.AngleAxis(rot, Vector3.forward), arrow.transform);
+                    arrowPart.GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Sprites/Arrow/" + s);
+                    arrowPart.transform.SetPos (arrowPart.transform.position, 2);
 
                 }
 

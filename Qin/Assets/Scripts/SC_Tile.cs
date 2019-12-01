@@ -261,20 +261,20 @@ public class SC_Tile : NetworkBehaviour {
         if (CanAttack && !MovingCharacter)
             UIManager.PreviewFight(activeCharacter.Tile);
         else if (CurrentDisplay == TDisplay.Sacrifice)
-            Soldier.ToggleDisplaySacrificeValue();        
+            Soldier.ToggleDisplaySacrificeValue();
+
+        SC_Arrow.CursorMoved (this);
 
         if (!UIManager.previewFightPanel.activeSelf) {
+
+            if (!Character && SC_Player.localPlayer.Turn)
+                activeCharacter?.ShowInfos ();
 
             Character?.ShowInfos();
             Qin?.ShowInfos();
 
         } else
-            UIManager.HideInfosIfActive(activeCharacter.gameObject);
-
-        if (!Character && SC_Player.localPlayer.Turn)
-            activeCharacter?.ShowInfos();
-
-        SC_Arrow.CursorMoved(this);
+            UIManager.HideInfosIfActive(activeCharacter.gameObject);             
 
         this.ShowInfos();
 

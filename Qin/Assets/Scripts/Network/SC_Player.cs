@@ -496,7 +496,7 @@ public class SC_Player : NetworkBehaviour {
 
         localPlayer.GameManager.TryFocusOn (activeCharacter.transform.position);
 
-        activeCharacter.Hero?.Hit(activeCharacter.Hero.ActionCost);        
+        activeCharacter.Hero?.Hit(activeCharacter.Hero.ActionCost, true);        
 
         localPlayer.GameManager.FinishAction();
 

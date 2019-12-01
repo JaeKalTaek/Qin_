@@ -52,39 +52,6 @@ public class SC_Qin : NetworkBehaviour {
 
     }
 
-	/*public static void UsePower(Vector3 pos) {
-
-		SC_Hero hero = gameManager.LastHeroDead;
-
-		hero.transform.SetPos(pos);
-		hero.Qin = true;
-		hero.PowerUsed = false;
-		hero.PowerBacklash = 0;
-		hero.BaseColor = new Color (255, 0, 205);
-		hero.Health = hero.maxHealth;
-		hero.Lifebar.UpdateGraph(hero.Health, hero.maxHealth);
-        hero.CanMove = true;
-		hero.Berserk = false;
-		hero.BerserkTurn = false;
-		hero.UnTired ();
-
-		Quaternion rotation = Quaternion.identity;
-		rotation.eulerAngles = new Vector3(0, 0, 180);
-
-		Quaternion lifebarRotation = Quaternion.identity;
-		lifebarRotation.eulerAngles = hero.Lifebar.transform.parent.rotation.eulerAngles;
-
-		hero.transform.rotation = rotation;
-		hero.Lifebar.transform.parent.rotation = lifebarRotation;
-
-		hero.gameObject.SetActive (true);
-
-		ChangeEnergy(-Qin.powerCost);
-
-		gameManager.LastHeroDead = null;
-
-	}*/
-
 	public static void ChangeEnergy(int amount) {
 
 		Energy += amount;
@@ -92,8 +59,10 @@ public class SC_Qin : NetworkBehaviour {
         if (Energy >= Qin.energyToWin)
             uiManager.ShowVictory(true);
         else if (Energy > 0) {
+
             uiManager.qinEnergy.text = "Qin's Energy : " + Energy;
-            uiManager.TryRefreshInfos(Qin.gameObject, Qin.GetType());
+            Qin.TryRefreshInfos ();
+
         }  else
             uiManager.ShowVictory(false);
 

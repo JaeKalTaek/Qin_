@@ -118,7 +118,7 @@ public class SC_Fight_Manager : MonoBehaviour {
             SC_Sound_Manager.Instance.Hit(c, attacked, attackedConstru);
 
         #region Current character moves
-        Vector3 basePos = c.transform.position;
+        Vector3 basePos = c.Sprite.transform.position;
 
         yield return new WaitForSeconds(fightDelay);
 
@@ -128,14 +128,16 @@ public class SC_Fight_Manager : MonoBehaviour {
 
             timer += Time.deltaTime;
 
-            c.transform.position = Vector3.Lerp(basePos, basePos + travel, Mathf.Min(timer, animTime) / animTime);
+            c.Sprite.transform.position = Vector3.Lerp(basePos, basePos + travel, Mathf.Min(timer, animTime) / animTime);
 
             yield return new WaitForEndOfFrame();
 
         }
 
         #region Critical strike feedback
-        if(attacking && SC_Player.localPlayer.Turn && c.Prepared && attacked && !attacked.Anticiping)
+        bool critFeedback = c.Prepared && ((attacked && !attacked.Anticipating) || (!attackedConstru));
+
+        if (attacking && SC_Player.localPlayer.Turn && critFeedback)
             SC_Camera.Instance.StartCoroutine("Screenshake");
         #endregion
 
@@ -154,11 +156,11 @@ public class SC_Fight_Manager : MonoBehaviour {
             #region Text Feedback
             string feedbackText = "";
 
-            if (c.Prepared && !attackedConstru)
+            if (critFeedback)
                 feedbackText += "Crit!";
 
             if (baseValue == endValue)
-                feedbackText += ((feedbackText != "" ? "\n" : "") + (attacked?.Anticiping ?? false ? "Dodged!" :  "No Damage!"));
+                feedbackText += ((feedbackText != "" ? "\n" : "") + (attacked?.Anticipating ?? false ? "Dodged!" :  "No Damage!"));
 
             if(feedbackText != "") {
 
@@ -231,7 +233,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         bool killed = attacked.Hit(CalcDamage(attacker, attacked));
 
         if (!killed)
-            attacked.AnticipationCharge = attacked.Anticiping ? 0 : attacked.AnticipationCharge + 1;
+            attacked.AnticipationCharge = Mathf.Min (attacked.Anticipation, attacked.Anticipating && !attacked.IsInvulnerable ? 0 : attacked.AnticipationCharge + 1);
 
         if (attacker.Hero) {
 
@@ -243,16 +245,16 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         }
 
-        uiManager.TryRefreshInfos(attacker.gameObject, attacker.GetType());
+        attacker.TryRefreshInfos ();
 
-        if(!killed)
-            uiManager.TryRefreshInfos(attacked.gameObject, attacked.GetType());
+        if (!killed)
+            attacked.TryRefreshInfos ();
 
     }
 
     public void HitConstruction(SC_Character attacker, SC_Construction construction) {
 
-        construction.Health = CalcDamage(attacker, construction); // CalcAttack(attacker);
+        construction.Health = CalcDamage(attacker, construction); 
 
         construction.Lifebar.UpdateGraph(construction.Health, construction.maxHealth);
 
@@ -265,23 +267,14 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         int damages = attacker.GetActiveWeapon().physical ? attacker.Strength : attacker.Chi;
 
-        //damages = Mathf.CeilToInt(damages * attacker.GetActiveWeapon().ShiFuMiModifier(attacked.GetActiveWeapon()));
-
         if (attacker.Hero)
             damages += (int)(damages * RelationBoost(attacker.Hero) + .5f);
-
-        /*if (attacker.Hero && attacked.Hero)
-            damages = Mathf.CeilToInt(damages * RelationMalus(attacker.Hero, attacked.Hero));*/
 
         if (attacker.Prepared)
             damages = (int)(damages * CharactersVariables.critMultiplier + .5f);
 
-        /*if (attacker.Hero?.Berserk ?? false)
-            damages = Mathf.CeilToInt(damages * CharactersVariables.berserkDamageMultiplier);*/
-
         if (attacker != activeCharacter)
             damages = (int)((damages / CharactersVariables.counterFactor) + .5f);
-
 
         return Mathf.Max(0, damages);
 
@@ -295,9 +288,11 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     public int CalcDamage (SC_Character attacker, SC_Character attacked) {
 
+        if (attacked.IsInvulnerable) return 0;
+
         int damages = CalcAttack(attacker);
 
-        if (attacked.Anticiping)
+        if (attacked.Anticipating)
             damages = (int)(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f) + .5f);
 
         int armor = attacked.Armor;
@@ -317,15 +312,6 @@ public class SC_Fight_Manager : MonoBehaviour {
 
     }
 
-    /*float RelationMalus (SC_Hero target, SC_Hero opponent) {
-
-        int value;
-        target.Relationships.TryGetValue(opponent.characterName, out value);
-
-        return 1 - (CharactersVariables.relationValues.GetValue("boost", value) / 100);
-
-    }*/
-
     float RelationBoost (SC_Hero target) {
 
         float boost = 0;
@@ -336,52 +322,6 @@ public class SC_Fight_Manager : MonoBehaviour {
         return boost / 100f;
 
     }
-
-    /*public SC_Hero CheckHeroSaved (SC_Hero toSave, bool alreadySaved) {
-
-        SC_Hero saver = null;
-
-        if (!alreadySaved) {
-
-            foreach (SC_Hero hero in FindObjectsOfType<SC_Hero>()) {
-
-                if (!hero.Qin) {
-
-                    int value = 0;
-                    toSave.Relationships.TryGetValue(hero.characterName, out value);
-
-                    int currentValue = -1;
-                    if (saver)
-                        toSave.Relationships.TryGetValue(saver.characterName, out currentValue);
-
-                    if ((value >= CharactersVariables.saveTriggerRelation) && (value > currentValue))
-                        saver = hero;
-
-                }
-
-            }
-
-            SC_Tile nearestTile = TileManager.GetUnoccupiedNeighbor(toSave);
-
-            if (saver && nearestTile) {
-
-                saver.Tile.Character = null;
-
-                saver.transform.SetPos(TileManager.GetUnoccupiedNeighbor(toSave).transform);
-
-                saver.Tile.Character = saver;
-
-            } else {
-
-                saver = null;
-
-            }
-
-        }
-
-        return saver;
-
-    }*/
 
     public void ApplyDamage (bool counter) {
 

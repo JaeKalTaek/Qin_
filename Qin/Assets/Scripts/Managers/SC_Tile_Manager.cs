@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -441,7 +441,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             if (list.Contains(tile) || OpenList.Contains(tile) || !target.CanCharacterGoThrough(tile))
                 continue;
 
-            int points = parentPoints - tile.Cost; //((target.Hero?.Berserk ?? false) ? 1 : tile.Cost);
+            int points = parentPoints - tile.Cost;
 
             if (points >= 0) {
 

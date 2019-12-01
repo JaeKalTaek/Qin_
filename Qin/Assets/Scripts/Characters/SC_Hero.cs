@@ -18,42 +18,32 @@ public class SC_Hero : SC_Character {
 
     public SC_Tile StartingTile { get; set; }
 
-    //Relationships	
     public Dictionary<string, int> Relationships { get; set; }
 	public List<string> RelationshipKeys { get; set; }
 
     public string RelationGainBlocked { get; set; }
 
-	//bool saved;
-
-	//Berserk	
-	/*public bool Berserk { get; set; }
-    public bool BerserkTurn { get; set; }*/
+	public bool Berserk { get; set; }
 
     [Tooltip("Characteristics")]
     public bool male;
 
-    //power	
-    /*public bool PowerUsed { get; set; }
-	public int PowerBacklash { get; set; }
-
-    [Tooltip("Color applied when the character is berserker")]
-    public Color berserkColor;*/
-
     #region Stamina system   
+    public int StaminaCostAugmentation { get; set; }
+
     public bool BaseActionDone { get { return ActionCount >= 0; } }
 
     public int ActionCount { get; set; }
 
-    public int ActionCost { get { return BaseActionDone ? gameManager.CommonCharactersVariables.baseStaminaActionCost + gameManager.CommonCharactersVariables.staminaActionAdditionalCost * (ActionCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation) : 0; } }
+    public int ActionCost { get { return BaseActionDone ? CommonVariables.baseStaminaActionCost + CommonVariables.staminaActionAdditionalCost * (ActionCount / StaminaCostAugmentation) : 0; } }
 
     public int MovementPoints { get; set; }
 
-    public bool BaseMovementDone { get { return MovementCount >= 0; } }
+    public bool BaseMovementDone => MovementCount >= 0;
 
     public int MovementCount { get; set; }
 
-    public int MovementCost (int distance) { return BaseMovementDone ? distance * (gameManager.CommonCharactersVariables.baseStaminaMovementCost + gameManager.CommonCharactersVariables.staminaMovementAdditionalCost * (MovementCount / gameManager.CommonCharactersVariables.staminaCostsAugmentation)) : 0; }
+    public int MovementCost (int distance) { return BaseMovementDone ? distance * (CommonVariables.baseStaminaMovementCost + CommonVariables.staminaMovementAdditionalCost * (MovementCount / StaminaCostAugmentation)) : 0; }
     #endregion
 
     public bool ReadyToRegen { get; set; }
@@ -66,6 +56,10 @@ public class SC_Hero : SC_Character {
 
     public bool Dead { get; set; }
 
+    public int HumansFateDuration { get; set; }
+
+    public override bool IsInvulnerable => HumansFateDuration > 0;
+
     public override void OnStartClient () {
 
         base.OnStartClient();
@@ -77,8 +71,6 @@ public class SC_Hero : SC_Character {
 
         male = loadedCharacter.Hero.male;
 
-        // berserkColor = loadedCharacter.Hero.berserkColor;
-
         if (heroes == null || (heroes.Count >= 6 && !clone))
             heroes = new List<SC_Hero>();
         
@@ -87,15 +79,19 @@ public class SC_Hero : SC_Character {
         if (heroes.Count == 6)
             SetupHeroesRelationships();
 
+        StaminaCostAugmentation = CommonVariables.staminaCostsAugmentation;
+
         if (clone) {
 
             foreach (SC_Hero h in heroes)
                 if (characterName == h.characterName && !h.clone)
                     original = h;
 
+            SetBerserk (original.Berserk);
+
         }
 
-        MovementPoints = clone ? original.MovementPoints : loadedCharacter.baseStats.movement;
+        MovementPoints = clone ? original.MovementPoints : loadedCharacter.baseStats.movement;       
 
     }
 
@@ -146,18 +142,10 @@ public class SC_Hero : SC_Character {
 
     public override void TrySelecting () {
 
-		if (CanBeSelected /*|| (Berserk && !BerserkTurn)*/)
+		if (CanBeSelected)
             base.TrySelecting();
 
 	}
-
-    /*public static void Attack(bool usedActiveWeapon) {
-
-        activeCharacter.Hero.SetWeapon(usedActiveWeapon);
-
-        fightManager.Attack();
-
-    }*/ 
 
     public void Heal (int amount) {
 
@@ -166,8 +154,6 @@ public class SC_Hero : SC_Character {
     }
 
 	public void Regen() {
-
-        // Health = Mathf.Min(Health + gameManager.CommonCharactersVariables.staminaRegen, MaxHealth);
 
         if (Tile.Village || Tile.Pit) {
 
@@ -182,75 +168,28 @@ public class SC_Hero : SC_Character {
 
 	}
 
-	/*public override bool Hit(int damages, bool saving) {
+	public void SetBerserk (bool b) {
 
-		bool dead = false;
+        if ((b && !Berserk) || (!b && Berserk))  {
 
-		base.Hit(damages, saving);
+            foreach (string s in new string[] { "Strength", "Chi", "Armor", "Resistance", "Preparation", "Anticipation", "Movement", "Range" }) {
 
-		if (Health <= 0) {
+                int bonus = (b ? 1 : -1) * Mathf.Max (1, (int) ((s == "Range" ? 1 : (int) baseStats.GetType ().GetField (s.ToLower ()).GetValue (baseStats)) * (gameManager.CommonCharactersVariables.berserkStatsBonusPercentage / 100f) + .5f));
 
-			if (saving) {
+                GetType ().GetProperty (s + "Modifiers").SetValue (this, (int) GetType ().GetProperty (s + "Modifiers").GetValue (this) + bonus);
 
-                Health = gameManager.CommonCharactersVariables.savedHealthAmount;
-				Berserk = true;
-				BerserkTurn = true;
+            }
 
-				GetComponent<SpriteRenderer> ().color = berserkColor;
+            if (b)
+                StaminaCostAugmentation *= CommonVariables.berserkStaminaThresholdMultiplier;
+            else
+                StaminaCostAugmentation /= CommonVariables.berserkStaminaThresholdMultiplier;
 
-			} else {
+            Berserk = b;
 
-				SC_Hero saver = fightManager.CheckHeroSaved (this, saved);
+        }         
 
-				if (saver) {
-
-					saver.Hit (damages, true);
-					saved = true;
-					Health += damages;
-
-				} else {
-
-					DestroyCharacter();
-					dead = true;
-
-				}
-
-			}
-
-		} else if (Health <= gameManager.CommonCharactersVariables.berserkTriggerHealth) {
-
-			CanMove = !gameManager.Qin;
-
-			BerserkTurn = true;
-
-			if(!Berserk)
-                GetComponent<SpriteRenderer>().color = berserkColor;
-
-            Berserk = true;
-
-		}
-
-        if (!dead)
-            UpdateHealth();
-
-        return dead;
-
-	}
-
-	public override void Tire() {
-
-		if (!Berserk || BerserkTurn) base.Tire ();
-
-	}
-
-	public override void UnTired() {
-
-		if (Berserk)
-			GetComponent<SpriteRenderer> ().color = berserkColor;
-		else
-			base.UnTired ();
-
-	}*/
+    }
 
 	public override void DestroyCharacter() {
 
@@ -278,20 +217,12 @@ public class SC_Hero : SC_Character {
 
                     if (!clone) {
 
-                        List<SC_Hero> heroesCopy = new List<SC_Hero> (heroes);
+                        List<SC_Hero> clones = new List<SC_Hero> (heroes);
 
-                        foreach (SC_Hero h in heroesCopy) {
-
-                            if (h != this && h.characterName == characterName) {
-
-                                heroes.Remove (h);
-
-                                h.DestroyCharacter ();
-
-                            }
-
-                        }
-
+                        foreach (SC_Hero h in clones)
+                            if (h != this && h.characterName == characterName)
+                                h.DestroyCharacter ();                        
+                                              
                         SC_Qin.ChangeEnergy (SC_Qin.Qin.energyWhenHeroDies);
 
                         SC_Sound_Manager.Instance.AugmentPart ();
@@ -302,25 +233,6 @@ public class SC_Hero : SC_Character {
 
                     if (heroes.Count <= 0)
                         uiManager.ShowVictory (true);
-
-                    // gameManager.LastHeroDead = this;        
-
-                    /*foreach (SC_Hero hero in heroes) {
-
-                        int value = 0;
-                        Relationships.TryGetValue (hero.characterName, out value);
-
-                        if (value >= gameManager.CommonCharactersVariables.berserkTriggerRelation) {
-
-                            hero.Berserk = true;
-                            hero.BerserkTurn = true;
-                            hero.CanMove = !gameManager.Qin;
-
-                            hero.GetComponent<Renderer> ().material.color = Color.cyan;
-
-                        }
-
-                    }*/
 
                 }
 

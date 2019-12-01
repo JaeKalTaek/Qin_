@@ -42,7 +42,7 @@ public abstract class SC_Character : NetworkBehaviour {
     public int AnticipationModifiers { get; set; }
     public int Anticipation { get { return Mathf.Max(1, baseStats.anticipation - AnticipationModifiers - CombatTile.CombatModifiers.anticipation - DemonsModifier("anticipation")); } }
     public int AnticipationCharge { get; set; }
-    public bool Anticiping { get { return AnticipationCharge >= Anticipation; } }
+    public bool Anticipating { get { return AnticipationCharge >= Anticipation; } }
 
     [Tooltip ("Weapons of this character")]
     public List<SC_Weapon> weapons;
@@ -88,6 +88,8 @@ public abstract class SC_Character : NetworkBehaviour {
 	protected static SC_UI_Manager uiManager;
 
     protected static SC_Fight_Manager fightManager;
+
+    protected SC_Common_Characters_Variables CommonVariables { get { return gameManager.CommonCharactersVariables; } }
     #endregion
 
     List<SC_Tile> path;
@@ -107,6 +109,10 @@ public abstract class SC_Character : NetworkBehaviour {
     protected SC_Character loadedCharacter;
 
     public SpriteRenderer Sprite { get; set; }
+
+    public int PreviousHealth { get; set; }
+
+    public virtual bool IsInvulnerable { get { return false; } }
 
     protected virtual void Awake() {
 
@@ -158,12 +164,6 @@ public abstract class SC_Character : NetworkBehaviour {
         transform.SetPos(transform.position, 0);        
 
     }
-
-    /*public static bool CanCharacterDoAction (int cost) { 
-
-        return !activeCharacter.Hero || !activeCharacter.Hero.BaseActionDone || (activeCharacter.Health >= cost);
-
-    }*/
 
     #region Movement
     public virtual void TrySelecting () {
@@ -288,8 +288,6 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (Hero) {
 
-            // CanMove = (Hero.Berserk && !Hero.BerserkTurn);
-
             uiManager.destroyConstruButton.SetActive(!SC_Player.localPlayer.Qin && (target.ProductionBuilding || target.Ruin));
 
             if (moved) {
@@ -298,8 +296,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 Hero.ReadyToRegen = false;
 
-                //if (Hero.BaseMovementDone)
-                    Hero.Hit(Hero.MovementCost(path.Count - 1));
+                Hero.Hit(Hero.MovementCost(path.Count - 1), true);
 
                 Hero.MovementPoints = (Hero.MovementPoints > path.Count - 1) ? Hero.MovementPoints - (path.Count - 1) : Hero.Movement;
 
@@ -325,12 +322,12 @@ public abstract class SC_Character : NetworkBehaviour {
 
             if (moved) {
 
-                uiManager.TryRefreshInfos (gameObject, GetType ());
+                this.TryRefreshInfos ();
 
-                SC_Tile t = uiManager.CurrentTile.GetComponent<SC_Tile> ();
+                SC_Tile t = uiManager.CurrentTile?.GetComponent<SC_Tile> ();
 
                 if (t && t.CursorOn)
-                    uiManager.TryRefreshInfos (t.gameObject, t.GetType ());
+                    t.TryRefreshInfos ();
 
             }
 
@@ -403,11 +400,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
                 Hero.MovementPoints = SC_Tile_Manager.TileDistance(Tile, LastPos);
 
-            } else {
-
+            } else
                 Hero.MovementPoints += SC_Tile_Manager.TileDistance(Tile, LastPos);
-
-            }
 
             if (Hero.BaseMovementDone) {
 
@@ -421,19 +415,15 @@ public abstract class SC_Character : NetworkBehaviour {
 
         TileManager.RemoveAllFilters ();
 
+        Demon?.RemoveAura ();
+
         SetCharacterPos (LastPos);
+
+        Demon?.AddAura ();
 
         CanBeSelected = true;
 
-        if (Demon) {
-
-            Demon.RemoveAura(LastPos);
-
-            Demon.AddAura();
-
-        }
-
-        uiManager.TryRefreshInfos (gameObject, GetType ());
+        this.TryRefreshInfos ();
 
         if (SC_Player.localPlayer.Turn) {            
 
@@ -469,15 +459,17 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public static void FinishCharacterAction (bool wait = false) {
 
+        activeCharacter.CapStats ();
+
         if (activeCharacter.Hero) {
 
             activeCharacter.Hero.ActionCount += wait ? 0 : 1;
 
-            if (activeCharacter.AttackTarget /*&& activeCharacter.Hero.BaseActionDone*/) {
+            if (activeCharacter.AttackTarget) {
 
                 activeCharacter.AttackTarget = null;
 
-                activeCharacter.Hit (activeCharacter.Hero.ActionCost);
+                activeCharacter.Hit (activeCharacter.Hero.ActionCost, true);
 
             }
 
@@ -488,9 +480,7 @@ public abstract class SC_Character : NetworkBehaviour {
                 if (!wait)
                     activeCharacter.Hero.IncreaseRelationships (gameManager.CommonCharactersVariables.relationGains.action);
 
-                SC_Sound_Manager.Instance.SetTempo ();
-
-                // activeCharacter.Hero.BerserkTurn = activeCharacter.Hero.Berserk;                
+                SC_Sound_Manager.Instance.SetTempo ();              
 
             }
 
@@ -501,6 +491,8 @@ public abstract class SC_Character : NetworkBehaviour {
             activeCharacter.AttackTarget = null;
 
             activeCharacter.SetTired (true);
+
+            activeCharacter.Demon?.CapStatsInAura ();
 
         }
 
@@ -533,9 +525,11 @@ public abstract class SC_Character : NetworkBehaviour {
 
 	}	
 
-	public virtual bool Hit(int damages) {
+	public virtual bool Hit (int damages, bool stamina = false) {        
 
-        if (Health >= 0) {
+        if (Health >= 0 && (!IsInvulnerable || stamina)) {
+
+            PreviousHealth = Health;
 
             Health -= damages;
 
@@ -553,7 +547,7 @@ public abstract class SC_Character : NetworkBehaviour {
     public void UpdateHealth() {
 
         Lifebar.UpdateGraph(Health, MaxHealth);
-        uiManager.TryRefreshInfos(gameObject, GetType());
+        this.TryRefreshInfos ();
 
     }	
 
@@ -567,13 +561,6 @@ public abstract class SC_Character : NetworkBehaviour {
         Tired = tired;        
 
         Sprite.color = Tired ? tiredColor : BaseColor;
-
-    }
-
-    public void UpdateStats () {
-
-        PreparationCharge = Mathf.Min (Preparation, PreparationCharge);
-        AnticipationCharge = Mathf.Min (Anticipation, AnticipationCharge);
 
     }
 
@@ -648,6 +635,30 @@ public abstract class SC_Character : NetworkBehaviour {
             return (Qin || !t.Construction.GreatWall) && !t.DrainingStele;
         else
             return true;
+
+    }
+
+    public int GetCurrentPropertyValue (string p) {
+
+        bool wasActive = this == activeCharacter;
+
+        if (wasActive)
+            activeCharacter = null;
+
+        int value = (int)GetType ().GetProperty (p).GetValue (this);
+
+        if (wasActive)
+            activeCharacter = this;
+
+        return value;
+
+    }
+
+    public void CapStats () {
+
+        AnticipationCharge = Mathf.Min (AnticipationCharge, Anticipation);
+
+        PreparationCharge = Mathf.Min (PreparationCharge, Preparation);
 
     }
 

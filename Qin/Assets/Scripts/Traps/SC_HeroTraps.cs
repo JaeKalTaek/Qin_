@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static SC_Global;
+using static SC_Character;
 
 public class SC_HeroTraps : MonoBehaviour {
 
@@ -21,10 +22,13 @@ public class SC_HeroTraps : MonoBehaviour {
 
     /*void Update () {
 
-        if (SC_Hero.heroes != null)
+        if (activeCharacter)
+            print (activeCharacter.characterName + ", " + activeCharacter.PreparationCharge + " / " + activeCharacter.Preparation);
+
+        /*if (SC_Hero.heroes != null)
             foreach (SC_Hero h in SC_Hero.heroes)
                 print (h.characterName + " is a " + h.clone + " on position : " + (h.Tile?.transform.position ?? new Vector3 (-1, -1, -1)) + ", and tile has a character : " + h.Tile.Character);
-
+                
     }*/
 
     void Raze (SC_Tile tile) {
@@ -188,6 +192,28 @@ public class SC_HeroTraps : MonoBehaviour {
     public void RallyingCry () {
 
         SC_Game_Manager.Instance.AdditionalTurn = false;
+
+    }
+    #endregion
+
+    #region Human's Fate
+    [Header ("Human's Fate")]
+    [Tooltip ("Human's Fate's duration")]
+    public int humansFateDuration;
+
+    public void HumansFate () {
+
+        hero.Dead = false;
+
+        hero.Tile.Character = hero;
+
+        hero.gameObject.SetActive (true);
+
+        hero.Health = hero.PreviousHealth;        
+
+        hero.HumansFateDuration = humansFateDuration;
+
+        hero.SetBerserk (true);
 
     }
     #endregion

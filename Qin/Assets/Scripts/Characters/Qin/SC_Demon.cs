@@ -80,37 +80,41 @@ public class SC_Demon : SC_BaseQinChara {
 
     void PerformAction (Action action, SC_Tile center = null) {
 
-        foreach (SC_Tile tile in TileManager.GetRange(center?.transform.position ?? transform.position, auraRange))
+        foreach (SC_Tile tile in TileManager.GetRange((center?.transform ?? transform).position, auraRange))
             action(tile);
 
     }
 
-    public void AddAura() {
+    public void AddAura (SC_Tile center = null) {
 
         PerformAction((SC_Tile tile) => {
 
             tile.TryAddAura(characterName, auraModifiers);
 
-            if (tile.Character)
-                uiManager.TryRefreshInfos(tile.Character.gameObject, tile.Character.GetType());
+            tile.Character?.TryRefreshInfos ();
 
-        });
+        }, center);
 
     }
 
-    public void RemoveAura(SC_Tile center = null) {
+    public void RemoveAura (SC_Tile center = null) {
 
         PerformAction((SC_Tile tile) => {
 
             tile.DemonAuras.Remove(new DemonAura(characterName, auraModifiers));
 
-            if (tile.Character)
-                uiManager.TryRefreshInfos(tile.Character.gameObject, tile.Character.GetType());
+            tile.Character?.TryRefreshInfos ();
 
         }, center);
 
     }
     
+    public void CapStatsInAura (SC_Tile center = null) {
+
+        PerformAction ((SC_Tile tile) => { tile.Character?.CapStats (); }, center);
+
+    }
+
     public void TryRespawn() {
 
         Alive++;

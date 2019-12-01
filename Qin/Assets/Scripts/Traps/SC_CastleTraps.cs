@@ -98,45 +98,48 @@ public class SC_CastleTraps : MonoBehaviour {
 
             List<SC_Hero> bestFriends = new List<SC_Hero> ();
 
-            foreach (SC_Hero hero in TileManager.HeroesInRange (Destroyer)) {
+            foreach (SC_Hero hero in SC_Hero.heroes) {
 
-                if (bestFriends.Count == 0)
-                    bestFriends.Add (hero);
-                else {
+                if (Destroyer.characterName != hero.characterName) {
 
-                    int currentValue = Destroyer.Relationships[bestFriends[0].characterName];
-
-                    int value = Destroyer.Relationships[hero.characterName];
-
-                    if (value >= currentValue) {
-
-                        if (value > currentValue)
-                            bestFriends.Clear ();
-
+                    if (bestFriends.Count == 0)
                         bestFriends.Add (hero);
+                    else {
+
+                        int currentValue = Destroyer.Relationships[bestFriends[0].characterName];
+
+                        int value = Destroyer.Relationships[hero.characterName];
+
+                        if (value >= currentValue) {
+
+                            if (value > currentValue)
+                                bestFriends.Clear ();
+
+                            bestFriends.Add (hero);
+
+                        }
 
                     }
 
-                }                
+                }
 
             }
 
-            if (bestFriends.Count > 1) {
+            SC_Hero closest = bestFriends[0];
 
-                SC_Hero closest = bestFriends[0];
+            if (bestFriends.Count > 1) {                
 
                 foreach (SC_Hero h in bestFriends)
                     if (SC_Tile_Manager.TileDistance (Destroyer.Tile, h.Tile) < SC_Tile_Manager.TileDistance (Destroyer.Tile, closest.Tile))
                         closest = h;
 
-                bestFriends[0] = closest;
-
             }
 
-            Destroyer.RelationGainBlocked = bestFriends[0].characterName;
+            Destroyer.RelationGainBlocked = closest.characterName;
+            closest.RelationGainBlocked = Destroyer.characterName;
 
-            Destroyer.Relationships[bestFriends[0].characterName] = 0;
-            bestFriends[0].Relationships[Destroyer.characterName] = 0;
+            Destroyer.Relationships[closest.characterName] = 0;
+            closest.Relationships[Destroyer.characterName] = 0;
 
         }
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class SC_BaseQinChara : SC_Character {
 
@@ -8,6 +9,14 @@ public class SC_BaseQinChara : SC_Character {
 
     [Tooltip("Cost to create this character")]
     public int cost;
+
+    public override void OnStartClient () {
+
+        base.OnStartClient ();
+
+        weapons = new List<SC_Weapon> (loadedCharacter.weapons);
+
+    }
 
     public override void TrySelecting () {
 

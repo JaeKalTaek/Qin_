@@ -582,7 +582,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public void HideInfosIfActive(GameObject g) {
 
         if (CurrentChara == g)
-            HideInfos(!endSacrifice.activeSelf);
+            HideInfos(!endSacrifice.activeSelf && !previewFightPanel.activeSelf);
 
     }
 
@@ -597,11 +597,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         CurrentChara = null;
 
+        CurrentTile = null;
+
 	}
 
     public void TryRefreshInfos(GameObject g, Type t) {
-
-        g.GetComponent<SC_Character> ()?.UpdateStats ();
 
         if((CurrentChara == g) || (CurrentTile == g))
             ShowInfos(g, t);
@@ -632,13 +632,17 @@ public class SC_UI_Manager : MonoBehaviour {
 
         heroTooltip.panel.SetActive(character.Hero);
 
-        characterTooltip.prep.Set(character.PreparationCharge, character.Preparation, ColorMode.Default);
+        int prep = character.GetCurrentPropertyValue ("Preparation");
 
-        characterTooltip.prep.GetComponentInChildren<Text>().text = character.PreparationCharge + " / " + character.Preparation;
+        characterTooltip.prep.Set (Mathf.Min (character.PreparationCharge, prep), prep, ColorMode.Default);
 
-        characterTooltip.anticip.Set(character.AnticipationCharge, character.Anticipation, ColorMode.Default);
+        characterTooltip.prep.GetComponentInChildren<Text>().text = Mathf.Min (character.PreparationCharge, prep) + " / " + prep;
 
-        characterTooltip.anticip.GetComponentInChildren<Text>().text = character.AnticipationCharge + " / " + character.Anticipation;
+        int anticip = character.GetCurrentPropertyValue ("Anticipation");
+
+        characterTooltip.anticip.Set(Mathf.Min (character.AnticipationCharge, anticip), anticip, ColorMode.Default);
+
+        characterTooltip.anticip.GetComponentInChildren<Text>().text = Mathf.Min (character.AnticipationCharge, anticip) + " / " + anticip;
 
         characterTooltip.prepContainer.SetActive(true);
 
@@ -753,12 +757,12 @@ public class SC_UI_Manager : MonoBehaviour {
         CurrentTile = t.gameObject;
 
         if (t.Construction)
-            ShowConstructionsInfos(t.Construction);
+            ShowConstructionsInfos (t.Construction);
         else {
 
             tileTooltip.name.text = t.infos.type;
-            tileTooltip.health.gameObject.SetActive(false);
-            tileTooltip.shields.gameObject.SetActive(false);
+            tileTooltip.health.gameObject.SetActive (false);
+            tileTooltip.shields.gameObject.SetActive (false);
 
         }
 
@@ -851,7 +855,15 @@ public class SC_UI_Manager : MonoBehaviour {
 
         if (StaminaCost != EStaminaCost.TooHigh) {
 
-            SC_Construction attackerConstru =  activeCharacter.CombatTile.AttackableContru;
+            if (activeCharacter.Demon && SC_Arrow.path != null) {
+
+                activeCharacter.Demon.RemoveAura ();
+
+                activeCharacter.Demon.AddAura (SC_Arrow.path[SC_Arrow.path.Count - 1]);
+
+            }
+
+            SC_Construction attackerConstru = activeCharacter.CombatTile.AttackableContru;
 
             attackerPreviewFight.name.text = activeCharacter.characterName + (attackerConstru ? " on " + (attackerConstru as SC_Castle ? "Castle" : attackerConstru.Name) : "");
 
@@ -930,7 +942,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         attackedPF.shields.Set(c?.Health ?? 0, !cantHit);  
 
-        attackedPF.anticip.Set(attacked.AnticipationCharge, c ? attacked.AnticipationCharge : Mathf.Min(attacked.AnticipationCharge + (cantHit || attackedKilled ? 0 : 1), attacked.Anticipation), attacked.Anticipation, attacked.Anticiping && !c);
+        attackedPF.anticip.Set(attacked.AnticipationCharge, c ? attacked.AnticipationCharge : Mathf.Min(attacked.AnticipationCharge + (cantHit || attackedKilled ? 0 : 1), attacked.Anticipation), attacked.Anticipation, attacked.Anticipating && !c && !attacked.IsInvulnerable);
 
         attackedPF.prep.Set(attacked.PreparationCharge, Mathf.Min(attacked.PreparationCharge + (attackedKilled || !attacked.GetActiveWeapon().Range(attacked).In(SC_Fight_Manager.AttackRange) ? 0 : 1), attacked.Preparation), attacked.Preparation, attacked.Prepared);
 
@@ -940,6 +952,14 @@ public class SC_UI_Manager : MonoBehaviour {
 
     // Also called by UI
     public void HidePreviewFight () {
+
+        if (previewFightPanel.activeSelf && activeCharacter?.Demon && SC_Arrow.path != null) {
+
+            activeCharacter.Demon.RemoveAura (SC_Arrow.path[SC_Arrow.path.Count - 1]);
+
+            activeCharacter.Demon.AddAura ();
+
+        }
 
         previewFightPanel.SetActive(false);
 
@@ -1004,7 +1024,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public void HideWeapons () {        
 
         weaponChoicePanel.SetActive(false);
-        previewFightPanel.SetActive(false);
+        HidePreviewFight ();
 
     }
     #endregion
@@ -1503,7 +1523,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         TileManager.PreviewAttack();
 
-        previewFightPanel.SetActive(false);
+        HidePreviewFight ();
 
     }    
     #endregion

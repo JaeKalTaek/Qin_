@@ -40,7 +40,7 @@ public class SC_Castle : SC_Bastion {
 
         Setup ();
 
-        uiManager.TryRefreshInfos (gameObject, typeof (SC_Castle));
+        this.TryRefreshInfos ();
 
         foreach (SC_Tile t in tileManager.ChangingTiles) {
 

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 [Serializable]
 public class SC_Global {
 
-    public enum TDisplay { None = -1, Attack = 0, Sacrifice = 1, Construct = 2, Deploy = 3, Movement = 4 }
+    public enum TDisplay { None = -1, Attack, Sacrifice, Construct, Deploy, Movement, QinCurse }
 
     public enum ShiFuMi { Rock, Paper, Scissors, Special }
 

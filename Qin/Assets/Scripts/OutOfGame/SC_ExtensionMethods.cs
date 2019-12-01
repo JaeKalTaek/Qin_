@@ -18,6 +18,13 @@ public static class SC_ExtensionMethods {
 
     }
 
+    public static void TryRefreshInfos (this MonoBehaviour MB) {
+
+        if (MB)
+            SC_UI_Manager.Instance.TryRefreshInfos (MB.gameObject, MB.GetType ());
+
+    }
+
     public static Vector3 I (this Vector3 v) {
 
         return new Vector3(v.x.I(), v.y.I(), v.z.I());

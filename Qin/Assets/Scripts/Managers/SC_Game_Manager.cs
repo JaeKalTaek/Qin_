@@ -270,22 +270,20 @@ public class SC_Game_Manager : NetworkBehaviour {
                     if (character.Tile.Region == ScorchedRegion && !character.Qin)
                         character.Hit (SC_CastleTraps.Instance.scorchedDamage);
 
-                } else
-                    character.Hero.IncreaseRelationships (CommonCharactersVariables.relationGains.finishTurn);                
+                } else {                  
+                    
+                    character.Hero.IncreaseRelationships (CommonCharactersVariables.relationGains.finishTurn);
 
-                /*if (Qin) {
+                    if (character.Hero.HumansFateDuration > 0) {
 
-                    if (character.Hero.PowerUsed)
-                        character.Hero.PowerBacklash++;
+                        character.Hero.HumansFateDuration--;
 
-                    if (character.Hero.PowerBacklash >= 2)
-                        character.Hero.DestroyCharacter();
+                        if (character.Hero.HumansFateDuration <= 0)
+                            character.Hit (character.Health);
 
-                } else {
+                    }
 
-                    character.Hero.BerserkTurn = false;
-
-                }*/
+                }
 
             }            
 
@@ -373,6 +371,8 @@ public class SC_Game_Manager : NetworkBehaviour {
     public void UnselectCharacter () {
 
         uiManager.HidePreviewFight();
+
+        uiManager.HideInfosIfActive (SC_Character.activeCharacter.gameObject);
 
         SC_Arrow.DestroyArrow();
 

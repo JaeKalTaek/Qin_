@@ -92,7 +92,7 @@ public class SC_Construction : NetworkBehaviour {
 
         Tile.Construction = null;
 
-        uiManager.TryRefreshInfos(Tile.gameObject, Tile.GetType());
+        Tile.TryRefreshInfos ();
 
         Tile.Cost = Tile.baseCost;
 

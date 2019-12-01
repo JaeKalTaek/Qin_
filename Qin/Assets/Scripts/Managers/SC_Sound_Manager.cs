@@ -230,7 +230,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
             e.getPath(out p);
 
-            if (p.Contains("/" + b + "_HIT_" + a + "_SLOW") && (p.Contains("CRIT") == attacker.Prepared)) {
+            if (p.Contains("/" + b + "_HIT_" + a + "_SLOW") && (p.Contains("CRIT") == (attacker.Prepared && ((attacked && !attacked.Anticipating) || !constru)))) {
 
                 EventInstance hitSound = RuntimeManager.CreateInstance(p);
                 hitSound.setVolume(.35f);

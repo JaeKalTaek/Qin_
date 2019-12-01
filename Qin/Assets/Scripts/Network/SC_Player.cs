@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using QinCurses;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -175,7 +176,7 @@ public class SC_Player : NetworkBehaviour {
     [Command]
     public void CmdSendQinInfos (CastleDeck[] decks, string curse, SoldierInfos[] soldiers) {
 
-        RpcSetCastles (decks);
+        RpcSendQinInfos (decks, curse);
 
         foreach (SoldierInfos s in soldiers) {
 
@@ -190,7 +191,7 @@ public class SC_Player : NetworkBehaviour {
     }
 
     [ClientRpc]
-    void RpcSetCastles (CastleDeck[] decks) {
+    void RpcSendQinInfos (CastleDeck[] decks, string curse) {
 
         foreach (SC_Castle c in FindObjectsOfType<SC_Castle> ()) {
 
@@ -200,6 +201,8 @@ public class SC_Player : NetworkBehaviour {
                 c.SetCastle (decks[c.Tile.Region].castle);
 
         }
+
+        SC_Qin.Curse = Resources.Load<SC_BaseQinCurse> ("Prefabs/QinCurses/P_" + curse);
 
     }
     #endregion
@@ -692,6 +695,22 @@ public class SC_Player : NetworkBehaviour {
             TileManager.DisplayConstructableTiles (GameManager.CurrentConstru);
         else
             localPlayer.Busy = false;
+
+    }
+    #endregion
+
+    #region Finality curse
+    [Command]
+    public void CmdFinality (GameObject target) {
+
+        RpcFinality (target);
+
+    }
+
+    [ClientRpc]
+    void RpcFinality (GameObject target) {
+
+        target.GetComponent<SC_Hero> ().DestroyCharacter ();
 
     }
     #endregion

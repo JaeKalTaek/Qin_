@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using static SC_Global;
 using DG.Tweening;
 using System.Collections.Generic;
+using TMPro;
+using QinCurses;
 
 public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler {
 
@@ -89,7 +91,7 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
                         GiveBackElement (ElementType, c.CastleType + "Castle");
 
-                        GetPrepCastle (c).Renderer.sprite = draggedElement.sprite;
+                        GetPrepCastle (c).Renderer.sprite = Sprite;
 
                     } else
                         UIManager.QinPreparationSlotsCount++;
@@ -98,7 +100,7 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
                     Renderer.DOFade (.5f, 0);
 
-                    GetPrepCastle (c).Renderer.sprite = draggedElement.sprite;
+                    GetPrepCastle (c).Renderer.sprite = Sprite;
 
                 }
 
@@ -157,9 +159,10 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
                 }
 
             }
-        }
+        } else if (ElementType == (int) EQinPreparationElement.Curse && GetType () == typeof (SC_QinPreparationElement))
+            slot.GetComponentInChildren<TextMeshProUGUI> ().text = Resources.Load<SC_BaseQinCurse> ("Prefabs/QinCurses/P_" + Sprite.name).cost.ToString ();
 
-        slot.Renderer.sprite = draggedElement.sprite;
+        slot.Renderer.sprite = Sprite;
 
     }
 

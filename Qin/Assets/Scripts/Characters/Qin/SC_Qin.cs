@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using QinCurses;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using static SC_Global;
@@ -30,6 +31,10 @@ public class SC_Qin : NetworkBehaviour {
 
 	public static SC_Qin Qin;
 
+    public static SC_BaseQinCurse Curse { get; set; }
+
+    public static bool CurseUsed;
+
 	void Start() {
 
 		Qin = this;
@@ -48,7 +53,7 @@ public class SC_Qin : NetworkBehaviour {
 
         tileManager.GetTileAt(transform.position + Vector3.up).Qin = this;
 
-        transform.SetPos(transform.position, 0);
+        transform.SetPos(transform.position, 1);
 
     }
 

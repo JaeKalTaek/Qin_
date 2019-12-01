@@ -12,6 +12,7 @@ using static SC_Hero;
 using UnityEngine.Events;
 using DG.Tweening;
 using System.Collections.Generic;
+using QinCurses;
 
 public class SC_UI_Manager : MonoBehaviour {
 
@@ -73,6 +74,7 @@ public class SC_UI_Manager : MonoBehaviour {
     public GameObject pitPanel;
     public CreateDemonPanel createDemonPanel;
     public SacrificeCastlePanel sacrificeCastlePanel;
+    public Button curseButton;
 
     [Header("Transforms")]
     public Transform tilesT;
@@ -143,7 +145,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
             heroPreparationUI.panel.SetActive(!qin);
 
-            preparationPanel.SetActive(true);
+            preparationPanel.SetActive(true);            
 
         } else
             gamePanel.SetActive(true);
@@ -418,6 +420,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
                 qinPreprationUI.trapsPool.SetActive (false);
                 qinPreprationUI.cursesPool.SetActive (true);
+
+                foreach (Transform t in qinPreprationUI.cursesPool.transform.GetChild (0))
+                    t.GetComponentInChildren<TextMeshProUGUI> ().text = Resources.Load<SC_BaseQinCurse> ("Prefabs/QinCurses/P_" + t.GetComponent<SC_QinPreparationElement> ().Sprite.name).cost.ToString ();
 
                 break;
 
@@ -1386,6 +1391,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
             construct.SetActive(localPlayer.Turn);
             sacrifice.SetActive(localPlayer.Turn);
+            curseButton.gameObject.SetActive (localPlayer.Turn && !SC_Qin.CurseUsed);
+
+            curseButton.interactable = SC_Qin.Curse.CanActivate ();
 
             if (GameManager.QinTurnStarting)
                 localPlayer.CmdSetQinTurnStarting(false);
@@ -1566,7 +1574,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    IEnumerator ClickSafety (Action a) {
+    public IEnumerator ClickSafety (Action a) {
 
         yield return new WaitForSeconds(clickSecurityDuration);
 

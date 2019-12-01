@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using static SC_Global;
 using System.Collections.Generic;
+using TMPro;
 
 public abstract class SC_PreparationSlot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
 
@@ -54,9 +55,10 @@ public abstract class SC_PreparationSlot : MonoBehaviour, IPointerClickHandler, 
                 for (int i = 0; i < sprites.Count; i++)
                     GetComponentInParent<SC_HeroDeck> ().Weapons[i].Renderer.sprite = sprites[i];
 
-            }
+            } else if (ElementType == (int) EQinPreparationElement.Curse && GetType () == typeof (SC_QinPreparationSlot))
+                GetComponentInChildren<TextMeshProUGUI> ().text = "";
 
-        }
+        } 
 
     }
 

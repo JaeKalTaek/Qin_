@@ -278,7 +278,7 @@ public class SC_Global {
 
         public GameObject castlesPool, trapsPool, cursesPool, soldiersPool;
 
-        public TextMeshProUGUI poolLabel, preparationSlotsCount;
+        public TextMeshProUGUI poolLabel, preparationSlotsCount, curseCost;
 
         public Button continueButton, returnButton, cancelButton;
 

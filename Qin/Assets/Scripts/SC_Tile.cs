@@ -187,7 +187,11 @@ public class SC_Tile : NetworkBehaviour {
 
             if (SC_Player.localPlayer.Turn) {
 
-                if (CurrentDisplay == TDisplay.Construct) {
+                if (CurrentDisplay == TDisplay.QinCurse) {
+
+                    SC_Qin.Curse.Use (this);
+
+                } else if (CurrentDisplay == TDisplay.Construct) {
 
                     SC_Player.localPlayer.CmdConstructAt (transform.position.x.I (), transform.position.y.I (), false);
 

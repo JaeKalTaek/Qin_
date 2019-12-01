@@ -398,6 +398,12 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     }
 
+    public void ActivateCurse () {
+
+        SC_Qin.Curse.Activate (false);
+
+    }
+
     public void Concede () {
 
         Player.CmdShowVictory(!Player.Qin);

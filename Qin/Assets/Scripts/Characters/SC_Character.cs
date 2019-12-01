@@ -161,7 +161,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
 		Tile.Character = this;
 
-        transform.SetPos(transform.position, 0);        
+        transform.SetPos(transform.position, 1);        
 
     }
 

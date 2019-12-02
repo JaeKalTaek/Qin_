@@ -66,6 +66,8 @@ public abstract class SC_Character : NetworkBehaviour {
 
     public SC_Hero Hero { get { return this as SC_Hero; } }
 
+    public bool RealHero { get { return (!Hero?.Qin) ?? false; } }
+
     public SC_BaseQinChara BaseQinChara { get { return this as SC_BaseQinChara; } }
 
     public SC_Soldier Soldier { get { return this as SC_Soldier; } }
@@ -288,11 +290,12 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if (Hero) {
 
-            uiManager.destroyConstruButton.SetActive(!SC_Player.localPlayer.Qin && (target.ProductionBuilding || target.Ruin));
+            uiManager.destroyConstruButton.SetActive(RealHero && (target.ProductionBuilding || target.Ruin));
 
             if (moved) {
 
-                SC_DrainingStele.UpdateHeroSlow(Hero);
+                if (RealHero)
+                    SC_DrainingStele.UpdateHeroSlow(Hero);
 
                 Hero.ReadyToRegen = false;
 
@@ -381,7 +384,7 @@ public abstract class SC_Character : NetworkBehaviour {
 
         transform.SetPos (newPos.transform.position);
 
-        if (Hero)
+        if (RealHero)
             SC_DrainingStele.UpdateHeroSlow (Hero);
 
         newPos.Character = this;

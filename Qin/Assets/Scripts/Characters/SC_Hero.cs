@@ -112,9 +112,9 @@ public class SC_Hero : SC_Character {
 
         transform.parent = uiManager.heroesT;
 
-        ActionCount = -1;
+        ActionCount = clone ? original.ActionCount : -1;
 
-        MovementCount = -1;
+        MovementCount = clone ? original.MovementCount : -1;
 
     }
 
@@ -217,6 +217,8 @@ public class SC_Hero : SC_Character {
 
                     if (!clone) {
 
+                        SC_Game_Manager.LastHeroDead = this;
+
                         Tile.Grave = Instantiate (Resources.Load<GameObject> ("Prefabs/P_Grave"));
 
                         Tile.Grave.transform.SetPos (Tile.transform.position, 3);
@@ -252,31 +254,35 @@ public class SC_Hero : SC_Character {
 
     public void IncreaseRelationships (int amount) {
 
-        List<string> differentHeroesInRange = new List<string> ();
+        if (!Qin) {
 
-        foreach (SC_Hero hero in TileManager.HeroesInRange (this))
-            if (hero.characterName != characterName && !differentHeroesInRange.Contains (hero.characterName))
-                differentHeroesInRange.Add (hero.characterName);
+            List<string> differentHeroesInRange = new List<string> ();
 
-        List<string> alreadyGained = new List<string> ();
+            foreach (SC_Hero hero in TileManager.HeroesInRange (this))
+                if (hero.characterName != characterName && !differentHeroesInRange.Contains (hero.characterName) && !hero.Qin)
+                    differentHeroesInRange.Add (hero.characterName);
 
-        foreach (SC_Hero hero in TileManager.HeroesInRange (this)) {
+            List<string> alreadyGained = new List<string> ();
 
-            if (hero.characterName != characterName && hero.characterName != RelationGainBlocked && !alreadyGained.Contains (hero.characterName)) {
+            foreach (SC_Hero hero in TileManager.HeroesInRange (this)) {
 
-                alreadyGained.Add (hero.characterName);
+                if (hero.characterName != characterName && hero.characterName != RelationGainBlocked && !alreadyGained.Contains (hero.characterName) && !hero.Qin) {
 
-                Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+                    alreadyGained.Add (hero.characterName);
 
-                Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+                    Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
 
-                Relationships[hero.characterName] += (int) (((float) amount / differentHeroesInRange.Count) + .5f);
+                    Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+
+                    Relationships[hero.characterName] += (int) (((float) amount / differentHeroesInRange.Count) + .5f);
+
+                }
 
             }
 
-        }
+            RelationGainBlocked = "";
 
-        RelationGainBlocked = "";
+        }
 
     }
 

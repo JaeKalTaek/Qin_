@@ -222,7 +222,7 @@ public class SC_Sound_Manager : MonoBehaviour {
 
         string a = attacker.Hero ? (attacker.Hero.male ? "" : "FE") + "MALE" : "SOLDIER";
 
-        string b = constru ? "BUILDING" : ((!attacked || attacked.BaseQinChara) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
+        string b = constru ? "BUILDING" : ((!attacked || attacked.BaseQinChara || (attacker.Hero && attacked.Hero)) ? "SOLDIER" : (attacked.Hero.male ? "" : "FE") + "MALE");
 
         foreach (EventDescription e in hitEvents) {
 

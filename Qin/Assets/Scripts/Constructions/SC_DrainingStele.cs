@@ -20,7 +20,7 @@ public class SC_DrainingStele : SC_Construction {
     void PerformAction(Action action) {
 
         foreach (SC_Hero hero in new List<SC_Hero> (SC_Hero.heroes))
-            if (SC_Tile_Manager.TileDistance(transform.position, hero.transform.position) <= range)
+            if ((!hero.Qin) && SC_Tile_Manager.TileDistance(transform.position, hero.transform.position) <= range)
                 action(hero);
 
     }

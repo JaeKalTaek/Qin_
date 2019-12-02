@@ -28,7 +28,7 @@ public class SC_Arrow : MonoBehaviour {
 
             path = SC_Tile_Manager.Instance.PathFinder(activeCharacter.Tile, tile);
 
-            if (activeCharacter.Hero /*&& (activeCharacter.Hero.BaseMovementDone || activeCharacter.Hero.BaseActionDone)*/)
+            if (activeCharacter.Hero)
                 SC_Hero.SetStaminaCost(new int[] { path != null ? activeCharacter.Hero.MovementCost(path.Count - 1) : 0, (newTile.CanAttack ? activeCharacter.Hero.ActionCost : 0) });
 
             if(newTile.CanAttack)

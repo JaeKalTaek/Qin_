@@ -267,7 +267,7 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         int damages = attacker.GetActiveWeapon().physical ? attacker.Strength : attacker.Chi;
 
-        if (attacker.Hero)
+        if (attacker.RealHero)
             damages += (int)(damages * RelationBoost(attacker.Hero) + .5f);
 
         if (attacker.Prepared)
@@ -290,23 +290,24 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         if (attacked.IsInvulnerable) return 0;
 
-        int damages = CalcAttack(attacker);
-
-        if (attacked.Anticipating)
-            damages = (int)(damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f) + .5f);
+        int damages = CalcAttack(attacker);        
 
         int armor = attacked.Armor;
         int resistance = attacked.Resistance;
 
-        if (attacked.Hero) {
+        if (attacked.RealHero) {            
 
             float relationBoost = RelationBoost(attacked.Hero);
             armor += (int)(armor * relationBoost + .5f);
             resistance += (int)(resistance * relationBoost + .5f);
 
-        }
+        } else if (attacker.RealHero && attacked.Hero)
+            damages -= (int) (damages * RelationBoost (attacker.Hero) + .5f);
 
         damages -= (attacker.GetActiveWeapon().physical) ? armor : resistance;
+
+        if (attacked.Anticipating)
+            damages = (int) (damages * ((100 - CharactersVariables.dodgeReductionPercentage) / 100f) + .5f);
 
         return Mathf.Max(0, damages);
 

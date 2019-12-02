@@ -683,10 +683,6 @@ public class SC_Player : NetworkBehaviour {
 
                 h.DrainingSteleSlow = hero.DrainingSteleSlow;
 
-                h.ActionCount = hero.ActionCount;
-
-                h.MovementCount = hero.MovementCount;
-
             }
 
         }
@@ -710,7 +706,25 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcFinality (GameObject target) {
 
+        SC_Qin.ChangeEnergy (-SC_Qin.Curse.cost);
+
         target.GetComponent<SC_Hero> ().DestroyCharacter ();
+
+    }
+    #endregion
+
+    #region Generic Curse usage
+    [Command]
+    public void CmdUseCurse (GameObject t) {
+
+        RpcUseCurse (t);
+
+    }
+
+    [ClientRpc]
+    void RpcUseCurse (GameObject t) {
+
+        SC_Qin.Curse.Use (t?.GetComponent <SC_Tile> ());
 
     }
     #endregion

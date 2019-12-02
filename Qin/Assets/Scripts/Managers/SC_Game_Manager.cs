@@ -25,7 +25,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public bool QinTurnStarting { get; set; }
 
-	public SC_Hero LastHeroDead { get; set; }
+	public static SC_Hero LastHeroDead { get; set; }
 
     public string CurrentConstru { get; set; }
 

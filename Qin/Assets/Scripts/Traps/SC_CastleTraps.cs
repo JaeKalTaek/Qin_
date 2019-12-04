@@ -60,19 +60,13 @@ public class SC_CastleTraps : MonoBehaviour {
 
             foreach (SC_Tile t in TileManager.tiles) {
 
-                if (!t.Character && !t.DrainingStele && !t.Qin) {
+                if (!t.Character && !t.DrainingStele && !t.Qin &&!t.Grave && TileManager.NearTiles (t, Destroyer.Tile)) {
 
-                    int dist = SC_Tile_Manager.TileDistance (t, Destroyer.Tile);
+                    GameObject go = Instantiate (Resources.Load<GameObject> ("Prefabs/Characters/Soldiers/P_BaseSoldier"), t.transform.position, Quaternion.identity);
 
-                    if (dist == 1 || (dist == 2 && t.transform.position.x != Destroyer.transform.position.x && t.transform.position.y != Destroyer.transform.position.y)) {
+                    go.GetComponent<SC_Soldier> ().characterPath = "Prefabs/Characters/Soldiers/Basic/P_" + reinforcementsSoldier;
 
-                        GameObject go = Instantiate (Resources.Load<GameObject> ("Prefabs/Characters/Soldiers/P_BaseSoldier"), t.transform.position, Quaternion.identity);
-
-                        go.GetComponent<SC_Soldier> ().characterPath = "Prefabs/Characters/Soldiers/Basic/P_" + reinforcementsSoldier;
-
-                        NetworkServer.Spawn (go);
-
-                    }
+                    NetworkServer.Spawn (go);
 
                 }
 

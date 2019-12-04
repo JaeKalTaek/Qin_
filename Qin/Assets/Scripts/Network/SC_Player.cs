@@ -695,25 +695,7 @@ public class SC_Player : NetworkBehaviour {
     }
     #endregion
 
-    #region Finality curse
-    [Command]
-    public void CmdFinality (GameObject target) {
-
-        RpcFinality (target);
-
-    }
-
-    [ClientRpc]
-    void RpcFinality (GameObject target) {
-
-        SC_Qin.ChangeEnergy (-SC_Qin.Curse.cost);
-
-        target.GetComponent<SC_Hero> ().DestroyCharacter ();
-
-    }
-    #endregion
-
-    #region Generic Curse usage
+    #region Curse usage
     [Command]
     public void CmdUseCurse (GameObject t) {
 

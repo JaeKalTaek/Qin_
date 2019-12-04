@@ -21,8 +21,6 @@ namespace QinCurses {
 
         public override void Use (SC_Tile tile) {
 
-            SC_Qin.ChangeEnergy (-SC_Qin.Curse.cost);
-
             base.Use (tile);
 
             SC_Hero h = SC_Game_Manager.LastHeroDead;

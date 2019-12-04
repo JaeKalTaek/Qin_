@@ -50,13 +50,7 @@ public class SC_Tile : NetworkBehaviour {
 
     }
 
-    public bool Constructable {
-        get /*(bool ignoreChara)*/ {
-
-            return /*(!Character || ignoreChara) &&*/ !Hero && !Construction && RegionValid && !Grave;
-
-        }
-    }
+    public bool Constructable { get { return !Hero && !Construction && RegionValid && !Grave; } }
 
     bool RegionValid { get { return (Region != -1) && SC_Castle.castles[Region]; } }
 
@@ -189,7 +183,9 @@ public class SC_Tile : NetworkBehaviour {
 
                 if (CurrentDisplay == TDisplay.QinCurse) {
 
-                    SC_Qin.Curse.Use (this);
+                    TileManager.RemoveAllFilters ();
+
+                    SC_Player.localPlayer.CmdUseCurse (gameObject);
 
                 } else if (CurrentDisplay == TDisplay.Construct) {
 

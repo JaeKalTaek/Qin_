@@ -48,13 +48,17 @@ namespace QinCurses {
 
         public virtual void Use (SC_Tile tile) {
 
-            SC_Qin.CurseUsed = true;
+            SC_Qin.ChangeEnergy (-SC_Qin.Curse.cost);
 
-            SC_Player.localPlayer.Busy = false;
+            if (SC_Player.localPlayer.Turn) {
 
-            UI.backAction = SC_Global.DoNothing;
+                SC_Qin.CurseUsed = true;
 
-            TileManager.RemoveAllFilters ();
+                SC_Player.localPlayer.Busy = false;
+
+                UI.backAction = SC_Global.DoNothing;
+
+            }
 
         }
 

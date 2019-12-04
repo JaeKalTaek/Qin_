@@ -261,9 +261,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         List<SC_Tile> range = new List<SC_Tile>((idealTiles.Count > 0) ? idealTiles : validTiles);        
 
-        /*if (currentTile.CanAttack && range.Contains(SC_Character.activeCharacter.Tile))
-            return SC_Character.activeCharacter.Tile;
-        else*/ if (!currentTile.CanAttack && range.Contains(SC_Character.activeCharacter.Tile) && (range.Count > 1))
+        if (!currentTile.CanAttack && range.Contains(SC_Character.activeCharacter.Tile) && (range.Count > 1))
             range.Remove(SC_Character.activeCharacter.Tile);
 
         SC_Tile validTile = null;
@@ -303,17 +301,40 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         SC_Character attacked = SC_Cursor.Tile.Character;
 
-        if (SC_Cursor.Tile.CanAttack && attacked) {
-
+        if (SC_Cursor.Tile.CanAttack && attacked)
             return !attacked.CanCounterAttack (!SC_Cursor.Tile.Construction && (attacked.Health - SC_Fight_Manager.Instance.CalcDamage (SC_Character.activeCharacter, attacked)) <= 0, TileDistance (SC_Cursor.Tile, tile));
-
-            /*bool killed = !attackedConstru && (attacked.Health - SC_Fight_Manager.Instance.CalcDamage(SC_Character.activeCharacter, attacked)) <= 0;
-
-            return killed || !attacked.GetRange().In(TileDistance(SC_Cursor.Tile, tile));*/
-
-        } else {
-
+        else
             return true;
+
+    }
+
+    public bool NearTiles (SC_Tile a, SC_Tile b) {
+
+        int dist = TileDistance (a, b);
+
+        return dist == 1 || (dist == 2 && a.transform.position.x != b.transform.position.x && a.transform.position.y != b.transform.position.y);
+
+    }
+
+    public static int NearDistance (SC_Tile a, SC_Tile b) {
+
+        return Mathf.Max (Mathf.Abs (a.transform.position.x.I () - b.transform.position.x.I ()), Mathf.Abs (a.transform.position.y.I () - b.transform.position.y.I ()));
+
+    }
+
+    public static int CompareTilesClockwiseOrder (SC_Tile center, SC_Tile a, SC_Tile b) {
+
+        if (NearDistance (center, a) < NearDistance (center, b))
+            return -1;
+        else if (NearDistance (center, a) > NearDistance (center, b))
+            return 1;
+        else {
+
+            float aAngle = Vector3.SignedAngle (Vector3.up, a.transform.position - center.transform.position, Vector3.back);
+
+            float bAngle = Vector3.SignedAngle (Vector3.up, b.transform.position - center.transform.position, Vector3.back);
+
+            return (int) Mathf.Sign ((aAngle < 0 ? 360 + aAngle : aAngle) - (bAngle < 0 ? 360 + bAngle : bAngle));
 
         }
 

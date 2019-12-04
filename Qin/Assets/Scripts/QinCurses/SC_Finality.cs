@@ -38,7 +38,7 @@ namespace QinCurses {
 
             base.Use (tile);
 
-            SC_Player.localPlayer.CmdFinality (tile.Hero.gameObject);
+            tile.Hero.DestroyCharacter ();
 
         }
 

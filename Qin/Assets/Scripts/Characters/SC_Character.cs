@@ -163,7 +163,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
 		Tile.Character = this;
 
-        transform.SetPos(transform.position, 1);        
+        Tile.UpdateFog ();
+
+        transform.SetPos(transform.position, "Character");        
 
     }
 
@@ -209,10 +211,17 @@ public abstract class SC_Character : NetworkBehaviour {
 
         path = TileManager.PathFinder(LastPos, target);
 
-        if(path == null)
-            FinishMovement(false);
-        else
-            StartCoroutine(Move());
+        if (path == null)
+            FinishMovement (false);
+        else {
+
+            Tile.Character = null;
+
+            Tile.UpdateFog ();
+
+            StartCoroutine (Move ());
+
+        }
 
     }    
 
@@ -270,11 +279,11 @@ public abstract class SC_Character : NetworkBehaviour {
 
         if(moved) {
 
-            transform.SetPos(target.transform.position);
+            transform.SetPos(target.transform.position);            
 
-            LastPos.Character = null;
+            target.Character = this;
 
-            target.Character = this;            
+            target.UpdateFog ();
 
         }        
 
@@ -382,12 +391,16 @@ public abstract class SC_Character : NetworkBehaviour {
 
         Tile.Character = null;
 
+        LastPos = Tile;
+
         transform.SetPos (newPos.transform.position);
 
         if (RealHero)
             SC_DrainingStele.UpdateHeroSlow (Hero);
 
         newPos.Character = this;
+
+        newPos.UpdateFog ();
 
     }
 
@@ -418,9 +431,11 @@ public abstract class SC_Character : NetworkBehaviour {
 
         TileManager.RemoveAllFilters ();
 
-        Demon?.RemoveAura ();
+        Demon?.RemoveAura ();        
 
         SetCharacterPos (LastPos);
+
+        LastPos.UpdateFog ();
 
         Demon?.AddAura ();
 
@@ -520,7 +535,9 @@ public abstract class SC_Character : NetworkBehaviour {
 
         Tile.Character = null;
 
-	}
+        Tile.UpdateFog ();
+
+    }
 
 	public SC_Weapon GetActiveWeapon() {
 

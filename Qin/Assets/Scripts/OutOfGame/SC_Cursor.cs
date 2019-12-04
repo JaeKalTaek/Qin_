@@ -40,7 +40,7 @@ public class SC_Cursor : NetworkBehaviour {
 
         newMousePos = oldMousePos;
 
-        transform.SetPos(transform.position, 2);
+        transform.SetPos(transform.position, "Cursor");
 
     }
 

@@ -85,6 +85,16 @@ public class SC_CastleTraps : MonoBehaviour {
     }
     #endregion
 
+    #region Oblivion
+    public void Oblivion () {
+
+        if (!SC_Player.localPlayer.Qin)
+            foreach (SC_Tile t in SC_Tile_Manager.Instance.regions[Region])
+                t.CreateFog (false);
+
+    }
+    #endregion
+
     #region Disillusion
     public void Disillusion () {
 

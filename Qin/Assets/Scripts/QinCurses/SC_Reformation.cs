@@ -33,8 +33,13 @@ namespace QinCurses {
 
             if (characters.Count > 0) {
 
-                foreach (SC_Character c in characters)
+                foreach (SC_Character c in characters) {
+
                     c.Tile.Character = null;
+
+                    c.Tile.UpdateFog ();
+
+                }
 
                 List<SC_Tile> orderedTiles = new List<SC_Tile> ();
 
@@ -49,6 +54,8 @@ namespace QinCurses {
                     characters[i].transform.SetPos (orderedTiles[i].transform.position);
 
                     orderedTiles[i].Character = characters[i];
+
+                    orderedTiles[i].UpdateFog ();
 
                 }
 

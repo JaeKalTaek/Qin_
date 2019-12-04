@@ -5,6 +5,7 @@ using static SC_EditorTile;
 using static SC_Global;
 using System.Reflection;
 using QinCurses;
+using System.Collections.Generic;
 
 public class SC_Game_Manager : NetworkBehaviour {
 
@@ -51,6 +52,8 @@ public class SC_Game_Manager : NetworkBehaviour {
     public bool? AdditionalTurn { get; set; }
 
     public static bool otherGM;
+
+    public List<string> elementLayers;
 
     #region Setup
     private void Awake () {

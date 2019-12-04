@@ -109,6 +109,8 @@ public class SC_Tile : NetworkBehaviour {
 
     public static Sprite[] filters;
 
+    public SC_Fog Fog { get; set; }
+
     void Awake () {
 
         DemonAuras = new List<DemonAura>();
@@ -292,6 +294,23 @@ public class SC_Tile : NetworkBehaviour {
             Soldier.ToggleDisplaySacrificeValue();
 
         UIManager.HideInfos(CanChangeFilters);
+
+    }
+
+    public void CreateFog (bool qin) {
+
+        Fog = Instantiate (Resources.Load<SC_Fog> ("Prefabs/P_Fog"));
+
+        Fog.transform.SetPos (transform.position, "Fog");
+
+        Fog.Setup (this, qin);
+
+    }
+
+    public void UpdateFog () {
+
+        foreach (SC_Tile t in SC_Tile_Manager.Instance.GetRange (transform.position, 1))
+            t.Fog?.UpdateFog ();
 
     }
 

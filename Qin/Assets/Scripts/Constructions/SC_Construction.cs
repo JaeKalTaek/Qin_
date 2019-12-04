@@ -76,7 +76,7 @@ public class SC_Construction : NetworkBehaviour {
 
         Tile.Cost = 1;
 
-        transform.SetPos(transform.position, 3);
+        transform.SetPos(transform.position, "Construction");
 
         // uiManager.TryRefreshInfos (Tile.gameObject, Tile.GetType ());
 

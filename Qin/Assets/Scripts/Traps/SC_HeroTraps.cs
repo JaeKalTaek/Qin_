@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static SC_Global;
-using static SC_Character;
 
 public class SC_HeroTraps : MonoBehaviour {
 
@@ -19,17 +18,6 @@ public class SC_HeroTraps : MonoBehaviour {
         Instance = this;
 
     }
-
-    /*void Update () {
-
-        if (activeCharacter)
-            print (activeCharacter.characterName + ", " + activeCharacter.PreparationCharge + " / " + activeCharacter.Preparation);
-
-        /*if (SC_Hero.heroes != null)
-            foreach (SC_Hero h in SC_Hero.heroes)
-                print (h.characterName + " is a " + h.clone + " on position : " + (h.Tile?.transform.position ?? new Vector3 (-1, -1, -1)) + ", and tile has a character : " + h.Tile.Character);
-                
-    }*/
 
     void Raze (SC_Tile tile) {
 
@@ -49,6 +37,20 @@ public class SC_HeroTraps : MonoBehaviour {
         foreach (SC_Tile t in SC_Tile_Manager.Instance.tiles)
             if (t.transform.position.x == hero.Tile.transform.position.x || t.transform.position.y == hero.Tile.transform.position.y)
                 Raze (t);
+
+    }
+    #endregion
+
+    #region Darkest Night
+    [Header ("Darkest Night")]
+    [Tooltip ("Darkest Night's radius")]
+    public int darkestNightRadius;
+
+    public void DarkestNight () {
+
+        if (SC_Player.localPlayer.Qin)
+            foreach (SC_Tile t in SC_Tile_Manager.Instance.GetRange (hero.transform.position, darkestNightRadius))
+                t.CreateFog (true);
 
     }
     #endregion
@@ -206,6 +208,8 @@ public class SC_HeroTraps : MonoBehaviour {
         hero.Dead = false;
 
         hero.Tile.Character = hero;
+
+        hero.Tile.UpdateFog ();
 
         hero.gameObject.SetActive (true);
 

@@ -223,7 +223,7 @@ public class SC_Hero : SC_Character {
 
                         Tile.Grave = Instantiate (Resources.Load<GameObject> ("Prefabs/P_Grave"));
 
-                        Tile.Grave.transform.SetPos (Tile.transform.position, 3);
+                        Tile.Grave.transform.SetPos (Tile.transform.position, "Construction");
 
                         List<SC_Hero> clones = new List<SC_Hero> (heroes);
 

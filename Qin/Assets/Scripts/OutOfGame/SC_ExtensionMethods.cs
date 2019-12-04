@@ -4,9 +4,9 @@ using static SC_Global;
 
 public static class SC_ExtensionMethods {
 
-   public static void SetPos(this Transform trans, Vector3 v3, float? f = null) {
+   public static void SetPos(this Transform trans, Vector3 v3, string layer = "") {
 
-        trans.position = new Vector3(v3.x, v3.y, f ?? trans.position.z);
+        trans.position = new Vector3(v3.x, v3.y, layer == "" ? trans.position.z : SC_Game_Manager.Instance.elementLayers.IndexOf (layer));
         trans.GetComponentInChildren<SpriteRenderer>().sortingOrder = -(v3.x.I() + v3.y.I());
 
     }

@@ -60,6 +60,8 @@ public class SC_Hero : SC_Character {
 
     public override bool IsInvulnerable => HumansFateDuration > 0;
 
+    public bool Isolated { get; set; }
+
     public override void OnStartClient () {
 
         base.OnStartClient();

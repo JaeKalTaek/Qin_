@@ -4,6 +4,7 @@ using System.Collections;
 using static SC_EditorTile;
 using static SC_Global;
 using System.Reflection;
+using QinCurses;
 
 public class SC_Game_Manager : NetworkBehaviour {
 
@@ -269,6 +270,9 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                     if (character.Tile.Region == ScorchedRegion && !character.Qin)
                         character.Hit (SC_CastleTraps.Instance.scorchedDamage);
+
+                    if (character.Hero.Isolated)
+                        ((SC_Isolation) SC_Qin.Curse).ApplyDamage (character.Hero);
 
                 } else {                  
                     

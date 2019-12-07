@@ -244,15 +244,12 @@ public class SC_Tile : NetworkBehaviour {
                         else if (SC_Demon.demons[Region].Alive == -1)
                             UIManager.DisplaySacrificeCastlePanel (Castle);
                     } else
-                        UIManager.ActivateMenu (UIManager.playerActionsPanel);
+                        UIManager.ClickWhileInactive (Castle);
 
                 }
 
-            } else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy) {
-
-                UIManager.ActivateMenu (UIManager.playerActionsPanel);
-
-            }
+            } else if (CurrentDisplay == TDisplay.None && !SC_Player.localPlayer.Busy)
+                UIManager.ClickWhileInactive (Castle);
 
         }
 

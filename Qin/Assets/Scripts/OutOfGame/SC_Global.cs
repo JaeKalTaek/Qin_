@@ -122,6 +122,8 @@ public class SC_Global {
 
         public Transform stats, weapons, relationshipsPanel;
 
+        public TrapPanel heroTrapPanel;
+
     }
 
     [Serializable]
@@ -182,13 +184,13 @@ public class SC_Global {
     }
 
     [Serializable]
-    public class CreateDemonPanel {
+    public class CastlePanel {
 
         public GameObject panel;
 
-        public Text name, cost;
+        public Text demonName, demonCost;
 
-        public Button create;
+        public Button createDemonButton;
 
     }
 
@@ -200,6 +202,15 @@ public class SC_Global {
         public Text type, buff;
 
         public Button yes, close;
+
+    }
+
+    [Serializable]
+    public struct TrapPanel {
+
+        public GameObject panel;
+
+        public EventTrigger trap;
 
     }
 

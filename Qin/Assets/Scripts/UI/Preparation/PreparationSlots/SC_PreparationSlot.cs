@@ -73,7 +73,7 @@ public abstract class SC_PreparationSlot : MonoBehaviour, IPointerClickHandler, 
     void LateUpdate () {
 
         if (hovering)
-            SC_UI_Manager.Instance.ShowTooltip (!IsDefault, Renderer.sprite.name);
+            SC_UI_Manager.Instance.ShowTooltip (IsDefault ? "" : Renderer.sprite.name);
 
     }
 
@@ -81,7 +81,7 @@ public abstract class SC_PreparationSlot : MonoBehaviour, IPointerClickHandler, 
 
         hovering = false;
 
-        SC_UI_Manager.Instance.ShowTooltip (false);
+        SC_UI_Manager.Instance.ShowTooltip ("");
 
     }
 

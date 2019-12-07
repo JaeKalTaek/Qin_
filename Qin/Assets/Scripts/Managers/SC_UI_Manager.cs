@@ -61,7 +61,6 @@ public class SC_UI_Manager : MonoBehaviour {
     public HeroTooltip heroTooltip;
     public SC_UI_Stamina[] staminaUsage;
     public WarningStaminaDeathPanel warningStaminaDeathPanel;
-    // public GameObject usePower;
 
     [Header("Qin")]
     public Text qinEnergy;
@@ -72,8 +71,9 @@ public class SC_UI_Manager : MonoBehaviour {
     public Transform qinPower;
     public GameObject sacrifice, endSacrifice;
     public GameObject pitPanel;
-    public CreateDemonPanel createDemonPanel;
+    public CastlePanel castlePanel;
     public SacrificeCastlePanel sacrificeCastlePanel;
+    public TrapPanel castleTrapPanel;
     public Button curseButton;
 
     [Header("Transforms")]
@@ -155,7 +155,7 @@ public class SC_UI_Manager : MonoBehaviour {
         Vector3 size = new Vector3(XSize, YSize, 1) * GameManager.CurrentMapPrefab.TileSize;
         gridRenderer.size = new Vector2(size.x, size.y);
         grid = gridRenderer.gameObject;
-        grid.transform.position = Vector3.Scale((size - Vector3.one * GameManager.CurrentMapPrefab.TileSize) / 2f, new Vector3(1, 1, 0));        
+        grid.transform.position = Vector3.Scale((size - Vector3.one * GameManager.CurrentMapPrefab.TileSize) / 2f, new Vector3(1, 1, 0));
 
     }
     #endregion
@@ -539,6 +539,7 @@ public class SC_UI_Manager : MonoBehaviour {
     #region Next Turn 
     public void NextTurn() {
 
+        HideCastleTrapPanel ();
         playerActionsPanel.SetActive(false);
         optionsPanel.SetActive(false);
         soundPanel.SetActive(false);
@@ -549,9 +550,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         SwapTurnIndicators(false);
 
-        turnIndicator.text = (GameManager.QinTurn ? "Qin" : "Coalition") + "'s Turn";
-
-        // usePower.SetActive (!gameManager.Qin && !SC_Player.localPlayer.Qin);        
+        turnIndicator.text = (GameManager.QinTurn ? "Qin" : "Coalition") + "'s Turn";       
 
         nextTurnUI.text.text = turnIndicator.text;
 
@@ -631,11 +630,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
             heroTooltip.movementCost.text = character.Hero.MovementCost(1).ToString();
 
-            heroTooltip.movementPoints.text = character.Hero.MovementPoints + "/" + character.Movement;
+            heroTooltip.movementPoints.text = character.Hero.MovementPoints + "/" + character.Movement;            
 
         }
 
-        heroTooltip.panel.SetActive(character.Hero);
+        heroTooltip.panel.SetActive(character.Hero);        
 
         int prep = character.GetCurrentPropertyValue ("Preparation");
 
@@ -661,7 +660,9 @@ public class SC_UI_Manager : MonoBehaviour {
     }
 
     #region Characters Details
-    public void DisplayCharacterDetails(SC_Character c) {        
+    public void DisplayCharacterDetails(SC_Character c) {
+
+        DisplayCharacterDetails (true);
 
         ShowCharacterInfos (c);
 
@@ -689,6 +690,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
         }
 
+        characterDetails.weapons.GetComponent<SC_Scroll_Menu> ().ReCalculate ();
+
         if (c.Hero) {
 
             for (int i = 0; i < c.Hero.RelationshipKeys.Count; i++) {
@@ -711,11 +714,20 @@ public class SC_UI_Manager : MonoBehaviour {
 
             characterDetails.relationshipsPanel.GetChild(6).GetComponent<Image>().sprite = c.Sprite.sprite;
 
+            characterDetails.heroTrapPanel.trap.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Sprites/Traps/Heroes/" + c.Hero.deck.trap);
+
+            if (characterDetails.heroTrapPanel.trap.triggers.Count > 1)
+                characterDetails.heroTrapPanel.trap.triggers.RemoveAt (1);
+
+            characterDetails.heroTrapPanel.trap.triggers.Add (CreateEventTriggerEntry (EventTriggerType.PointerEnter, (eventData) => { ShowTooltip (c.Hero.deck.trap); }));
+
         }
 
         characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);
 
-        DisplayCharacterDetails (true);
+        characterDetails.heroTrapPanel.panel.SetActive (c.Hero);
+
+        characterDetails.soldierPanel.SetActive (c.Soldier);
 
     }
 
@@ -733,8 +745,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
         SC_Cursor.SetLock(b);
 
-        if(b)
+        if (b)
             previousBackAction = backAction;
+        else
+            ShowTooltip ();
 
         backAction = b ? () => DisplayCharacterDetails(false) : previousBackAction;
 
@@ -972,15 +986,6 @@ public class SC_UI_Manager : MonoBehaviour {
     #endregion
 
     #region Heroes
-    /*public void ShowHeroPower(bool show, string heroName) {
-
-		usePower.SetActive (!show);
-
-		if (show)
-			usePower.GetComponentInChildren<Text> ().name = heroName;
-
-	}*/
-
     #region Weapons
     public void ChooseWeapon () {
 
@@ -1043,8 +1048,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void DisplayStaminaCost (int cost) {
 
-        //if (CurrentChara == activeCharacter.gameObject)
-            staminaUsage[0].SetStaminaCost(cost);
+        staminaUsage[0].SetStaminaCost(cost);
 
         staminaUsage[1].SetStaminaCost(cost);
 
@@ -1108,6 +1112,8 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void EndQinAction() {
 
+        HideCastleTrapPanel ();
+
         TileManager.RemoveAllFilters();
 
         StartCoroutine(ClickSafety(() => { SC_Cursor.SetLock(false); }));
@@ -1120,7 +1126,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         pitPanel.SetActive(false);
 
-        createDemonPanel.panel.SetActive(false);
+        castlePanel.panel.SetActive(false);
 
         sacrificeCastlePanel.panel.SetActive(false);
 
@@ -1141,19 +1147,6 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    // Called by UI
-    /*public void DisplayResurrection () {
-
-        if (!SC_Player.localPlayer.Busy && gameManager.LastHeroDead && (SC_Qin.Energy > SC_Qin.Qin.powerCost)) {
-
-            StartQinAction("qinPower");
-
-            TileManager.DisplayResurrection();
-
-        }
-
-    }*/
-
     void DisplayActionPanel() {
 
         SC_Cursor.SetLock(true);
@@ -1172,15 +1165,17 @@ public class SC_UI_Manager : MonoBehaviour {
 
         DisplayActionPanel();
 
-        createDemonPanel.name.text = castle.CastleType + " Demon";
+        castlePanel.demonName.text = castle.CastleType + " Demon";
 
-        createDemonPanel.create.image.sprite = Resources.Load<Sprite>("Sprites/Characters/Demons/" + castle.CastleType);
+        castlePanel.createDemonButton.image.sprite = Resources.Load<Sprite>("Sprites/Characters/Demons/" + castle.CastleType);
 
-        createDemonPanel.cost.text = "Cost : " + castle.DemonCost + " vital energy";        
+        castlePanel.demonCost.text = "Cost: " + castle.DemonCost + " energy";        
 
-        createDemonPanel.panel.SetActive(true);
+        castlePanel.panel.SetActive(true);
 
-        createDemonPanel.create.Select();
+        castlePanel.createDemonButton.Select();
+
+        DisplayCastleTrapPanel (castle);
 
     }
 
@@ -1206,11 +1201,36 @@ public class SC_UI_Manager : MonoBehaviour {
 
         sacrificeCastlePanel.panel.SetActive(true);
 
+        DisplayCastleTrapPanel (castle);
+
         (can ? sacrificeCastlePanel.canPanel : sacrificeCastlePanel.cantPanel).SetActive(true);
 
         (can ? sacrificeCastlePanel.cantPanel : sacrificeCastlePanel.canPanel).SetActive(false);
 
         (can ? sacrificeCastlePanel.yes : sacrificeCastlePanel.close).Select();
+
+    }
+
+    public void DisplayCastleTrapPanel (SC_Castle c) {
+
+        castleTrapPanel.panel.GetComponent<RectTransform> ().anchoredPosition = Vector2.right * ((sacrificeCastlePanel.panel.activeSelf || castlePanel.panel.activeSelf) ? 125 : 0);
+
+        castleTrapPanel.trap.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Sprites/Traps/Qin/" + c.Trap);
+
+        if (castleTrapPanel.trap.triggers.Count > 1)
+            castleTrapPanel.trap.triggers.RemoveAt (1);
+
+        castleTrapPanel.trap.triggers.Add (CreateEventTriggerEntry (EventTriggerType.PointerEnter, (eventData) => { ShowTooltip (c.Trap); }));
+
+        castleTrapPanel.panel.SetActive (true);
+
+    }
+
+    public void HideCastleTrapPanel () {        
+
+        castleTrapPanel.panel.SetActive (false);
+
+        ShowTooltip ();
 
     }
 
@@ -1412,6 +1432,27 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
+    public void ClickWhileInactive (SC_Castle c) {
+
+        if (c) {
+
+            SC_Cursor.SetLock (true);
+
+            backAction = () => {
+
+                SC_Cursor.SetLock (false);
+
+                HideCastleTrapPanel ();
+
+            };
+
+            DisplayCastleTrapPanel (c);
+
+        } else
+            ActivateMenu (playerActionsPanel);
+
+    }
+
     public void ActivateMenu (GameObject menu) {
 
         SC_Cursor.SetLock(true);
@@ -1590,9 +1631,9 @@ public class SC_UI_Manager : MonoBehaviour {
 
     }
 
-    public void ShowTooltip (bool show, string id = "") {
+    public void ShowTooltip (string id = "") {
 
-        if (show) {
+        if (id != "") {
 
             string text = "";
 
@@ -1603,7 +1644,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         }
 
-        tooltip.gameObject.SetActive (show);
+        tooltip.gameObject.SetActive (id != "");
 
         SetTooltipPos ();
 

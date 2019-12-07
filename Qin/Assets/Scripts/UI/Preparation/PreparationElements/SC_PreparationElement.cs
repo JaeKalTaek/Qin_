@@ -202,13 +202,13 @@ public abstract class SC_PreparationElement : MonoBehaviour, IBeginDragHandler, 
 
     void IPointerEnterHandler.OnPointerEnter (PointerEventData eventData) {
 
-        SC_UI_Manager.Instance.ShowTooltip (true, Sprite.name);
+        SC_UI_Manager.Instance.ShowTooltip (Sprite.name);
 
     }
 
     void IPointerExitHandler.OnPointerExit (PointerEventData eventData) {
 
-        SC_UI_Manager.Instance.ShowTooltip (false);
+        SC_UI_Manager.Instance.ShowTooltip ("");
 
     }
 

@@ -317,8 +317,9 @@ public class SC_Fight_Manager : MonoBehaviour {
 
         float boost = 0;
 
-        foreach (SC_Hero hero in TileManager.HeroesInRange(target))       
-            boost += CharactersVariables.relationValues.GetValue("boost", target.Relationships[hero.characterName]);
+        foreach (SC_Hero hero in TileManager.HeroesInRange (target))
+            if (hero.characterName != target.characterName)
+                boost += CharactersVariables.relationValues.GetValue("boost", target.Relationships[hero.characterName]);
 
         return boost / 100f;
 

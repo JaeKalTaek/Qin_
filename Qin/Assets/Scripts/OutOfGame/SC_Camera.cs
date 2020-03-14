@@ -35,7 +35,7 @@ public class SC_Camera : MonoBehaviour {
     [Tooltip ("If the camera centers on the tile to focus or if it just moves enough for it to be included in the in-focus zone")]
     public bool centeredFocus;
 
-    Vector3 CursorPos { get { return (SC_Game_Manager.Instance.prep ? TileUnderMouse.transform : SC_Cursor.Instance.transform).position; } }
+    Vector3 CursorPos { get { return (SC_Game_Manager.Instance.PrepPhase ? TileUnderMouse.transform : SC_Cursor.Instance.transform).position; } }
 
     Vector3 targetPos;
 
@@ -92,7 +92,7 @@ public class SC_Camera : MonoBehaviour {
 
         transform.position = targetPos;
 
-        Vector3 returnValue = cam.WorldToViewportPoint(SC_Game_Manager.Instance.prep ? WorldMousePos : CursorPos + new Vector3(f, f, 0));
+        Vector3 returnValue = cam.WorldToViewportPoint(SC_Game_Manager.Instance.PrepPhase ? WorldMousePos : CursorPos + new Vector3(f, f, 0));
 
         transform.position = oldPos;
 
@@ -104,7 +104,7 @@ public class SC_Camera : MonoBehaviour {
 
         float xMax = (XSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize * cam.aspect;
         float prepUIOffset = cam.ViewportToWorldPoint (Vector3.right * (SC_UI_Manager.Instance.heroPreparationUI.decks.GetComponent<RectTransform> ().sizeDelta.x / UISize.x)).x - cam.ViewportToWorldPoint (Vector3.zero).x;
-        float xMin = (-boardMargins[zoomIndex] - .5f) * TileSize + cam.orthographicSize * cam.aspect - (SC_Game_Manager.Instance.prep ? prepUIOffset : 0);
+        float xMin = (-boardMargins[zoomIndex] - .5f) * TileSize + cam.orthographicSize * cam.aspect - (SC_Game_Manager.Instance.PrepPhase ? prepUIOffset : 0);
 
         float x = (CursorPos.x == 0) ? xMin : (CursorPos.x.I() == XSize - 1) ? xMax : Mathf.Clamp(p.x, xMin, xMax);
 

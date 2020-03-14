@@ -19,10 +19,7 @@ public class SC_Castle : SC_Bastion {
 
     protected override void Start () {
 
-        if (!SC_Game_Manager.Instance.prep)
-            Setup ();
-        else
-            CastleType = "";
+        CastleType = "";
 
         base.Start();
 

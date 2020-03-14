@@ -103,7 +103,7 @@ public class SC_Tile : NetworkBehaviour {
 
     SpriteRenderer filter;
 
-    public static bool CanChangeFilters { get { return !GameManager.prep && (!activeCharacter || (activeCharacter.Qin != SC_Player.localPlayer.Qin)) && !SC_Player.localPlayer.Busy; } }
+    public static bool CanChangeFilters { get { return !GameManager.PrepPhase && (!activeCharacter || (activeCharacter.Qin != SC_Player.localPlayer.Qin)) && !SC_Player.localPlayer.Busy; } }
 
     public List<DemonAura> DemonAuras { get; set; }
 

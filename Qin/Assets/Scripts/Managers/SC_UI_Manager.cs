@@ -106,7 +106,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public static Vector2 Size { get { return Instance.GetComponent<RectTransform>().sizeDelta; } }
 
-    public static bool CanInteract { get { return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !GameManager.prep; } }
+    public static bool CanInteract { get { return (!EventSystem.current.IsPointerOverGameObject() || !Cursor.visible) && !GameManager.PrepPhase; } }
 
     [Header("Other variables")]
     public float clickSecurityDuration;
@@ -139,16 +139,11 @@ public class SC_UI_Manager : MonoBehaviour {
 
         fightManager = SC_Fight_Manager.Instance;
 
-        if (GameManager.prep) {
+        qinPreprationUI.panel.SetActive(qin);
 
-            qinPreprationUI.panel.SetActive(qin);
+        heroPreparationUI.panel.SetActive(!qin);
 
-            heroPreparationUI.panel.SetActive(!qin);
-
-            preparationPanel.SetActive(true);            
-
-        } else
-            gamePanel.SetActive(true);
+        preparationPanel.SetActive(true);            
 
         // Setup Grid
         SpriteRenderer gridRenderer = Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_Grid").GetComponent<SpriteRenderer>());

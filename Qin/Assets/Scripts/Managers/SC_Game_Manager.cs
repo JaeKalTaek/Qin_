@@ -9,11 +9,7 @@ using System.Collections.Generic;
 
 public class SC_Game_Manager : NetworkBehaviour {
 
-    public SC_MapEditorScript playMapPrefab;
-
-    public SC_MapEditorScript prepMapPrefab;
-
-    public bool prep;
+    public SC_MapEditorScript mapPrefab;
 
     public SC_MapEditorScript CurrentMapPrefab { get; set; }
 
@@ -55,6 +51,8 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public List<string> elementLayers;
 
+    public bool PrepPhase { get { return uiManager.preparationPanel.activeSelf; } }
+
     #region Setup
     private void Awake () {
 
@@ -74,9 +72,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
         SC_Tile.filters = Resources.LoadAll<Sprite>("Sprites/Tiles/Filters");
 
-        CurrentMapPrefab = prep ? prepMapPrefab : playMapPrefab;
-
-        TileSize = CurrentMapPrefab.TileSize;
+        TileSize = mapPrefab.TileSize;
 
         CommonCharactersVariables = Resources.Load<SC_Common_Characters_Variables>("Prefabs/Characters/P_Common_Characters_Variables");
 
@@ -174,14 +170,11 @@ public class SC_Game_Manager : NetworkBehaviour {
 
                 GameObject go = Instantiate(constructionPrefab, eTile.transform.position, Quaternion.identity);
 
-                if ((eTile.construction == ConstructionType.Castle) && !prep)
-                    go.GetComponent<SC_Castle>().CastleType = eTile.castleType.ToString();
-
                 NetworkServer.Spawn (go);                
 
 			}
 
-            if ((eTile.soldier != SoldierType.None) || eTile.Qin || (eTile.Hero != HeroType.None && !prep)) {
+            if ((eTile.soldier != SoldierType.None) || eTile.Qin) {
 
                 string basePath = "Prefabs/Characters/" + (eTile.soldier != SoldierType.None ? "Soldiers/P_BaseSoldier" : (eTile.Qin ? "P_Qin" : "Heroes/P_BaseHero"));
 
@@ -215,8 +208,6 @@ public class SC_Game_Manager : NetworkBehaviour {
         yield return new WaitForSeconds (.5f);
 
         uiManager.loadingPanel.SetActive(false);
-
-        prep = false;
 
         SC_Cursor.SetLock (false);
 

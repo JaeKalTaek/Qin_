@@ -11,8 +11,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public SC_MapEditorScript mapPrefab;
 
-    public SC_MapEditorScript CurrentMapPrefab { get; set; }
-
     public SC_Common_Characters_Variables CommonCharactersVariables { get; set; }
 
     public SC_CommonQinVariables CommonQinVariables { get; set; }
@@ -102,7 +100,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     void GenerateMap() {
 
-        foreach (Transform child in CurrentMapPrefab.transform) {
+        foreach (Transform child in mapPrefab.transform) {
 
             SC_EditorTile eTile = child.GetComponent<SC_EditorTile>();
 
@@ -160,7 +158,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 	void GenerateElements() {
 
-		foreach (Transform child in CurrentMapPrefab.transform) {
+		foreach (Transform child in mapPrefab.transform) {
 
 			SC_EditorTile eTile = child.GetComponent<SC_EditorTile> ();
 

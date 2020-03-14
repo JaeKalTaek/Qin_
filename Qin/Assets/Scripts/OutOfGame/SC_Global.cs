@@ -16,9 +16,9 @@ public class SC_Global {
 
     public static SC_Tile TileUnderMouse { get { return SC_Tile_Manager.Instance.GetTileAt (WorldMousePos, true); } }
 
-    public static int XSize { get { return SC_Game_Manager.Instance.CurrentMapPrefab.SizeMapX; } }
+    public static int XSize { get { return SC_Game_Manager.Instance.mapPrefab.SizeMapX; } }
 
-    public static int YSize { get { return SC_Game_Manager.Instance.CurrentMapPrefab.SizeMapY; } }
+    public static int YSize { get { return SC_Game_Manager.Instance.mapPrefab.SizeMapY; } }
 
     public static int Size { get { return XSize + YSize; } }
 

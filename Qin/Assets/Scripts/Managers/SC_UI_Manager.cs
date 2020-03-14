@@ -147,10 +147,10 @@ public class SC_UI_Manager : MonoBehaviour {
 
         // Setup Grid
         SpriteRenderer gridRenderer = Instantiate(Resources.Load<GameObject>("Prefabs/UI/P_Grid").GetComponent<SpriteRenderer>());
-        Vector3 size = new Vector3(XSize, YSize, 1) * GameManager.CurrentMapPrefab.TileSize;
+        Vector3 size = new Vector3(XSize, YSize, 1) * GameManager.mapPrefab.TileSize;
         gridRenderer.size = new Vector2(size.x, size.y);
         grid = gridRenderer.gameObject;
-        grid.transform.position = Vector3.Scale((size - Vector3.one * GameManager.CurrentMapPrefab.TileSize) / 2f, new Vector3(1, 1, 0));
+        grid.transform.position = Vector3.Scale((size - Vector3.one * GameManager.mapPrefab.TileSize) / 2f, new Vector3(1, 1, 0));
 
     }
     #endregion

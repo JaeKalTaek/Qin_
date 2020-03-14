@@ -128,6 +128,13 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     }
 
+    public void SetupTiles () {
+
+        foreach (SC_Tile t in tiles)
+            t.SetupTile ();
+
+    }
+
     #region Utility Functions
     public static List<T> GetTilesAtDistance<T>(Array array, T center, int distance) where T : MonoBehaviour {
 

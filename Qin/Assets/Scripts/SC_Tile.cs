@@ -111,29 +111,6 @@ public class SC_Tile : NetworkBehaviour {
 
     public SC_Fog Fog { get; set; }
 
-    void Awake () {
-
-        DemonAuras = new List<DemonAura>();
-
-    }
-
-    public override void OnStartClient () {
-
-        base.OnStartClient();
-
-        CurrentDisplay = TDisplay.None;
-
-        SetupTile();
-
-        if (infos.region != -1) {
-
-            for (int i = 0; i < transform.GetChild(2).childCount; i++)
-                transform.GetChild(2).GetChild(i).gameObject.SetActive(infos.borders[i] && (i % 2 == 0));
-
-        }        
-
-    }
-
     public void SetupTile() {
 
         SC_Tile t = Resources.Load<SC_Tile>("Prefabs/Tiles/P_" + infos.type);
@@ -143,13 +120,30 @@ public class SC_Tile : NetworkBehaviour {
 
         combatModifers = t.combatModifers;
 
-        string s = infos.type == "Changing" ? "Changing" : infos.type + "/" + (infos.type == "River" ? (RiverSprite)infos.riverSprite + "" : UnityEngine.Random.Range (0, Resources.LoadAll<Sprite> ("Sprites/Tiles/" + infos.type).Length) + "");
+        string s = "Sprites/Tiles/" + infos.type;
 
-        transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Tiles/" + s);
+        if (infos.type == "River")
+            s += "/" + ((RiverSprite) infos.riverSprite).ToString ();
+        else if (infos.type != "Changing") {
+
+            s += "/" + ((infos.type == "Plain" || infos.type == "Snow") ? "Base/" : "");
+
+            s += UnityEngine.Random.Range (0, Resources.LoadAll<Sprite> (s).Length) + "";
+
+        }
+
+        transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(s);
 
         transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = (infos.type == "Mountain") ? -(transform.position.x.I() + transform.position.y.I()) : -Size;
 
         transform.GetChild(0).transform.localPosition = new Vector3(t.spriteOffset.x, t.spriteOffset.y);
+
+        if (infos.region != -1) {
+
+            for (int i = 0; i < transform.GetChild (2).childCount; i++)
+                transform.GetChild (2).GetChild (i).gameObject.SetActive (infos.borders[i] && (i % 2 == 0));
+
+        }
 
         SC_UI_Manager.Instance?.TryRefreshInfos (gameObject, GetType ());
 
@@ -157,7 +151,11 @@ public class SC_Tile : NetworkBehaviour {
 
     void Start() {
 
-        if (!isServer && transform.position.x.I() == (GameManager.CurrentMapPrefab.SizeMapX - 1) && transform.position.y.I() == (GameManager.CurrentMapPrefab.SizeMapY - 1))
+        DemonAuras = new List<DemonAura> ();
+
+        CurrentDisplay = TDisplay.None;
+
+        if (!isServer && transform.position.x.I() == (GameManager.mapPrefab.SizeMapX - 1) && transform.position.y.I() == (GameManager.mapPrefab.SizeMapY - 1))
             GameManager?.StartCoroutine("FinishConnecting");
 
         filter = transform.GetChild(1).GetComponent<SpriteRenderer>();

@@ -88,12 +88,14 @@ public class SC_Player : NetworkBehaviour {
     [ClientRpc]
     void RpcFinishConnecting() {
 
+        TileManager.SetupTiles ();
+
         UIManager.SetupUI(localPlayer.Qin);
 
         SC_Cursor.Instance = Instantiate(Resources.Load<SC_Cursor>("Prefabs/P_Cursor"));
 
         if (localPlayer.Qin)
-            SC_Cursor.Instance.transform.position = new Vector3(GameManager.CurrentMapPrefab.SizeMapX - 1, GameManager.CurrentMapPrefab.SizeMapY - 1, 0) * SC_Game_Manager.TileSize;
+            SC_Cursor.Instance.transform.position = new Vector3(GameManager.mapPrefab.SizeMapX - 1, GameManager.mapPrefab.SizeMapY - 1, 0) * SC_Game_Manager.TileSize;
         else
             SC_Cursor.Instance.transform.position = Vector3.zero;
 

@@ -68,7 +68,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
             if(t.Region != -1)
                 regions[t.Region].Add(t);            
 
-            if (t.infos.heroDeploy /*&& qinIsServerForStart != isServer*/) {
+            if (t.infos.heroDeploy) {
 
                 t.ChangeDisplay (TDisplay.Deploy);
 
@@ -339,6 +339,48 @@ public class SC_Tile_Manager : NetworkBehaviour {
         }
 
     }
+
+    public delegate bool IsTileNotable (SC_Tile t);
+
+    public string GetNotableNeighborsName (SC_Tile center, IsTileNotable test) {
+
+        bool left = false;
+        bool right = false;
+        bool top = false;
+        int count = 0;
+
+        foreach (SC_Tile tile in GetTilesAtDistance (tiles, center, 1)) {
+
+            if (test (tile)) {
+
+                if (tile.transform.position.x < center.transform.position.x)
+                    left = true;
+                else if (tile.transform.position.x > center.transform.position.x)
+                    right = true;
+                else if (tile.transform.position.y > center.transform.position.y)
+                    top = true;
+
+                count++;
+
+            }
+
+        }
+
+        string rotation = "";
+
+        if (count == 1)
+            rotation = right ? "Right" : left ? "Left" : top ? "Top" : "Bottom";
+        else if (count == 2)
+            rotation = right ? (left ? "RightLeft" : top ? "RightTop" : "RightBottom") : left ? (top ? "LeftTop" : "LeftBottom") : "TopBottom";
+        else if (count == 3)
+            rotation = !right ? "Left" : (!left ? "Right" : (!top ? "Bottom" : "Top"));
+
+        if (!rotation.Equals (""))
+            rotation = "_" + rotation;
+
+        return count.ToString () + rotation;
+
+    }
     #endregion
 
     #region Attack
@@ -575,43 +617,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     public void UpdateWallGraph (SC_Construction construction) {
 
-        SC_Tile under = construction.Tile;
+        string n = GetNotableNeighborsName (construction.Tile, (SC_Tile t) => { return t.GreatWall; });
 
-        bool left = false;
-        bool right = false;
-        bool top = false;
-        int count = 0;
-
-        foreach (SC_Tile tile in GetTilesAtDistance(tiles, under, 1)) {
-
-            if (tile.GreatWall) {
-
-                if (tile.transform.position.x < under.transform.position.x)
-                    left = true;
-                else if (tile.transform.position.x > under.transform.position.x)
-                    right = true;
-                else if (tile.transform.position.y > under.transform.position.y)
-                    top = true;
-
-                count++;
-
-            }
-
-        }
-
-        string rotation = "";
-
-        if (count == 1)
-            rotation = right ? "Right" : left ? "Left" : top ? "Top" : "Bottom";
-        else if (count == 2)
-            rotation = right ? (left ? "RightLeft" : top ? "RightTop" : "RightBottom") : left ? (top ? "LeftTop" : "LeftBottom") : "TopBottom";
-        else if (count == 3)
-            rotation = !right ? "Left" : (!left ? "Right" : (!top ? "Bottom" : "Top"));
-
-        if (!rotation.Equals(""))
-            rotation = "_" + rotation;
-
-        construction.GetComponentInChildren<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/" + (construction as SC_Castle ? "Castle" : (construction as SC_Wall ? "Wall" : "Bastion")) + "/" + count.ToString() + rotation);
+        construction.GetComponentInChildren<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Constructions/" + (construction as SC_Castle ? "Castle" : (construction as SC_Wall ? "Wall" : "Bastion")) + "/" + n);
 
     }
     #endregion
@@ -623,14 +631,6 @@ public class SC_Tile_Manager : NetworkBehaviour {
             soldier.Tile.ChangeDisplay(TDisplay.Sacrifice);
 
     }
-
-    /*public void DisplayResurrection () {
-
-        foreach (SC_Tile tile in tiles)
-            if (tile.Empty)
-                tile.ChangeDisplay(TDisplay.Resurrection);
-
-    }*/
     #endregion
 
 }

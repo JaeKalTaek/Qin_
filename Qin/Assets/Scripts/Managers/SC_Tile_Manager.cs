@@ -569,13 +569,11 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         foreach (SC_Tile tile in GetTilesAtDistance(tiles, center, 1))
             if (tile.GreatWall)
-                UpdateWallGraph(tile.Construction.gameObject);
+                UpdateWallGraph(tile.Construction);
 
     }
 
-    public void UpdateWallGraph (GameObject go) {
-
-        SC_Construction construction = go.GetComponent<SC_Construction>();
+    public void UpdateWallGraph (SC_Construction construction) {
 
         SC_Tile under = construction.Tile;
 

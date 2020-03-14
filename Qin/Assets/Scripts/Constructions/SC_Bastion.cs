@@ -4,7 +4,7 @@
 
         base.Start();
 
-        tileManager.UpdateWallGraph(gameObject);
+        tileManager.UpdateWallGraph(this);
 
         tileManager.UpdateNeighborWallGraph(Tile);
 

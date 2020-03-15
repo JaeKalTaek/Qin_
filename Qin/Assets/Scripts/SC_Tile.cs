@@ -118,7 +118,7 @@ public class SC_Tile : NetworkBehaviour {
 
     public SC_Fog Fog { get; set; }
 
-    public void SetupTile() {
+    public void SetupTile (bool changed = true) {
 
         SC_Tile t = Resources.Load<SC_Tile>("Prefabs/Tiles/P_" + infos.type);
 
@@ -127,20 +127,38 @@ public class SC_Tile : NetworkBehaviour {
 
         combatModifers = t.combatModifers;
 
-        string s = "Sprites/Tiles/" + infos.type;
+        if (changed) {
 
-        if (infos.type == "River")
-            s += "/" + ((RiverSprite) infos.riverSprite).ToString ();
-        else if (infos.type != "Changing") {
+            string s = "Sprites/Tiles/" + infos.type;
 
-            s += "/" + ((Plain || Snow) ? "Base/" : "");
+            if (infos.type == "River")
+                s += "/" + ((RiverSprite) infos.riverSprite).ToString ();
+            else if (infos.type != "Changing") {
 
-            s += UnityEngine.Random.Range (0, Resources.LoadAll<Sprite> (s).Length) + "";
+                s += "/" + ((Plain || Snow) ? "Base/" : "");
+
+                s += UnityEngine.Random.Range (0, Resources.LoadAll<Sprite> (s).Length) + "";
+
+            }
+
+            transform.GetChild (0).GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> (s);
+
+            transform.GetChild (0).GetComponent<SpriteRenderer> ().sortingOrder = (infos.type == "Mountain") ? -(transform.position.x.I () + transform.position.y.I ()) : -Size;
+
+            transform.GetChild (0).transform.localPosition = new Vector3 (t.spriteOffset.x, t.spriteOffset.y);
+
+            if (infos.region != -1) {
+
+                for (int i = 0; i < transform.GetChild (2).childCount; i++)
+                    transform.GetChild (2).GetChild (i).gameObject.SetActive (infos.borders[i] && (i % 2 == 0));
+
+            }
+
+            SC_UI_Manager.Instance?.TryRefreshInfos (gameObject, GetType ());
 
         }
 
-        transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(s);        
-
+        #region Transitions
         foreach (Transform child in transform)
             if (child.name == "Transition")
                 Destroy (child.gameObject);
@@ -161,19 +179,7 @@ public class SC_Tile : NetworkBehaviour {
         AddTransitions (new SC_Tile[] { bottomRight, bottom, right }, new string[] { "Bottom", "Right" }, new float[] { 1, -1 });
 
         AddTransitions (new SC_Tile[] { bottomLeft, bottom, left }, new string[] { "Bottom", "Left" }, new float[] { -1, -1 });
-
-        transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = (infos.type == "Mountain") ? -(transform.position.x.I() + transform.position.y.I()) : -Size;
-
-        transform.GetChild(0).transform.localPosition = new Vector3(t.spriteOffset.x, t.spriteOffset.y);
-
-        if (infos.region != -1) {
-
-            for (int i = 0; i < transform.GetChild (2).childCount; i++)
-                transform.GetChild (2).GetChild (i).gameObject.SetActive (infos.borders[i] && (i % 2 == 0));
-
-        }
-
-        SC_UI_Manager.Instance?.TryRefreshInfos (gameObject, GetType ());
+        #endregion
 
     }
 

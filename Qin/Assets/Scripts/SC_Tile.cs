@@ -6,6 +6,7 @@ using static SC_Character;
 using static SC_EditorTile;
 using System.Collections.Generic;
 using static SC_HeroTraps;
+using static SC_Game_Manager;
 
 [Serializable]
 public class SC_Tile : NetworkBehaviour {
@@ -90,6 +91,10 @@ public class SC_Tile : NetworkBehaviour {
 
     public bool CursorOn { get; set; }
 
+    public bool Plain { get { return infos.type == "Plain"; } }
+
+    public bool Snow { get { return infos.type == "Snow"; } }
+
     // Used for PathFinder
     public SC_Tile Parent { get; set; }
 
@@ -126,13 +131,38 @@ public class SC_Tile : NetworkBehaviour {
             s += "/" + ((RiverSprite) infos.riverSprite).ToString ();
         else if (infos.type != "Changing") {
 
-            s += "/" + ((infos.type == "Plain" || infos.type == "Snow") ? "Base/" : "");
+            s += "/" + ((Plain || Snow) ? "Base/" : "");
 
             s += UnityEngine.Random.Range (0, Resources.LoadAll<Sprite> (s).Length) + "";
 
         }
 
         transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(s);
+
+        /*if (Plain || Snow) {
+
+            SC_Tile bottomLeft = TileManager.GetTileAt (transform.position - new Vector3 (1, 1, 0) * TileSize);
+            SC_Tile left = TileManager.GetTileAt (transform.position - new Vector3 (1, 0, 0) * TileSize);
+            SC_Tile topLeft = TileManager.GetTileAt (transform.position + new Vector3 (-1, 1, 0) * TileSize);
+            SC_Tile top = TileManager.GetTileAt (transform.position + new Vector3 (0, 1, 0) * TileSize);
+            SC_Tile topRight = TileManager.GetTileAt (transform.position + new Vector3 (1, 1, 0) * TileSize);
+            SC_Tile right = TileManager.GetTileAt (transform.position + new Vector3 (1, 0, 0) * TileSize);
+            SC_Tile bottomRight = TileManager.GetTileAt (transform.position + new Vector3 (1, -1, 0) * TileSize);
+            SC_Tile bottom = TileManager.GetTileAt (transform.position - new Vector3 (0, 1, 0) * TileSize);
+
+            if (Snow) {
+
+                if (left.Snow && bottom.Snow && !bottomLeft.Snow) {
+
+                    SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
+                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/" + infos.type + "/InteriorCorners/BottomLeft");
+                    sr.transform.position = transform.position - new Vector3 (1, 1, 0) * TileSize * .75f;
+
+                }
+
+            }
+
+        }*/
 
         transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = (infos.type == "Mountain") ? -(transform.position.x.I() + transform.position.y.I()) : -Size;
 

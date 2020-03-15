@@ -218,7 +218,15 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     public SC_Tile GetTileAt (int x, int y) {
 
-        return tiles[x, y];
+        try {
+
+            return tiles[x, y];
+
+        } catch (IndexOutOfRangeException) {
+
+            return null;
+
+        }
 
     }
 

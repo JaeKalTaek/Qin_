@@ -47,11 +47,12 @@ public class SC_Castle : SC_Bastion {
 
                 t.infos.riverSprite = (int) SC_EditorTile.RiverSprite.Small_Alone;
 
-                t.SetupTile ();
-
             }
 
         }
+
+        foreach (SC_Tile t in tileManager.regions[Tile.Region])
+            t.SetupTile ();
 
     }
 

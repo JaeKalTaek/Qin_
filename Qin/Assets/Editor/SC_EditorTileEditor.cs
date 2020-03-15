@@ -21,6 +21,9 @@ public class SC_EditorTileEditor : Editor {
 
                 tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Tiles/" + s);
 
+                if (!tile.GetComponent<SpriteRenderer> ().sprite)
+                    tile.GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Sprites/Tiles/" + tile.tileType + "/Base/0");
+
                 tile.SetSprite(0, tile.construction == ConstructionType.None ? "" : "Constructions/" + tile.construction);
 
                 if (tile.construction == ConstructionType.Castle) {

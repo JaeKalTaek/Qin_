@@ -57,7 +57,7 @@ public class SC_Camera : MonoBehaviour {
 
         zoomIndex = defaultZoomIndex;
 
-        cam.orthographicSize = zooms[zoomIndex] * TileSize;
+        cam.orthographicSize = zooms[zoomIndex];
 
         transform.position = ClampedPos(CursorPos - (Vector3.forward * -16f));
 
@@ -70,13 +70,13 @@ public class SC_Camera : MonoBehaviour {
 
             zoomIndex = Mathf.Clamp(zoomIndex - Mathf.RoundToInt(Input.GetAxisRaw("Mouse ScrollWheel")), 0, zooms.Length - 1);
 
-            if (cam.orthographicSize != (zooms[zoomIndex] * TileSize))
-                cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, zooms[zoomIndex] * TileSize, zoomSpeed * Time.deltaTime);
+            if (cam.orthographicSize != zooms[zoomIndex])
+                cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, zooms[zoomIndex], zoomSpeed * Time.deltaTime);
 
             Vector3 topRight = CursorCornerCamPos(true);
             Vector3 bottomLeft = CursorCornerCamPos(false);
 
-            targetPos = ClampedPos(targetPos + new Vector3(topRight.x > 1 ? 1 : bottomLeft.x < 0 ? -1 : 0, topRight.y > 1 ? 1 : bottomLeft.y < 0 ? -1 : 0, 0) * TileSize);
+            targetPos = ClampedPos(targetPos + new Vector3(topRight.x > 1 ? 1 : bottomLeft.x < 0 ? -1 : 0, topRight.y > 1 ? 1 : bottomLeft.y < 0 ? -1 : 0, 0));
 
             transform.position = Vector3.Lerp(transform.position, targetPos, moveSpeed * Time.deltaTime);
 
@@ -102,14 +102,14 @@ public class SC_Camera : MonoBehaviour {
 
     Vector3 ClampedPos (Vector3 p) {
 
-        float xMax = (XSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize * cam.aspect;
+        float xMax = (XSize + boardMargins[zoomIndex] - .5f) - cam.orthographicSize * cam.aspect;
         float prepUIOffset = cam.ViewportToWorldPoint (Vector3.right * (SC_UI_Manager.Instance.heroPreparationUI.decks.GetComponent<RectTransform> ().sizeDelta.x / UISize.x)).x - cam.ViewportToWorldPoint (Vector3.zero).x;
-        float xMin = (-boardMargins[zoomIndex] - .5f) * TileSize + cam.orthographicSize * cam.aspect - (SC_Game_Manager.Instance.PrepPhase ? prepUIOffset : 0);
+        float xMin = (-boardMargins[zoomIndex] - .5f) + cam.orthographicSize * cam.aspect - (SC_Game_Manager.Instance.PrepPhase ? prepUIOffset : 0);
 
         float x = (CursorPos.x == 0) ? xMin : (CursorPos.x.I() == XSize - 1) ? xMax : Mathf.Clamp(p.x, xMin, xMax);
 
-        float yMax = (YSize + boardMargins[zoomIndex] - .5f) * TileSize - cam.orthographicSize;
-        float yMin = (-.5f - boardMargins[zoomIndex]) * TileSize + cam.orthographicSize;
+        float yMax = (YSize + boardMargins[zoomIndex] - .5f) - cam.orthographicSize;
+        float yMin = (-.5f - boardMargins[zoomIndex]) + cam.orthographicSize;
 
         float y = (CursorPos.y == 0) ? yMin : (CursorPos.y.I() == YSize - 1) ? yMax : Mathf.Clamp(p.y, yMin, yMax);
 
@@ -121,9 +121,9 @@ public class SC_Camera : MonoBehaviour {
     #region Focus
     Vector2 TargetOnScreen (Vector3 pos) {
 
-        Vector3 min = cam.WorldToViewportPoint (pos - new Vector3 (1, 1, 0) * (TileSize * (tileDistanceFocus - .5f)));
+        Vector3 min = cam.WorldToViewportPoint (pos - new Vector3 (1, 1, 0) * (tileDistanceFocus - .5f));
 
-        Vector3 max = cam.WorldToViewportPoint (pos + new Vector3 (1, 1, 0) * (TileSize * (tileDistanceFocus + .5f)));
+        Vector3 max = cam.WorldToViewportPoint (pos + new Vector3 (1, 1, 0) * (tileDistanceFocus + .5f));
 
         return new Vector2 (min.x < 0 ? -1 : (max.x > 1 ? 1 : 0), min.y < 0 ? -1 : (max.y > 1 ? 1 : 0));
 
@@ -146,10 +146,10 @@ public class SC_Camera : MonoBehaviour {
             Vector2 target = TargetOnScreen (pos);
 
             if (target.x != 0)
-                targetPos.x += pos.x - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.x == 1 ? Vector3.one : Vector3.zero) + Vector3.left * TileSize * Mathf.Sign(target.x) * tileDistanceFocus, true).transform.position.x;
+                targetPos.x += pos.x - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.x == 1 ? Vector3.one : Vector3.zero) + Vector3.left * Mathf.Sign(target.x) * tileDistanceFocus, true).transform.position.x;
 
             if (target.y != 0)
-                targetPos.y += pos.y - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.y == 1 ? Vector3.one : Vector3.zero) + Vector3.down * TileSize * Mathf.Sign (target.y) * tileDistanceFocus, true).transform.position.y;
+                targetPos.y += pos.y - SC_Tile_Manager.Instance.GetTileAt (cam.ViewportToWorldPoint (target.y == 1 ? Vector3.one : Vector3.zero) + Vector3.down * Mathf.Sign (target.y) * tileDistanceFocus, true).transform.position.y;
 
         }
 

@@ -95,7 +95,7 @@ public class SC_Player : NetworkBehaviour {
         SC_Cursor.Instance = Instantiate(Resources.Load<SC_Cursor>("Prefabs/P_Cursor"));
 
         if (localPlayer.Qin)
-            SC_Cursor.Instance.transform.position = new Vector3(GameManager.mapPrefab.SizeMapX - 1, GameManager.mapPrefab.SizeMapY - 1, 0) * SC_Game_Manager.TileSize;
+            SC_Cursor.Instance.transform.position = new Vector3(GameManager.mapPrefab.SizeMapX - 1, GameManager.mapPrefab.SizeMapY - 1, 0);
         else
             SC_Cursor.Instance.transform.position = Vector3.zero;
 

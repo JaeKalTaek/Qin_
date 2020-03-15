@@ -52,7 +52,7 @@ public class SC_Demon : SC_BaseQinChara {
 
             for (int j = -auraRange; j <= auraRange; j++) {
 
-                if(SC_Tile_Manager.TileDistance(transform.position, transform.position + (new Vector3(i, j, 0) * SC_Game_Manager.TileSize)) <= auraRange) {
+                if(SC_Tile_Manager.TileDistance(transform.position, transform.position + new Vector3(i, j, 0)) <= auraRange) {
 
                     SpriteRenderer sr = Instantiate(Resources.Load<SpriteRenderer>("Prefabs/Characters/Components/DemonAura"), transform);
 

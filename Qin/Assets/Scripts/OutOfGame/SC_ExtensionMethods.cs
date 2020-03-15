@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using static SC_Global;
 
@@ -33,7 +33,7 @@ public static class SC_ExtensionMethods {
 
     public static int I (this float f) {
 
-        return Mathf.RoundToInt(f / .96f);
+        return Mathf.RoundToInt(f);
 
     }
 

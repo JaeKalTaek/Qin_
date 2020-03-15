@@ -96,7 +96,7 @@ public class SC_Fight_Manager : MonoBehaviour {
         #endregion
 
         // Attacking character attacks
-        StartCoroutine(FightAnim(activeCharacter, travel * .5f * SC_Game_Manager.Instance.mapPrefab.TileSize, true));        
+        StartCoroutine(FightAnim(activeCharacter, travel * .5f, true));        
 
     }
 

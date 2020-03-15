@@ -82,7 +82,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
             for (int j = -borderSize; j <= YSize + borderSize; j++) {
 
-                Vector3 pos = new Vector3(i - .5f, j - .5f, 0) * SC_Game_Manager.TileSize;
+                Vector3 pos = new Vector3(i - .5f, j - .5f, 0);
 
                 string path = "";
 

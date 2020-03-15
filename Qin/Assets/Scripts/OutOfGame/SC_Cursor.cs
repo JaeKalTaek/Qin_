@@ -80,7 +80,7 @@ public class SC_Cursor : NetworkBehaviour {
 
                 inputsMoveTimer = inputsMoveDelay;
 
-                newPos = transform.position + new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0) * TileSize;
+                newPos = transform.position + new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
 
             } else if (Cursor.visible) {
 
@@ -91,7 +91,7 @@ public class SC_Cursor : NetworkBehaviour {
             int x = newPos.x.I();
             int y = newPos.y.I();
 
-            transform.SetPos(new Vector3(Mathf.Clamp(x, 0, XSize - 1), Mathf.Clamp(y, 0, YSize - 1), 0) * TileSize);
+            transform.SetPos(new Vector3(Mathf.Clamp(x, 0, XSize - 1), Mathf.Clamp(y, 0, YSize - 1), 0));
 
             #region Cursor has moved
             if (oldPos != transform.position) {

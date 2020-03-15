@@ -35,8 +35,6 @@ public class SC_Game_Manager : NetworkBehaviour {
 
 	SC_Tile_Manager tileManager;
 
-    public static float TileSize;
-
     public bool ServerStarted { get; set; }
 
     public bool FocusOn { get; set; }
@@ -69,8 +67,6 @@ public class SC_Game_Manager : NetworkBehaviour {
         SC_Demon.demons = new SC_Demon[6];
 
         SC_Tile.filters = Resources.LoadAll<Sprite>("Sprites/Tiles/Filters");
-
-        TileSize = mapPrefab.TileSize;
 
         CommonCharactersVariables = Resources.Load<SC_Common_Characters_Variables>("Prefabs/Characters/P_Common_Characters_Variables");
 

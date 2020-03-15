@@ -272,9 +272,9 @@ public class SC_Hero : SC_Character {
 
                     alreadyGained.Add (hero.characterName);
 
-                    Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+                    Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), transform.position + Vector3.up, Quaternion.identity);
 
-                    Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up * SC_Game_Manager.TileSize, Quaternion.identity);
+                    Instantiate (Resources.Load<GameObject> ("Prefabs/UI/P_RelationshipGainFeedback"), hero.transform.position + Vector3.up, Quaternion.identity);
 
                     Relationships[hero.characterName] += (int) (((float) amount / differentHeroesInRange.Count) + .5f);
 

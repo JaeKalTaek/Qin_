@@ -142,7 +142,7 @@ public class SC_Tile : NetworkBehaviour {
         transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(s);        
 
         foreach (Transform child in transform)
-            if (child.name == "Border" || child.name == "Corner")
+            if (child.name == "Transition")
                 Destroy (child.gameObject);
 
         SC_Tile bottomLeft = TileManager.GetTileAt (transform.position - new Vector3 (1, 1, 0));
@@ -154,299 +154,13 @@ public class SC_Tile : NetworkBehaviour {
         SC_Tile bottomRight = TileManager.GetTileAt (transform.position + new Vector3 (1, -1, 0));
         SC_Tile bottom = TileManager.GetTileAt (transform.position - new Vector3 (0, 1, 0));
 
-        if (!topLeft?.Snow ?? false) {
+        AddTransitions (new SC_Tile[] { topLeft, top, left }, new string[] { "Top", "Left" }, new float[] { -1, 1 });
 
-            if (top.Snow && left.Snow) {
+        AddTransitions (new SC_Tile[] { topRight, top, right }, new string[] { "Top", "Right" }, new float[] { 1, 1 });
 
-                SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/InteriorCorners/TopLeft");
-                sr.transform.localPosition = new Vector3 (-1, 1, 0) * .625f;
+        AddTransitions (new SC_Tile[] { bottomRight, bottom, right }, new string[] { "Bottom", "Right" }, new float[] { 1, -1 });
 
-            } else if (Snow) {
-
-                if (!top.Snow) {
-
-                    SpriteRenderer sr = new GameObject ("Border").AddComponent<SpriteRenderer> ();
-                    sr.sortingLayerName = "Tiles";
-                    sr.sortingOrder = 1;
-                    sr.transform.parent = transform;
-                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Top");
-                    sr.transform.localPosition = new Vector3 (-.25f, .625f, 0);
-
-                    if (!left.Snow) {
-
-                        sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                        sr.transform.parent = transform;
-                        sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/ExteriorCorners/TopLeft");
-                        sr.transform.localPosition = new Vector3 (-1, 1, 0) * .625f;
-
-                    }
-
-                }
-
-                if (!left.Snow) {
-
-                    SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                    sr.sortingLayerName = "Tiles";
-                    sr.sortingOrder = 1;
-                    sr.transform.parent = transform;
-                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Left");
-                    sr.transform.localPosition = new Vector3 (-.625f, .25f, 0);
-
-                }
-
-            }
-
-        } else if (Snow && !topLeft) {
-
-            if (!top?.Snow ?? false) {
-
-                SpriteRenderer sr = new GameObject ("Border").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Top");
-                sr.transform.localPosition = new Vector3 (-.25f, .625f, 0);
-
-            }
-
-            if (!left?.Snow ?? false) {
-
-                SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Left");
-                sr.transform.localPosition = new Vector3 (-.625f, .25f, 0);
-
-            }
-
-        }
-
-        if (!topRight?.Snow ?? false) {
-
-            if (top.Snow && right.Snow) {
-
-                SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/InteriorCorners/TopRight");
-                sr.transform.localPosition = new Vector3 (1, 1, 0) * .625f;
-
-            } else if (Snow) {
-
-                if (!top.Snow) {
-
-                    SpriteRenderer sr = new GameObject ("Border").AddComponent<SpriteRenderer> ();
-                    sr.sortingLayerName = "Tiles";
-                    sr.sortingOrder = 1;
-                    sr.transform.parent = transform;
-                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Top");
-                    sr.transform.localPosition = new Vector3 (.25f, .625f, 0);
-
-                    if (!right.Snow) {
-
-                        sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                        sr.sortingLayerName = "Tiles";
-                        sr.sortingOrder = 1;
-                        sr.transform.parent = transform;
-                        sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/ExteriorCorners/TopRight");
-                        sr.transform.localPosition = new Vector3 (1, 1, 0) * .625f;
-
-                    }
-
-                }
-
-                if (!right.Snow) {
-
-                    SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                    sr.sortingLayerName = "Tiles";
-                    sr.sortingOrder = 1;
-                    sr.transform.parent = transform;
-                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Right");
-                    sr.transform.localPosition = new Vector3 (.625f, .25f, 0);
-
-                }
-
-            }
-
-        } else if (Snow && !topRight) {
-
-            if (!top?.Snow ?? false) {
-
-                SpriteRenderer sr = new GameObject ("Border").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Top");
-                sr.transform.localPosition = new Vector3 (.25f, .625f, 0);
-
-            }
-
-            if (!right?.Snow ?? false) {
-
-                SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Right");
-                sr.transform.localPosition = new Vector3 (.625f, .25f, 0);
-
-            }
-
-        }
-
-        if (!bottomRight?.Snow ?? false) {
-
-            if (bottom.Snow && right.Snow) {
-
-                SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/InteriorCorners/BottomRight");
-                sr.transform.localPosition = new Vector3 (1, -1, 0) * .625f;
-
-            } else if (Snow) {
-
-                if (!bottom.Snow) {
-
-                    SpriteRenderer sr = new GameObject ("Border").AddComponent<SpriteRenderer> ();
-                    sr.sortingLayerName = "Tiles";
-                    sr.sortingOrder = 1;
-                    sr.transform.parent = transform;
-                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Bottom");
-                    sr.transform.localPosition = new Vector3 (.25f, -.625f, 0);
-
-                    if (!right.Snow) {
-
-                        sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                        sr.sortingLayerName = "Tiles";
-                        sr.sortingOrder = 1;
-                        sr.transform.parent = transform;
-                        sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/ExteriorCorners/BottomRight");
-                        sr.transform.localPosition = new Vector3 (1, -1, 0) * .625f;
-
-                    }
-
-                }
-
-                if (!right.Snow) {
-
-                    SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                    sr.sortingLayerName = "Tiles";
-                    sr.sortingOrder = 1;
-                    sr.transform.parent = transform;
-                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Right");
-                    sr.transform.localPosition = new Vector3 (.625f, -.25f, 0);
-
-                }                
-
-            }
-
-        } else if (Snow && !bottomRight) {
-
-            if (!bottom?.Snow ?? false) {
-
-                SpriteRenderer sr = new GameObject ("Border").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Bottom");
-                sr.transform.localPosition = new Vector3 (.25f, -.625f, 0);
-
-            }
-
-            if (!right?.Snow ?? false) {
-
-                SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Right");
-                sr.transform.localPosition = new Vector3 (.625f, -.25f, 0);
-
-            }
-
-        }
-
-        if (!bottomLeft?.Snow ?? false) {
-
-            if (bottom.Snow && left.Snow) {
-
-                SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/InteriorCorners/BottomLeft");
-                sr.transform.localPosition = -new Vector3 (1, 1, 0) * .625f;
-
-            } else if (Snow) {
-
-                if (!bottom.Snow) {
-
-                    SpriteRenderer sr = new GameObject ("Border").AddComponent<SpriteRenderer> ();
-                    sr.sortingLayerName = "Tiles";
-                    sr.sortingOrder = 1;
-                    sr.transform.parent = transform;
-                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Bottom");
-                    sr.transform.localPosition = new Vector3 (-.25f, -.625f, 0);
-
-                    if (!left.Snow) {
-
-                        sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                        sr.sortingLayerName = "Tiles";
-                        sr.sortingOrder = 1;
-                        sr.transform.parent = transform;
-                        sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/ExteriorCorners/BottomLeft");
-                        sr.transform.localPosition = new Vector3 (-1, -1, 0) * .625f;
-
-                    }
-
-                }
-
-                if (!left.Snow) {
-
-                    SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                    sr.sortingLayerName = "Tiles";
-                    sr.sortingOrder = 1;
-                    sr.transform.parent = transform;
-                    sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Left");
-                    sr.transform.localPosition = new Vector3 (-.625f, -.25f, 0);
-
-                }                
-
-            }
-
-        } else if (Snow && !bottomLeft) {
-
-            if (!bottom?.Snow ?? false) {
-
-                SpriteRenderer sr = new GameObject ("Border").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Bottom");
-                sr.transform.localPosition = new Vector3 (-.25f, -.625f, 0);
-
-            }
-
-            if (!left?.Snow ?? false) {
-
-                SpriteRenderer sr = new GameObject ("Corner").AddComponent<SpriteRenderer> ();
-                sr.sortingLayerName = "Tiles";
-                sr.sortingOrder = 1;
-                sr.transform.parent = transform;
-                sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/Snow/Borders/Left");
-                sr.transform.localPosition = new Vector3 (-.625f, -.25f, 0);
-
-            }
-
-        }
+        AddTransitions (new SC_Tile[] { bottomLeft, bottom, left }, new string[] { "Bottom", "Left" }, new float[] { -1, -1 });
 
         transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = (infos.type == "Mountain") ? -(transform.position.x.I() + transform.position.y.I()) : -Size;
 
@@ -460,6 +174,51 @@ public class SC_Tile : NetworkBehaviour {
         }
 
         SC_UI_Manager.Instance?.TryRefreshInfos (gameObject, GetType ());
+
+    }
+
+    void AddTransition (string path, float x, float y) {
+
+        SpriteRenderer sr = new GameObject ("Transition").AddComponent<SpriteRenderer> ();
+        sr.sortingLayerName = "Tiles";
+        sr.sortingOrder = path.Contains ("Snow") ? 2 : 1;
+        sr.transform.parent = transform;
+        sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/" + path);
+        sr.transform.localPosition = new Vector3 (x, y, 0);
+
+    }
+
+    void AddTransitions (SC_Tile[] neighbors, string[] sides, float[] signs) {
+
+        if (!neighbors[0]?.Snow ?? false) {
+
+            if (neighbors[1].Snow && neighbors[2].Snow)
+                AddTransition ("Snow/InteriorCorners/" + sides[0] + sides[1], .625f * signs[0], .625f * signs[1]);
+            else if (Snow) {
+
+                if (!neighbors[1].Snow) {
+
+                    AddTransition ("Snow/Borders/" + sides[0], -.25f * signs[0], .625f * signs[1]);
+
+                    if (!neighbors[2].Snow)
+                        AddTransition ("Snow/ExteriorCorners/" + sides[0] + sides[1], .625f * signs[0], .625f * signs[1]);
+
+                }
+
+                if (!neighbors[2].Snow)
+                    AddTransition ("Snow/Borders/" + sides[1], .625f * signs[0], .25f * signs[1]);
+
+            }
+
+        } else if (Snow && !neighbors[0]) {
+
+            if (!neighbors[1]?.Snow ?? false)
+                AddTransition ("Snow/Borders/" + sides[0], -.25f * signs[0], .625f * signs[1]);
+
+            if (!neighbors[2]?.Snow ?? false)
+                AddTransition ("Snow/Borders/" + sides[1], .625f * signs[0], .25f * signs[1]);
+
+        }
 
     }
 

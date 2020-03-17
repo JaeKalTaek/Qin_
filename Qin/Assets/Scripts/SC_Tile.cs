@@ -91,6 +91,8 @@ public class SC_Tile : NetworkBehaviour {
 
     public bool CursorOn { get; set; }
 
+    public bool PlainBase { get { return Plain || infos.type == "Forest" || infos.type == "Mountain"; } }
+
     public bool Plain { get { return infos.type == "Plain"; } }
 
     public bool Snow { get { return infos.type == "Snow"; } }
@@ -189,40 +191,57 @@ public class SC_Tile : NetworkBehaviour {
         sr.sortingLayerName = "Tiles";
         sr.sortingOrder = path.Contains ("Snow") ? 2 : 1;
         sr.transform.parent = transform;
-        sr.sprite = Resources.Load<Sprite> ("Sprites/Tiles/" + path);
+        Sprite[] sprites = Resources.LoadAll<Sprite> ("Sprites/Tiles/" + path);
+        sr.sprite = sprites[UnityEngine.Random.Range (0, sprites.Length)];
         sr.transform.localPosition = new Vector3 (x, y, 0);
 
     }
 
     void AddTransitions (SC_Tile[] neighbors, string[] sides, float[] signs) {
 
-        if (!neighbors[0]?.Snow ?? false) {
+        if (!neighbors[0]?.Snow ?? true) {
 
-            if (neighbors[1].Snow && neighbors[2].Snow)
-                AddTransition ("Snow/InteriorCorners/" + sides[0] + sides[1], .625f * signs[0], .625f * signs[1]);
+            if (neighbors[0] && neighbors[1].Snow && neighbors[2].Snow)
+                AddTransition ("Snow/InteriorCorners/" + sides[0] + sides[1], .75f * signs[0], .75f * signs[1]);
             else if (Snow) {
 
-                if (!neighbors[1].Snow) {
+                if (!neighbors[1]?.Snow ?? false) {
 
-                    AddTransition ("Snow/Borders/" + sides[0], -.25f * signs[0], .625f * signs[1]);
+                    AddTransition ("Snow/Borders/" + sides[0], .25f * signs[0], .625f * signs[1]);
 
-                    if (!neighbors[2].Snow)
+                    if (!neighbors[2]?.Snow ?? false)
                         AddTransition ("Snow/ExteriorCorners/" + sides[0] + sides[1], .625f * signs[0], .625f * signs[1]);
 
                 }
 
-                if (!neighbors[2].Snow)
+                if (!neighbors[2]?.Snow ?? false)
                     AddTransition ("Snow/Borders/" + sides[1], .625f * signs[0], .25f * signs[1]);
 
             }
 
-        } else if (Snow && !neighbors[0]) {
+        }
 
-            if (!neighbors[1]?.Snow ?? false)
-                AddTransition ("Snow/Borders/" + sides[0], -.25f * signs[0], .625f * signs[1]);
+        if (Desert) {
 
-            if (!neighbors[2]?.Snow ?? false)
-                AddTransition ("Snow/Borders/" + sides[1], .625f * signs[0], .25f * signs[1]);
+            bool interiorCorner = false;
+
+            if (neighbors[0] && neighbors[1].PlainBase && neighbors[2].PlainBase) {
+
+                AddTransition ("Plain/InteriorCorners/" + sides[0] + sides[1], .25f * signs[0], .25f * signs[1]);
+                interiorCorner = true;
+
+            } else if ((neighbors[0]?.PlainBase ?? false) && !neighbors[1].PlainBase && !neighbors[2].PlainBase)
+                AddTransition ("Plain/ExteriorCorners/" + sides[0] + sides[1], .375f * signs[0], .375f * signs[1]);
+
+            if (!interiorCorner) {
+
+                if (neighbors[1]?.PlainBase ?? false)
+                    AddTransition ("Plain/Borders/" + sides[0], .25f * signs[0], .375f * signs[1]);
+
+                if (neighbors[2]?.PlainBase ?? false)
+                    AddTransition ("Plain/Borders/" + sides[1], .375f * signs[0], .25f * signs[1]);
+
+            }
 
         }
 

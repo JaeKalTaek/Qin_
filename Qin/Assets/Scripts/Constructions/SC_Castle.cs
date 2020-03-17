@@ -51,8 +51,8 @@ public class SC_Castle : SC_Bastion {
 
         }
 
-        foreach (SC_Tile t in tileManager.regions[Tile.Region])
-            t.SetupTile (tileManager.ChangingTiles.Contains (t));
+        foreach (SC_Tile t in tileManager.tiles)
+            t.SetupTile (tileManager.ChangingTiles.Contains (t) && t.Region == Tile.Region);
 
     }
 

@@ -4,10 +4,10 @@ using static SC_Global;
 
 public static class SC_ExtensionMethods {
 
-   public static void SetPos(this Transform trans, Vector3 v3, string layer = "") {
+   public static void SetPos(this Transform t, Vector3 v3, string layer = "") {
 
-        trans.position = new Vector3(v3.x, v3.y, layer == "" ? trans.position.z : SC_Game_Manager.Instance.elementLayers.IndexOf (layer));
-        trans.GetComponentInChildren<SpriteRenderer>().sortingOrder = -(v3.x.I() + v3.y.I());
+        t.position = new Vector3(v3.x, v3.y, layer == "" ? t.position.z : SC_Game_Manager.Instance.elementLayers.IndexOf (layer));
+        t.GetComponentInChildren<SpriteRenderer>().sortingOrder = -(v3.x.I() + v3.y.I());
 
     }
 
@@ -22,12 +22,6 @@ public static class SC_ExtensionMethods {
 
         if (MB)
             SC_UI_Manager.Instance.TryRefreshInfos (MB.gameObject, MB.GetType ());
-
-    }
-
-    public static Vector3 I (this Vector3 v) {
-
-        return new Vector3(v.x.I(), v.y.I(), v.z.I());
 
     }
 

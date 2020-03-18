@@ -354,6 +354,12 @@ public class SC_Global {
 
     }
 
+    public static string GetRandomSprite (string path) {
+
+        return path + UnityEngine.Random.Range (0, Resources.LoadAll<Sprite> (path).Length).ToString ();
+
+    }
+
     [Serializable]
     public class BaseCharacterStats {
 

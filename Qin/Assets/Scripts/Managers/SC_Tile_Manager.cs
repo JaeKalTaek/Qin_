@@ -93,12 +93,12 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
                 if ((i < 0) || (j < 0) || (i > XSize) || (j > YSize)) {
 
-                    path += "Full";
+                    path += "Sprites/Borders/Full";
 
                 } else if (b || t || l || r) {
 
                     if (b || t)
-                        path += (l || r) ? "Corner/" + (b ? "Bottom" : "Top") + (l ? "Left" : "Right") : RandomBorder(b ? "Bottom" : "Top");
+                        path += (l || r) ? "Sprites/Borders/Corner/" + (b ? "Bottom" : "Top") + (l ? "Left" : "Right") : RandomBorder(b ? "Bottom" : "Top");
                     else
                         path += RandomBorder(l ? "Left" : "Right");
 
@@ -107,7 +107,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
                 if (path != "") {
 
                     GameObject go = Instantiate(Resources.Load<GameObject>("Prefabs/Tiles/P_Border"), pos, Quaternion.identity, uiManager.bordersT);
-                    go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Borders/" + path);
+                    go.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(path);
                     go.GetComponent<SpriteRenderer>().sortingOrder -= i + j - (b ? 2 : (t ? -2 : 0));
 
                 }
@@ -122,9 +122,9 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
     }
 
-    string RandomBorder(string folderPath) {
+    string RandomBorder (string folderPath) {
 
-        return folderPath + "/" + UnityEngine.Random.Range(0, Resources.LoadAll<Sprite>("Sprites/Borders/" + folderPath).Length);
+        return GetRandomSprite ("Sprites/Borders/" + folderPath + "/");
 
     }
 

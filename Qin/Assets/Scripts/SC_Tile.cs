@@ -131,28 +131,31 @@ public class SC_Tile : NetworkBehaviour {
 
         if (changed) {
 
-            string s = "Sprites/Tiles/" + infos.type;
+            string s = "Sprites/Tiles/" + (PlainBase ? "Plain" : infos.type);
 
             if (infos.type == "River")
                 s += "/" + ((RiverSprite) infos.riverSprite).ToString ();
-            else if (infos.type != "Changing") {
+            else if (infos.type != "Changing")
+                s = GetRandomSprite (s + (PlainBase || Snow ? "/Base/" : "/"));
 
-                s += "/" + ((Plain || Snow) ? "Base/" : "");
+            GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> (s);
 
-                s += UnityEngine.Random.Range (0, Resources.LoadAll<Sprite> (s).Length) + "";
+            GetComponent<SpriteRenderer> ().sortingOrder = -(transform.position.x.I () + transform.position.y.I ());
+
+            if (PlainBase && !Plain) {
+
+                SpriteRenderer feature = new GameObject ("Feature").AddComponent<SpriteRenderer> ();
+                feature.transform.parent = transform;
+                feature.transform.localPosition = new Vector3 (t.spriteOffset.x, t.spriteOffset.y, SC_Game_Manager.Instance.elementLayers.IndexOf ("Construction"));
+                feature.sprite = Resources.Load<Sprite> (GetRandomSprite ("Sprites/Tiles/" + infos.type + "/"));
+                feature.sortingOrder = -(transform.position.x.I () + transform.position.y.I ());
 
             }
 
-            transform.GetChild (0).GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> (s);
-
-            transform.GetChild (0).GetComponent<SpriteRenderer> ().sortingOrder = (infos.type == "Mountain") ? -(transform.position.x.I () + transform.position.y.I ()) : -Size;
-
-            transform.GetChild (0).transform.localPosition = new Vector3 (t.spriteOffset.x, t.spriteOffset.y);
-
             if (infos.region != -1) {
 
-                for (int i = 0; i < transform.GetChild (2).childCount; i++)
-                    transform.GetChild (2).GetChild (i).gameObject.SetActive (infos.borders[i] && (i % 2 == 0));
+                for (int i = 0; i < transform.GetChild (1).childCount; i++)
+                    transform.GetChild (1).GetChild (i).gameObject.SetActive (infos.borders[i] && (i % 2 == 0));
 
             }
 
@@ -181,7 +184,6 @@ public class SC_Tile : NetworkBehaviour {
         AddTransitions (new SC_Tile[] { bottomRight, bottom, right }, new string[] { "Bottom", "Right" }, new float[] { 1, -1 });
 
         AddTransitions (new SC_Tile[] { bottomLeft, bottom, left }, new string[] { "Bottom", "Left" }, new float[] { -1, -1 });
-        #endregion
 
     }
 
@@ -191,8 +193,7 @@ public class SC_Tile : NetworkBehaviour {
         sr.sortingLayerName = "Tiles";
         sr.sortingOrder = path.Contains ("Snow") ? 2 : 1;
         sr.transform.parent = transform;
-        Sprite[] sprites = Resources.LoadAll<Sprite> ("Sprites/Tiles/" + path);
-        sr.sprite = sprites[UnityEngine.Random.Range (0, sprites.Length)];
+        sr.sprite = Resources.Load<Sprite> (GetRandomSprite ("Sprites/Tiles/" + path + "/"));
         sr.transform.localPosition = new Vector3 (x, y, 0);
 
     }
@@ -246,8 +247,9 @@ public class SC_Tile : NetworkBehaviour {
         }
 
     }
+    #endregion
 
-    void Start() {
+    void Start () {
 
         DemonAuras = new List<DemonAura> ();
 
@@ -256,7 +258,7 @@ public class SC_Tile : NetworkBehaviour {
         if (!isServer && transform.position.x.I() == (GameManager.mapPrefab.SizeMapX - 1) && transform.position.y.I() == (GameManager.mapPrefab.SizeMapY - 1))
             GameManager?.StartCoroutine("FinishConnecting");
 
-        filter = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        filter = transform.GetChild(0).GetComponent<SpriteRenderer>();
 
         if(UIManager)
             transform.parent = UIManager.tilesT;        

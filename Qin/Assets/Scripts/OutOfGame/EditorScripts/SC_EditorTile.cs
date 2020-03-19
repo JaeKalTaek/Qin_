@@ -7,9 +7,6 @@ public class SC_EditorTile : MonoBehaviour {
     [Tooltip("Type of this tile")]
     public TileType tileType;
 
-    [Tooltip("Sprite of the river on this tile")]
-    public RiverSprite riverSprite;
-
     [Tooltip("Region to which this tile belongs")]
     public Region region = Region.None;
 
@@ -74,12 +71,6 @@ public class SC_EditorTile : MonoBehaviour {
     public enum Region {
 
         None = -1, Zhao, Wei, Chu, Qi, Yan, Han
-
-    }
-
-    public enum RiverSprite {
-
-        Horizontal, Vertical, Bottom, Left, Top, Right, LeftBottom, LeftTop, RightBottom, RightTop, T_Top, T_Bottom, T_Right, T_Left, Cross, Big_Alone, Big_Alone_2, Small_Alone
 
     }
 

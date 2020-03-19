@@ -39,17 +39,9 @@ public class SC_Castle : SC_Bastion {
 
         this.TryRefreshInfos ();
 
-        foreach (SC_Tile t in tileManager.ChangingTiles) {
-
-            if (t.Region == Tile.Region) {
-
+        foreach (SC_Tile t in tileManager.ChangingTiles)
+            if (t.Region == Tile.Region)
                 t.infos.type = CastleType == "" ? "Changing" : CastleType;
-
-                t.infos.riverSprite = (int) SC_EditorTile.RiverSprite.Small_Alone;
-
-            }
-
-        }
 
         foreach (SC_Tile t in tileManager.tiles)
             t.SetupTile (tileManager.ChangingTiles.Contains (t) && t.Region == Tile.Region);

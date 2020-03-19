@@ -110,7 +110,6 @@ public class SC_Game_Manager : NetworkBehaviour {
             go.GetComponent<SC_Tile>().infos = new TileInfos(
                 eTile.tileType.ToString(),
                 eTile.heroDeployTile,
-                (int)eTile.riverSprite,
                 (int)eTile.region,
                 borders
             );

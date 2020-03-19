@@ -99,6 +99,8 @@ public class SC_Tile : NetworkBehaviour {
 
     public bool Desert { get { return infos.type == "Desert"; } }
 
+    public bool River { get { return infos.type == "River"; } }
+
     // Used for PathFinder
     public SC_Tile Parent { get; set; }
 
@@ -129,13 +131,36 @@ public class SC_Tile : NetworkBehaviour {
 
         combatModifers = t.combatModifers;
 
+        #region Getting adjacent tiles
+        SC_Tile bottomLeft = TileManager.GetTileAt (transform.position - new Vector3 (1, 1, 0));
+        SC_Tile left = TileManager.GetTileAt (transform.position - new Vector3 (1, 0, 0));
+        SC_Tile topLeft = TileManager.GetTileAt (transform.position + new Vector3 (-1, 1, 0));
+        SC_Tile top = TileManager.GetTileAt (transform.position + new Vector3 (0, 1, 0));
+        SC_Tile topRight = TileManager.GetTileAt (transform.position + new Vector3 (1, 1, 0));
+        SC_Tile right = TileManager.GetTileAt (transform.position + new Vector3 (1, 0, 0));
+        SC_Tile bottomRight = TileManager.GetTileAt (transform.position + new Vector3 (1, -1, 0));
+        SC_Tile bottom = TileManager.GetTileAt (transform.position - new Vector3 (0, 1, 0));
+        #endregion
+
         if (changed) {
 
             string s = "Sprites/Tiles/" + (PlainBase ? "Plain" : infos.type);
 
-            if (infos.type == "River")
-                s += "/" + ((RiverSprite) infos.riverSprite).ToString ();
-            else if (infos.type != "Changing")
+            if (River) {
+
+                string c = TileManager.GetNotableNeighborsName (this, (SC_Tile tile) => { return tile.River; });
+
+                if (c == "4") {
+
+                    if (topLeft.River == topRight.River == bottomLeft.River == bottomRight.River == false)
+                        s += "/4_Cross";
+                    else
+                        s = GetRandomSprite (s + "/4/");                   
+
+                } else
+                    s += "/" + c;
+
+            } else if (infos.type != "Changing")
                 s = GetRandomSprite (s + (PlainBase || Snow ? "/Base/" : "/"));
 
             GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> (s);
@@ -166,16 +191,7 @@ public class SC_Tile : NetworkBehaviour {
         #region Transitions
         foreach (Transform child in transform)
             if (child.name == "Transition")
-                Destroy (child.gameObject);
-
-        SC_Tile bottomLeft = TileManager.GetTileAt (transform.position - new Vector3 (1, 1, 0));
-        SC_Tile left = TileManager.GetTileAt (transform.position - new Vector3 (1, 0, 0));
-        SC_Tile topLeft = TileManager.GetTileAt (transform.position + new Vector3 (-1, 1, 0));
-        SC_Tile top = TileManager.GetTileAt (transform.position + new Vector3 (0, 1, 0));
-        SC_Tile topRight = TileManager.GetTileAt (transform.position + new Vector3 (1, 1, 0));
-        SC_Tile right = TileManager.GetTileAt (transform.position + new Vector3 (1, 0, 0));
-        SC_Tile bottomRight = TileManager.GetTileAt (transform.position + new Vector3 (1, -1, 0));
-        SC_Tile bottom = TileManager.GetTileAt (transform.position - new Vector3 (0, 1, 0));
+                Destroy (child.gameObject);        
 
         AddTransitions (new SC_Tile[] { topLeft, top, left }, new string[] { "Top", "Left" }, new float[] { -1, 1 });
 

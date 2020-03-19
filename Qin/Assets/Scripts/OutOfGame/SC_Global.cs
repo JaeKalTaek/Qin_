@@ -62,19 +62,15 @@ public class SC_Global {
 
         public bool heroDeploy;
 
-        public int riverSprite;
-
         public int region;
 
         public bool[] borders;
 
-        public TileInfos (string t, bool d, int rS, int r, bool[] b) {
+        public TileInfos (string t, bool d, int r, bool[] b) {
 
             type = t;
 
             heroDeploy = d;
-
-            riverSprite = rS;
 
             region = r;
 

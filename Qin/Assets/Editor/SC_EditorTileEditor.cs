@@ -17,9 +17,7 @@ public class SC_EditorTileEditor : Editor {
 
                 SC_EditorTile tile = o as SC_EditorTile;
 
-                string s = (tile.IsChanging ? "Changing" : (tile.IsRiver ? "River/" + tile.riverSprite : tile.tileType + "/0"));
-
-                tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Tiles/" + s);
+                tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/Tiles/" + (tile.IsChanging ? "Changing" : tile.tileType + "/0"));
 
                 if (!tile.GetComponent<SpriteRenderer> ().sprite)
                     tile.GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Sprites/Tiles/" + tile.tileType + "/Base/0");

@@ -30,19 +30,19 @@ public class SC_DeploymentHero : MonoBehaviour {
 
         SC_Tile tileAtPos = SC_Tile_Manager.Instance.GetTileAt (transform.position);
 
-        if (tileAtPos && tileAtPos.CurrentDisplay == TDisplay.Deploy && tileAtPos.transform.position != oldPos) {            
+        if (tileAtPos && tileAtPos.CurrentDisplay == TDisplay.Deploy && tileAtPos.transform.position != oldPos) {
 
             if (tileAtPos.DeployedHero)
-                tileAtPos.DeployedHero.transform.position = oldPos;
+                tileAtPos.DeployedHero.transform.SetPos (oldPos, "Character");
 
             SC_Tile_Manager.Instance.GetTileAt (oldPos).DeployedHero = tileAtPos.DeployedHero;
 
             tileAtPos.DeployedHero = this;
 
-            transform.position = tileAtPos.transform.position;
+            transform.SetPos (tileAtPos.transform.position, "Character");
 
         } else
-            transform.position = oldPos;
+            transform.SetPos (oldPos, "Character");
 
     }
 

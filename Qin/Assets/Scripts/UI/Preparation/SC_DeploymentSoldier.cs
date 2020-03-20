@@ -66,7 +66,7 @@ public class SC_DeploymentSoldier : MonoBehaviour {
 
                 if (SameRegion || prevTile && regionPoints[prevTile.Region] >= TileUnderMouse.DeployedSoldier.Cost) {
 
-                    TileUnderMouse.DeployedSoldier.transform.position = prevTile.transform.position;
+                    TileUnderMouse.DeployedSoldier.transform.SetPos (prevTile.transform.position, "Character");
 
                     prevTile.DeployedSoldier = TileUnderMouse.DeployedSoldier;
 
@@ -81,21 +81,21 @@ public class SC_DeploymentSoldier : MonoBehaviour {
 
             if (prevTile)
                 UIManager.qinPreprationUI.castleDecks[prevTile.Region].SoldiersPoints.text = regionPoints[prevTile.Region].ToString ();
-                       
+
+            UIManager.qinPreprationUI.castleDecks[TileUnderMouse.Region].SoldiersPoints.text = regionPoints[TileUnderMouse.Region].ToString ();
+
+            transform.SetPos (TileUnderMouse.transform.position, "Character");
+
+            TileUnderMouse.DeployedSoldier = this;
+
             prevTile = TileUnderMouse;
-
-            UIManager.qinPreprationUI.castleDecks[prevTile.Region].SoldiersPoints.text = regionPoints[prevTile.Region].ToString ();
-
-            transform.position = prevTile.transform.position;
-
-            prevTile.DeployedSoldier = this;
 
         } else {
 
             if (!prevTile)
                 Destroy (gameObject);
             else
-                transform.position = prevTile.transform.position;
+                transform.SetPos (prevTile.transform.position, "Character");
 
         }
 

@@ -40,8 +40,6 @@ public class SC_Cursor : NetworkBehaviour {
 
         newMousePos = oldMousePos;
 
-        transform.SetPos(transform.position, "Cursor");
-
     }
 
     void Update () {
@@ -91,7 +89,7 @@ public class SC_Cursor : NetworkBehaviour {
             int x = newPos.x.I();
             int y = newPos.y.I();
 
-            transform.SetPos(new Vector3(Mathf.Clamp(x, 0, XSize - 1), Mathf.Clamp(y, 0, YSize - 1), 0));
+            transform.position = new Vector3(Mathf.Clamp(x, 0, XSize - 1), Mathf.Clamp(y, 0, YSize - 1), 0);
 
             #region Cursor has moved
             if (oldPos != transform.position) {

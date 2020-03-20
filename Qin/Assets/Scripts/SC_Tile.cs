@@ -150,32 +150,27 @@ public class SC_Tile : NetworkBehaviour {
 
                 string c = TileManager.GetNotableNeighborsName (this, (SC_Tile tile) => { return tile.River; });
 
-                if (c == "4") {
+                s += "/" + c;
 
-                    if (topLeft.River == topRight.River == bottomLeft.River == bottomRight.River == false)
-                        s += "/4_Cross";
-                    else
-                        s = GetRandomSprite (s + "/4/");                   
+                if ((c != "0") && (!c.StartsWith ("1")) && (c != "2_RightLeft") && (c != "2_TopBottom")) {
 
-                } else
-                    s += "/" + c;
+                    string[] cornerStrings = new string[] { "LeftBottom", "RightBottom", "LeftTop", "RightTop" };
+
+                    SC_Tile[] corners = new SC_Tile[] { bottomLeft, bottomRight, topLeft, topRight };
+
+                    for (int i = 0; i < 4; i++)
+                        if (cornerStrings[i].Contains (c.Remove (0, Mathf.Min (2, c.Length))) && (!corners[i]?.River ?? false))
+                                AddSpriteRenderer ("RiverCorner", GetRandomSprite ("Sprites/Tiles/River/Corners/" + cornerStrings[i] + "/"), "Tiles", 1, Vector3.zero);
+
+                }
 
             } else if (infos.type != "Changing")
                 s = GetRandomSprite (s + (PlainBase || Snow ? "/Base/" : "/"));
 
             GetComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> (s);
 
-            GetComponent<SpriteRenderer> ().sortingOrder = -(transform.position.x.I () + transform.position.y.I ());
-
-            if (PlainBase && !Plain) {
-
-                SpriteRenderer feature = new GameObject ("Feature").AddComponent<SpriteRenderer> ();
-                feature.transform.parent = transform;
-                feature.transform.localPosition = new Vector3 (t.spriteOffset.x, t.spriteOffset.y, SC_Game_Manager.Instance.elementLayers.IndexOf ("Construction"));
-                feature.sprite = Resources.Load<Sprite> (GetRandomSprite ("Sprites/Tiles/" + infos.type + "/"));
-                feature.sortingOrder = -(transform.position.x.I () + transform.position.y.I ());
-
-            }
+            if (PlainBase && !Plain)
+                AddSpriteRenderer ("Feature", GetRandomSprite ("Sprites/Tiles/" + infos.type + "/"), "Elements", -1, new Vector3 (t.spriteOffset.x, t.spriteOffset.y, SC_Game_Manager.Instance.elementLayers.IndexOf ("Construction")));
 
             if (infos.region != -1) {
 
@@ -205,12 +200,7 @@ public class SC_Tile : NetworkBehaviour {
 
     void AddTransition (string path, float x, float y) {
 
-        SpriteRenderer sr = new GameObject ("Transition").AddComponent<SpriteRenderer> ();
-        sr.sortingLayerName = "Tiles";
-        sr.sortingOrder = path.Contains ("Snow") ? 2 : 1;
-        sr.transform.parent = transform;
-        sr.sprite = Resources.Load<Sprite> (GetRandomSprite ("Sprites/Tiles/" + path + "/"));
-        sr.transform.localPosition = new Vector3 (x, y, 0);
+        AddSpriteRenderer ("Transition", GetRandomSprite ("Sprites/Tiles/" + path + "/"), "Tiles", -1, new Vector3 (x, y, 0));
 
     }
 
@@ -264,6 +254,17 @@ public class SC_Tile : NetworkBehaviour {
 
     }
     #endregion
+
+    void AddSpriteRenderer (string name, string path, string layer, int ord, Vector3 pos) {
+
+        SpriteRenderer sr = new GameObject (name).AddComponent<SpriteRenderer> ();
+        sr.transform.parent = transform;
+        sr.sprite = Resources.Load<Sprite> (path);
+        sr.sortingLayerName = layer;
+        sr.sortingOrder = ord < 0 ? -(transform.position.x.I () + transform.position.y.I ()) : ord;
+        sr.transform.localPosition = pos;
+
+    }
 
     void Start () {
 

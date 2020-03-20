@@ -136,7 +136,7 @@ namespace Prototype.NetworkLobby {
             nameInput.onEndEdit.AddListener(OnNameChanged);*/
 
             readyButton.onClick.RemoveAllListeners();
-            readyButton.onClick.AddListener(OnReadyClicked);
+            readyButton.onClick.AddListener(() => { OnReadyClicked (true); });
 
             //when OnClientEnterLobby is called, the loval PlayerController is not yet created, so we need to redo that here to disable
             //the add button if we reach maxLocalPlayer. We pass 0, as it was already counted on OnClientEnterLobby
@@ -168,15 +168,18 @@ namespace Prototype.NetworkLobby {
                 Text textComponent = readyButton.transform.GetChild(0).GetComponent<Text>();
                 textComponent.text = "READY";
                 textComponent.color = ReadyColor;
-                readyButton.interactable = false;
+                readyButton.onClick.RemoveAllListeners ();
+                readyButton.onClick.AddListener (() => { OnReadyClicked (false); });
                 //colorButton.interactable = false;
                 sideButton.interactable = false;
                 //nameInput.interactable = false;
 
             } else {
 
-                SetReadyButton(); 
-
+                readyButton.transform.GetChild (0).GetComponent<Text> ().color = NotReadyColor;
+                SetReadyButton ();
+                readyButton.onClick.RemoveAllListeners ();
+                readyButton.onClick.AddListener (() => { OnReadyClicked (true); });
                 //colorButton.interactable = isLocalPlayer;
                 sideButton.interactable = isLocalPlayer;
                 //nameInput.interactable = isLocalPlayer;
@@ -231,9 +234,12 @@ namespace Prototype.NetworkLobby {
 
         }
 
-        public void OnReadyClicked() {
+        public void OnReadyClicked(bool ready) {
 
-            SendReadyToBeginMessage();
+            if (ready)
+                SendReadyToBeginMessage ();
+            else
+                SendNotReadyToBeginMessage ();
 
         }
 

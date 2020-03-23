@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a2a4e6efdd322dd45838e0ea6b5ead02
+guid: 022e1b21c692b9f439555cc3334330e2
 TextureImporter:
   fileIDToRecycleName: {}
   externalObjects: {}
@@ -36,13 +36,13 @@ TextureImporter:
     mipBias: -100
     wrapU: 1
     wrapV: 1
-    wrapW: -1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
   spriteMode: 1
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 96
@@ -80,24 +80,13 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-  - serializedVersion: 2
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
     sprites: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: cd6ce8a85048a2b4fa02f9280d047d8c
+    spriteID: 1eb619c8d366888489154ccdcdd2801b
     vertices: []
     indices: 
     edges: []

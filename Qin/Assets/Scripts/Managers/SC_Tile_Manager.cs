@@ -6,9 +6,9 @@ using static SC_Global;
 
 public class SC_Tile_Manager : NetworkBehaviour {
 
-    [Header("Tweakable Variables")]
+    /*[Header("Tweakable Variables")]
     [Tooltip("Number of border sprites around the board")]
-    public int borderSize;
+    public int borderSize;*/
 
     [HideInInspector]
     [SyncVar]
@@ -78,7 +78,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
         }
 
-        for (int i = -borderSize; i <= XSize + borderSize; i++) {
+        /*for (int i = -borderSize; i <= XSize + borderSize; i++) {
 
             for (int j = -borderSize; j <= YSize + borderSize; j++) {
 
@@ -114,7 +114,7 @@ public class SC_Tile_Manager : NetworkBehaviour {
 
             }
 
-        }
+        }*/
 
 		gameManager.FinishSetup ();
 

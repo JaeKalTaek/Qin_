@@ -3,10 +3,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static SC_Global;
 using static SC_Character;
-using static SC_EditorTile;
 using System.Collections.Generic;
 using static SC_HeroTraps;
-using static SC_Game_Manager;
 
 [Serializable]
 public class SC_Tile : NetworkBehaviour {
@@ -101,7 +99,6 @@ public class SC_Tile : NetworkBehaviour {
 
     public bool River { get { return infos.type == "River"; } }
 
-    // Used for PathFinder
     public SC_Tile Parent { get; set; }
 
 	static SC_Game_Manager GameManager { get { return SC_Game_Manager.Instance; } }
@@ -268,17 +265,40 @@ public class SC_Tile : NetworkBehaviour {
 
     void Start () {
 
+        bool left = transform.position.x.I () == 0;
+        bool right = transform.position.x.I () == GameManager.mapPrefab.SizeMapX - 1;
+        bool bottom = transform.position.y.I () == 0;
+        bool top = transform.position.y.I () == GameManager.mapPrefab.SizeMapY - 1;
+
+        if (left || right || bottom || top) {
+
+            if (left || right)
+                AddSpriteRenderer ("Border", GetRandomSprite ("Sprites/Borders/" + (left ? "Left" : "Right") + "/"), "Tiles", 2, new Vector3 (left ? -1 : (right ? 1 : 0), 0, 0));
+
+            if (bottom || top)
+                AddSpriteRenderer ("Border", GetRandomSprite ("Sprites/Borders/" + (top ? "Top" : "Bottom") + "/"), "Tiles", 2, new Vector3 (0, bottom ? -1 : (top ? 1 : 0), 0));
+
+            if ((left && bottom) || (left && top) || (right && bottom) || (right && top)) {
+
+               string s = (bottom ? "Bottom" : "Top") + (left ? "Left" : "Right");
+
+                AddSpriteRenderer ("Border", "Sprites/Borders/Corner/" + s, "Tiles", 2, new Vector3 (left ? -1 : (right ? 1 : 0), bottom ? -1 : (top ? 1 : 0), 0));
+
+            }
+
+        }
+
         DemonAuras = new List<DemonAura> ();
 
-        CurrentDisplay = TDisplay.None;
-
-        if (!isServer && transform.position.x.I() == (GameManager.mapPrefab.SizeMapX - 1) && transform.position.y.I() == (GameManager.mapPrefab.SizeMapY - 1))
-            GameManager?.StartCoroutine("FinishConnecting");
+        CurrentDisplay = TDisplay.None;        
 
         filter = transform.GetChild(0).GetComponent<SpriteRenderer>();
 
         if(UIManager)
-            transform.parent = UIManager.tilesT;        
+            transform.parent = UIManager.tilesT;
+
+        if (!isServer && right && top) 
+            GameManager?.StartCoroutine ("FinishConnecting");
 
     }
 

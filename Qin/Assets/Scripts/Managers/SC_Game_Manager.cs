@@ -52,6 +52,10 @@ public class SC_Game_Manager : NetworkBehaviour {
     #region Setup
     private void Awake () {
 
+        GameObject bg = Instantiate (Resources.Load<GameObject> ("Prefabs/P_Background"));
+        bg.GetComponent<SpriteRenderer> ().size = new Vector2 (mapPrefab.SizeMapX + 10, mapPrefab.SizeMapY + 10);
+        bg.transform.position = new Vector3 ((mapPrefab.SizeMapX - 1) / 2f, (mapPrefab.SizeMapY - 1) / 2f, 0);
+
         ScorchedRegion = -1;
 
         FocusOn = true;

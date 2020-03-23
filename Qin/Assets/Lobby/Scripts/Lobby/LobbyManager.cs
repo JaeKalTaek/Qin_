@@ -352,6 +352,26 @@ namespace Prototype.NetworkLobby {
 
         }
 
+        // ----------------- Server callbacks ------------------
+
+        public override void OnServerDisconnect (NetworkConnection conn) {
+
+            NetworkServer.DestroyPlayersForConnection (conn);
+
+            if (conn.lastError != NetworkError.Ok) {
+
+                /*if (LogFilter.logError) {
+
+                    Debug.LogError ("ServerDisconnected due to error: " + conn.lastError);
+
+                }*/
+
+                print ("Hello");
+
+            }
+
+        }
+
     }
 
 }

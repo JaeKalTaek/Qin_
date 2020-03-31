@@ -197,7 +197,7 @@ public class SC_Tile : NetworkBehaviour {
 
     void AddTransition (string path, float x, float y) {
 
-        AddSpriteRenderer ("Transition", GetRandomSprite ("Sprites/Tiles/" + path + "/"), "Tiles", -1, new Vector3 (x, y, 0));
+        AddSpriteRenderer ("Transition", GetRandomSprite ("Sprites/Tiles/" + path + "/"), "Tiles", path.Contains("Snow") ? 2 : 1, new Vector3 (x, y, 0));
 
     }
 

@@ -395,7 +395,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void ActivateCurse () {
 
-        SC_Qin.Curse.Activate (false);
+        SC_Qin.Curse.Activate (true);
 
     }
 

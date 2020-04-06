@@ -6,12 +6,6 @@ namespace QinCurses {
 
     public class SC_Reformation : SC_BaseQinCurse {
 
-        public override void Activate (bool canReturn) {
-
-            base.Activate (true);
-
-        }
-
         protected override List<GameObject> GetAvailableTiles () {
 
             List<GameObject> tiles = new List<GameObject> ();

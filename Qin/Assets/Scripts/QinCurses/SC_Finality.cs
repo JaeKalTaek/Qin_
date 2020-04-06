@@ -10,12 +10,6 @@ namespace QinCurses {
         [Range (0, 100)]
         public int finalityHealthPercent;
 
-        public override void Activate (bool canReturn) {
-
-            base.Activate (true);
-
-        }
-
         protected override List<GameObject> GetAvailableTiles () {
 
             List<GameObject> tiles = new List<GameObject> ();

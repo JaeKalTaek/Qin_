@@ -31,14 +31,15 @@ public class SC_UI_Manager : MonoBehaviour {
     [Header("Game")]
     public GameObject gamePanel;
     public GameObject loadingPanel, victoryPanel;
-    public Text turnIndicator;
+    // public Text turnIndicator;
+    public Image turnIndicator;
     public TextMeshProUGUI infoText;
     public GameObject playerActionsPanel, optionsPanel, soundPanel, concedePanel;
     public GameObject endTurnButton;
     public Toggle healthBarsToggle;
     public TileTooltip tileTooltip;
     public Slider musicVolume;
-    public NextTurnUI nextTurnUI;
+    // public NextTurnUI nextTurnUI;
 
     [Header("Fight UI")]
     public GameObject previewFightPanel;
@@ -62,8 +63,9 @@ public class SC_UI_Manager : MonoBehaviour {
     public SC_UI_Stamina[] staminaUsage;
     public WarningStaminaDeathPanel warningStaminaDeathPanel;
 
-    [Header("Qin")]
+    [Header ("Qin")]
     public Text qinEnergy;
+    public RectTransform qinEnergyBar;
     public GameObject construct, constructPanel, endQinConstru, cancelSoldierConstru;
     public SC_QinCancelConstruButton cancelQinConstru;
     public Transform qinConstrus, soldierConstrus;
@@ -543,25 +545,33 @@ public class SC_UI_Manager : MonoBehaviour {
 
         backAction = DoNothing;
 
-        SwapTurnIndicators(false);
+        DOTween.Sequence ().Append (turnIndicator.rectTransform.DOAnchorPosX (turnIndicator.rectTransform.sizeDelta.x, 1, true).OnComplete (SwapTurnIndicator)).Append (turnIndicator.rectTransform.DOAnchorPosX (0, 1, true).OnComplete (GameManager.StartNextTurn));
+
+        /*SwapTurnIndicators(false);
 
         turnIndicator.text = (GameManager.QinTurn ? "Qin" : "Coalition") + "'s Turn";       
 
-        nextTurnUI.text.text = turnIndicator.text;
+        nextTurnUI.text.text = turnIndicator.text;*/
 
-        DOTween.Sequence ().Append (nextTurnUI.panel.DOFade (1, 1)).Append (nextTurnUI.panel.DOFade (0, 1));
+        //DOTween.Sequence ().Append (nextTurnUI.panel.DOFade (1, 1)).Append (nextTurnUI.panel.DOFade (0, 1));
 
-        DOTween.Sequence ().Append (nextTurnUI.text.DOFade (1, 1)).Append (nextTurnUI.text.DOFade (0, 1).OnComplete (GameManager.StartNextTurn));
+        //DOTween.Sequence ().Append (nextTurnUI.text.DOFade (1, 1)).Append (nextTurnUI.text.DOFade (0, 1).OnComplete (GameManager.StartNextTurn));
 
     }   
      
-    public void SwapTurnIndicators(bool b) {
+    void SwapTurnIndicator () {
+
+        turnIndicator.sprite = Resources.Load<Sprite> ("Sprites/UI/TurnIndicator/" + (GameManager.QinTurn ? "Qin" : "Coalition") + "TurnIndicator");
+
+    }
+
+    /*public void SwapTurnIndicators(bool b) {
 
         turnIndicator.transform.parent.gameObject.SetActive(b);
 
         nextTurnUI.panel.gameObject.SetActive(!b);
 
-    }
+    }*/
     #endregion
 
     #region Infos

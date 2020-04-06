@@ -313,7 +313,7 @@ public class SC_Game_Manager : NetworkBehaviour {
 
     public void StartNextTurn() {
 
-        uiManager.SwapTurnIndicators (true);
+        // uiManager.SwapTurnIndicators (true);
 
         SC_Cursor.SetLock (false);
 

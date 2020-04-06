@@ -47,7 +47,8 @@ public class SC_Qin : NetworkBehaviour {
 
         Energy = startEnergy;
 
-		uiManager.qinEnergy.text = "Qin's Energy : " + Energy;
+        uiManager.qinEnergyBar.localScale = new Vector3 (((float) Energy) / Qin.energyToWin, 1, 1);
+        uiManager.qinEnergy.text = Energy.ToString ();
 
         tileManager.GetTileAt(gameObject).Qin = this;
 
@@ -65,7 +66,9 @@ public class SC_Qin : NetworkBehaviour {
             uiManager.ShowVictory(true);
         else if (Energy > 0) {
 
-            uiManager.qinEnergy.text = "Qin's Energy : " + Energy;
+            uiManager.qinEnergyBar.localScale = new Vector3 (((float)Energy) / Qin.energyToWin, 1, 1);
+            uiManager.qinEnergy.text = Energy.ToString ();
+
             Qin.TryRefreshInfos ();
 
         }  else

@@ -407,7 +407,7 @@ public class SC_Tile : NetworkBehaviour {
                 activeCharacter?.ShowInfos ();
 
             Character?.ShowInfos();
-            Qin?.ShowInfos();
+            // Qin?.ShowInfos();
 
         } else
             UIManager.HideInfosIfActive(activeCharacter.gameObject);             

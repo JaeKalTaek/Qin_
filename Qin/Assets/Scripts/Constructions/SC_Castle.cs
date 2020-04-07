@@ -44,7 +44,7 @@ public class SC_Castle : SC_Bastion {
                 t.infos.type = CastleType == "" ? "Changing" : CastleType;
 
         foreach (SC_Tile t in tileManager.tiles)
-            t.SetupTile (tileManager.ChangingTiles.Contains (t) && t.Region == Tile.Region);
+            t.SetupTile (true /*tileManager.ChangingTiles.Contains (t) && t.Region == Tile.Region*/);
 
     }
 

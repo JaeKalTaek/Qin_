@@ -141,6 +141,10 @@ public class SC_Tile : NetworkBehaviour {
 
         if (changed) {
 
+            foreach (Transform child in transform)
+                if (child.name == "RiverCorner" || child.name == "Transition")
+                    Destroy (child.gameObject);
+
             string s = "Sprites/Tiles/" + (PlainBase ? "Plain" : infos.type);
 
             if (River) {
@@ -180,11 +184,7 @@ public class SC_Tile : NetworkBehaviour {
 
         }
 
-        #region Transitions
-        foreach (Transform child in transform)
-            if (child.name == "Transition")
-                Destroy (child.gameObject);        
-
+        #region Transitions      
         AddTransitions (new SC_Tile[] { topLeft, top, left }, new string[] { "Top", "Left" }, new float[] { -1, 1 });
 
         AddTransitions (new SC_Tile[] { topRight, top, right }, new string[] { "Top", "Right" }, new float[] { 1, 1 });

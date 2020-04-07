@@ -1439,7 +1439,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
     public void ClickWhileInactive (SC_Castle c) {
 
-        if (c) {
+        if (c && localPlayer.Qin) {
 
             SC_Cursor.SetLock (true);
 

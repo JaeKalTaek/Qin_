@@ -730,7 +730,7 @@ public class SC_UI_Manager : MonoBehaviour {
 
         characterDetails.relationshipsPanel.gameObject.SetActive(c.Hero);
 
-        characterDetails.heroTrapPanel.panel.SetActive (c.Hero);
+        characterDetails.heroTrapPanel.panel.SetActive (c.Hero && !localPlayer.Qin);
 
         characterDetails.soldierPanel.SetActive (c.Soldier);
 
